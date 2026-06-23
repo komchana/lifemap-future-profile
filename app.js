@@ -1329,6 +1329,16 @@ function initApp() {
   if (window.lucide) {
     window.lucide.createIcons();
   }
+
+  // Fade out splash screen smoothly
+  const splash = document.getElementById('app-splash-screen');
+  if (splash) {
+    splash.style.opacity = '0';
+    splash.style.visibility = 'hidden';
+    setTimeout(() => {
+      splash.remove();
+    }, 400);
+  }
 }
 
 // Initialize LINE LIFF

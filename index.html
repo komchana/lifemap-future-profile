@@ -12,8 +12,55 @@
   <script src="https://unpkg.com/lucide@latest"></script>
   <!-- Stylesheet -->
   <link rel="stylesheet" href="style.css">
+  <!-- Inline theme detection to prevent flash of light/dark theme -->
+  <script>
+    (function() {
+      const theme = localStorage.getItem('lifemap_theme') || 'dark-theme';
+      document.documentElement.className = theme;
+      const style = document.createElement('style');
+      style.innerHTML = `
+        #app-splash-screen {
+          background-color: ${theme === 'light-theme' ? '#F7FAEF' : '#10170A'} !important;
+        }
+        #app-splash-screen h2 {
+          color: ${theme === 'light-theme' ? '#10170A' : '#F7FAEF'} !important;
+        }
+        #app-splash-screen p {
+          color: ${theme === 'light-theme' ? '#3D4F2F' : '#C4D1B5'} !important;
+        }
+        @keyframes splashPulse {
+          0%, 100% { transform: scale(1); box-shadow: 0 0 30px rgba(214, 255, 92, 0.1); }
+          50% { transform: scale(1.05); box-shadow: 0 0 50px rgba(214, 255, 92, 0.25); }
+        }
+        @keyframes spinSlow {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        @keyframes loadingBar {
+          0% { left: -100%; width: 100%; }
+          50% { left: 0%; width: 50%; }
+          100% { left: 100%; width: 100%; }
+        }
+      `;
+      document.head.appendChild(style);
+    })();
+  </script>
 </head>
 <body>
+  <!-- Premium Splash Screen Loader to eliminate loading flickers -->
+  <div id="app-splash-screen" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: #10170a; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.4s ease, visibility 0.4s ease;">
+    <div style="text-align: center;">
+      <div style="width: 80px; height: 80px; border-radius: 24px; background: linear-gradient(135deg, rgba(214, 255, 92, 0.1) 0%, rgba(214, 255, 92, 0.02) 100%); border: 1px solid rgba(214, 255, 92, 0.2); display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; box-shadow: 0 0 30px rgba(214,255,92,0.1); position: relative; animation: splashPulse 2s infinite ease-in-out;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#D6FF5C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-compass" style="animation: spinSlow 8s linear infinite;"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+      </div>
+      <h2 style="font-family: 'Poppins', 'Prompt', sans-serif; font-size: 1.8rem; font-weight: 700; color: #F7FAEF; margin-bottom: 8px; letter-spacing: 1px; transition: color 0.3s;">LifeMap</h2>
+      <p style="font-family: 'Poppins', 'Prompt', sans-serif; font-size: 0.85rem; color: #C4D1B5; letter-spacing: 2px; text-transform: uppercase; transition: color 0.3s;">Future Profile</p>
+    </div>
+    <div style="position: absolute; bottom: 60px; width: 140px; height: 3px; background: rgba(247, 250, 239, 0.1); border-radius: 2px; overflow: hidden;">
+      <div style="position: absolute; top: 0; left: 0; height: 100%; background: #D6FF5C; border-radius: 2px; animation: loadingBar 1.5s infinite ease-in-out;"></div>
+    </div>
+  </div>
+
   <!-- Background Glows -->
   <div class="bg-glow-olive"></div>
   <div class="bg-glow-lime"></div>
