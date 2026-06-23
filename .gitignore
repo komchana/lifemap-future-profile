@@ -1,0 +1,13 @@
+# macOS
+.DS_Store
+
+# Temporary backups / step files
+*.step*
+
+# Netlify config
+.netlify/
+
+# Node dependencies (if added later)
+node_modules/
+dist/
+.env
