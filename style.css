@@ -79,6 +79,7 @@ body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
   height: 100vh;
+  height: -webkit-fill-available; /* Fix for LINE browser / iOS Safari */
   width: 100%;
   max-width: 100%;
   overflow: hidden;
@@ -135,6 +136,7 @@ body {
   display: flex;
   width: 100vw;
   height: 100vh;
+  height: -webkit-fill-available; /* Fix for LINE browser / iOS Safari */
   position: relative;
   z-index: 1;
 }
@@ -519,6 +521,12 @@ body {
 #view-onboarding {
   overflow-y: auto;
   padding: 40px 16px;
+}
+
+/* Quiz Tab View - must scroll on mobile */
+#view-quiz-tab {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 .onboarding-card {
   max-width: 580px;
@@ -1050,6 +1058,8 @@ select:focus, textarea:focus {
   max-width: 650px;
   margin: auto;
   padding: 40px 16px;
+  width: 100%;
+  box-sizing: border-box;
 }
 .quiz-welcome-header {
   text-align: center;
@@ -2029,6 +2039,7 @@ select:focus, textarea:focus {
   .app-container {
     flex-direction: column !important;
     height: 100vh !important;
+    height: -webkit-fill-available !important; /* Fix for LINE browser / iOS */
     width: 100% !important;
     max-width: 100% !important;
     overflow: hidden !important;
@@ -2060,6 +2071,8 @@ select:focus, textarea:focus {
     max-width: 100% !important;
     height: 100% !important;
     padding-bottom: 0 !important; /* Default to no bottom padding when bottom nav is hidden */
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
   }
 
   /* Adjust height and padding only when bottom nav (sidebar) is visible */
@@ -2201,6 +2214,7 @@ select:focus, textarea:focus {
     left: 0 !important;
     width: 100% !important;
     height: 100vh !important;
+    height: -webkit-fill-available !important; /* Fix for LINE browser / iOS */
     overflow-y: scroll !important;
     -webkit-overflow-scrolling: touch !important;
     flex-direction: column !important;
@@ -2266,12 +2280,30 @@ select:focus, textarea:focus {
   .quiz-body {
     padding: 16px !important;
   }
+  .quiz-container {
+    padding: 20px 14px !important;
+  }
   .quiz-options-list {
-    gap: 12px !important;
+    gap: 10px !important;
   }
   .option-card {
     padding: 14px 16px !important;
     font-size: 0.9rem !important;
+  }
+  .quiz-option-btn {
+    padding: 13px 16px !important;
+    font-size: 0.9rem !important;
+  }
+  .quiz-question-box {
+    padding: 18px !important;
+    margin-bottom: 16px !important;
+  }
+  .quiz-question-box h2 {
+    font-size: 1.1rem !important;
+    margin-bottom: 14px !important;
+  }
+  .quiz-progress-header {
+    margin-bottom: 16px !important;
   }
 
   /* Dashboard View mobile adjustments */
@@ -2313,7 +2345,7 @@ select:focus, textarea:focus {
     gap: 16px !important;
     width: 100% !important;
     max-width: 100% !important;
-    overflow-x: hidden !important;
+    overflow: visible !important; /* Let parent view-panel handle scrolling */
   }
   .profile-archetype-card {
     padding: 20px !important;
@@ -2438,9 +2470,20 @@ select:focus, textarea:focus {
   }
 
   /* View layouts padding adjustment */
-  #view-dashboard, #view-quiz-tab, #view-review, #view-parent, #view-marketplace, #view-settings {
+  #view-dashboard, #view-review, #view-parent, #view-marketplace, #view-settings {
     padding: 16px !important;
     overflow-y: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  /* Quiz tab: no extra padding — quiz-container handles its own spacing */
+  #view-quiz-tab {
+    padding-top: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
     width: 100% !important;
     max-width: 100% !important;
     box-sizing: border-box !important;
