@@ -106,166 +106,182 @@ export const gradePersonalizationMap = {
 export const quizQuestions = [
   {
     id: "q1",
-    domain: "interest",
-    framework: "RIASEC + Big Five",
+    key: "q1",
+    domain: "Profile Archetype",
     prompt: {
-      th: "ถ้าได้เริ่มโปรเจกต์ใหม่ คุณอยากรับบทบาทไหนมากที่สุด",
-      en: "If you were starting a new project, which role would you want to take the most?"
+      th: "Q1. ถ้าได้เริ่มโปรเจกต์ใหม่ในโรงเรียน คุณอยากรับบทบาทไหนมากที่สุด?",
+      en: "Q1. If you were starting a new project in school, which role would you want to take the most?"
     },
     options: [
-      {
-        label: { th: "ออกแบบภาพรวม เล่าเรื่อง และทำให้งานน่าจดจำ", en: "Design the overall vision, tell the story, and make it memorable" },
-        value: 4, cluster: "creator", riasec: "A", bigFive: "openness"
-      },
-      {
-        label: { th: "ทดลองสร้างต้นแบบ ใช้เครื่องมือ และแก้ปัญหาให้ใช้งานได้จริง", en: "Build prototypes, use tools, and solve problems to make it functional" },
-        value: 4, cluster: "builder", riasec: "R", bigFive: "conscientiousness"
-      },
-      {
-        label: { th: "ค้นหาข้อมูล วิเคราะห์ pattern และสรุปเหตุผล", en: "Gather information, analyze patterns, and summarize logical reasons" },
-        value: 4, cluster: "analyst", riasec: "I", bigFive: "conscientiousness"
-      },
-      {
-        label: { th: "เข้าใจผู้ใช้ ประสานทีม และช่วยให้ทุกคนทำงานร่วมกันได้ดี", en: "Understand users, coordinate the team, and help everyone collaborate smoothly" },
-        value: 4, cluster: "helper", riasec: "S", bigFive: "agreeableness"
-      },
-    ],
+      { label: { th: "A. ออกแบบภาพรวม เล่าเรื่อง และทำคอนเทนต์ให้น่าสนใจ", en: "A. Design overall vision, storytelling, and engaging content" }, value: 4, cluster: "creator", riasec: "A", bigFive: "openness", code: "A" },
+      { label: { th: "B. ทดลองสร้างต้นแบบ ใช้เครื่องมือ และแก้ปัญหาให้ใช้งานได้จริง", en: "B. Build prototypes, use tools, and solve functional problems" }, value: 4, cluster: "builder", riasec: "R", bigFive: "conscientiousness", code: "B" },
+      { label: { th: "C. ค้นหาข้อมูล วิเคราะห์ pattern และสรุปเหตุผลด้วยหลักฐาน", en: "C. Research data, analyze patterns, and summarize logic with evidence" }, value: 4, cluster: "analyst", riasec: "I", bigFive: "conscientiousness", code: "C" },
+      { label: { th: "D. เข้าใจผู้ใช้ ประสานทีม และช่วยให้ทุกคนทำงานร่วมกันได้ดี", en: "D. Understand users, coordinate team, and facilitate collaboration" }, value: 4, cluster: "helper", riasec: "S", bigFive: "agreeableness", code: "D" },
+      { label: { th: "E. มองหาโอกาส คิดวิธีขยายผล หรือทำให้โปรเจกต์เติบโต", en: "E. Look for opportunities, scale impact, or grow the project" }, value: 4, cluster: "entrepreneur", riasec: "E", bigFive: "extraversion", code: "E" }
+    ]
   },
   {
     id: "q2",
-    domain: "study",
-    framework: "Big Five",
+    key: "q2",
+    domain: "Learning Style",
     prompt: {
-      th: "เวลาเรียนเรื่องยาก วิธีไหนช่วยให้คุณไปต่อได้ดีที่สุด",
-      en: "When studying a difficult topic, which method helps you keep going best?"
+      th: "Q2. เวลาเรียนเรื่องยาก วิธีไหนช่วยให้คุณไปต่อได้ดีที่สุด?",
+      en: "Q2. When studying a difficult topic, which method helps you keep going best?"
     },
     options: [
-      {
-        label: { th: "เชื่อมโยงกับภาพ ตัวอย่าง และไอเดียใหม่ ๆ", en: "Associate it with visuals, real examples, and new ideas" },
-        value: 3, cluster: "creator", riasec: "A", bigFive: "openness"
-      },
-      {
-        label: { th: "แบ่งเป็นขั้นตอน เช็กงานทีละส่วน และทำซ้ำจนมั่นใจ", en: "Break it into steps, check work section by section, and repeat until confident" },
-        value: 3, cluster: "builder", riasec: "C", bigFive: "conscientiousness"
-      },
-      {
-        label: { th: "ถามคำถามลึก ๆ แล้วหาเหตุผลหรือหลักฐานรองรับ", en: "Ask deep questions and find supporting logic or evidence" },
-        value: 3, cluster: "analyst", riasec: "I", bigFive: "openness"
-      },
-      {
-        label: { th: "คุยกับเพื่อนหรือครูเพื่อแลกเปลี่ยนมุมมอง", en: "Talk with friends or teachers to exchange perspectives" },
-        value: 3, cluster: "helper", riasec: "S", bigFive: "extraversion"
-      },
-    ],
+      { label: { th: "A. เชื่อมโยงกับภาพ ตัวอย่าง และไอเดียสร้างสรรค์ใหม่ ๆ", en: "A. Associate with visuals, examples, and creative new ideas" }, value: 3, cluster: "creator", riasec: "A", bigFive: "openness", code: "A" },
+      { label: { th: "B. แบ่งเป็นขั้นตอน ลองทำจริง และทำซ้ำจนมั่นใจ", en: "B. Break into steps, practice hands-on, and repeat until confident" }, value: 3, cluster: "builder", riasec: "C", bigFive: "conscientiousness", code: "B" },
+      { label: { th: "C. ถามคำถามลึก ๆ แล้วหาเหตุผลหรือหลักฐานรองรับ", en: "C. Ask deep questions and find supporting logic or evidence" }, value: 3, cluster: "analyst", riasec: "I", bigFive: "openness", code: "C" },
+      { label: { th: "D. คุยกับเพื่อนหรือครูเพื่อแลกเปลี่ยนมุมมอง", en: "D. Talk with friends or teachers to exchange perspectives" }, value: 3, cluster: "helper", riasec: "S", bigFive: "extraversion", code: "D" },
+      { label: { th: "E. เชื่อมกับเป้าหมายในอนาคต ว่าจะนำไปใช้ทำอะไรได้", en: "E. Connect with future goals and real-world application" }, value: 3, cluster: "entrepreneur", riasec: "E", bigFive: "conscientiousness", code: "E" }
+    ]
   },
   {
     id: "q3",
-    domain: "career",
-    framework: "RIASEC",
+    key: "q3",
+    domain: "Extracurricular Exploration",
     prompt: {
-      th: "กิจกรรมเสริมแบบไหนที่คุณอยากลองเพื่อสำรวจอาชีพ",
-      en: "What kind of extracurricular activities do you want to try to explore careers?"
+      th: "Q3. กิจกรรมเสริมแบบไหนที่คุณอยากลองเพื่อสำรวจอาชีพ?",
+      en: "Q3. What kind of extracurricular activities do you want to try to explore careers?"
     },
     options: [
-      {
-        label: { th: "ค่ายสื่อ คอนเทนต์ การออกแบบ หรือ portfolio creative", en: "Media, content, design camps, or creative portfolios" },
-        value: 3, cluster: "creator", riasec: "A", bigFive: "openness"
-      },
-      {
-        label: { th: "ค่าย maker วิศวกรรม หุ่นยนต์ หรือสิ่งประดิษฐ์", en: "Maker, engineering, robotics camps, or inventions" },
-        value: 3, cluster: "builder", riasec: "R", bigFive: "conscientiousness"
-      },
-      {
-        label: { th: "data challenge งานวิจัย วิทยาศาสตร์ หรือวิเคราะห์ธุรกิจ", en: "Data challenges, scientific research, or business analysis" },
-        value: 3, cluster: "analyst", riasec: "I", bigFive: "conscientiousness"
-      },
-      {
-        label: { th: "อาสาแนะแนว สุขภาวะ การศึกษา หรือกิจกรรมชุมชน", en: "Guidance volunteering, wellbeing, education, or community service" },
-        value: 3, cluster: "helper", riasec: "S", bigFive: "agreeableness"
-      },
-    ],
+      { label: { th: "A. ค่ายสื่อ คอนเทนต์ การออกแบบ หรือทำ portfolio creative", en: "A. Media, content, design camps, or creative portfolio" }, value: 3, cluster: "creator", riasec: "A", bigFive: "openness", code: "A" },
+      { label: { th: "B. ค่าย maker วิศวกรรม หุ่นยนต์ หรือสิ่งประดิษฐ์", en: "B. Maker, engineering, robotics camps, or inventions" }, value: 3, cluster: "builder", riasec: "R", bigFive: "conscientiousness", code: "B" },
+      { label: { th: "C. data challenge งานวิจัย วิทยาศาสตร์ หรือวิเคราะห์ธุรกิจ", en: "C. Data challenges, scientific research, or business analysis" }, value: 3, cluster: "analyst", riasec: "I", bigFive: "conscientiousness", code: "C" },
+      { label: { th: "D. อาสาแนะแนว สุขภาวะ การศึกษา หรือกิจกรรมชุมชน", en: "D. Guidance volunteering, wellbeing, education, or community service" }, value: 3, cluster: "helper", riasec: "S", bigFive: "agreeableness", code: "D" },
+      { label: { th: "E. แข่งขัน startup pitch ทำเพจ หรือลองขายของออนไลน์", en: "E. Startup pitch competitions, page building, or e-commerce" }, value: 3, cluster: "entrepreneur", riasec: "E", bigFive: "extraversion", code: "E" }
+    ]
   },
   {
     id: "q4",
-    domain: "career",
-    framework: "RIASEC",
+    key: "q4",
+    domain: "Team & Competition Role",
     prompt: {
-      th: "ถ้าอยู่ในทีมประกวดหรือ startup school project คุณอยากดูแลส่วนไหน",
-      en: "If you were in a competition or startup school project team, which part would you manage?"
+      th: "Q4. ถ้าอยู่ในทีมประกวดหรือ startup school project คุณอยากดูแลส่วนไหน?",
+      en: "Q4. If in a competition or startup school project team, which part would you manage?"
     },
     options: [
-      {
-        label: { th: "pitch, branding และการสื่อสารให้คนเชื่อในไอเดีย", en: "Pitching, branding, and communicating to make people believe in the idea" },
-        value: 3, cluster: "entrepreneur", riasec: "E", bigFive: "extraversion"
-      },
-      {
-        label: { th: "งบประมาณ ตารางงาน เอกสาร และระบบติดตามงาน", en: "Budgets, schedules, documentation, and tracking systems" },
-        value: 3, cluster: "analyst", riasec: "C", bigFive: "conscientiousness"
-      },
-      {
-        label: { th: "prototype, demo หรือการทดสอบกับผู้ใช้จริง", en: "Prototype, demo, or testing with real users" },
-        value: 3, cluster: "builder", riasec: "R", bigFive: "conscientiousness"
-      },
-      {
-        label: { th: "สัมภาษณ์ผู้ใช้และเข้าใจปัญหาของคนจริง", en: "Interviewing users and understanding real people's problems" },
-        value: 3, cluster: "helper", riasec: "S", bigFive: "agreeableness"
-      },
-    ],
+      { label: { th: "A. branding storytelling และการสื่อสารให้คนเชื่อในไอเดีย", en: "A. Branding, storytelling, and persuasive communication" }, value: 3, cluster: "creator", riasec: "A", bigFive: "openness", code: "A" },
+      { label: { th: "B. prototype, demo หรือการทดสอบกับผู้ใช้จริง", en: "B. Prototype, demo, or real user testing" }, value: 3, cluster: "builder", riasec: "R", bigFive: "conscientiousness", code: "B" },
+      { label: { th: "C. data analysis วางแผนเชิงตัวเลข หรือทำ research", en: "C. Data analysis, numerical planning, or research" }, value: 3, cluster: "analyst", riasec: "I", bigFive: "conscientiousness", code: "C" },
+      { label: { th: "D. สัมภาษณ์ผู้ใช้ และเข้าใจปัญหาของคนจริง", en: "D. User interviews and understanding human problems" }, value: 3, cluster: "helper", riasec: "S", bigFive: "agreeableness", code: "D" },
+      { label: { th: "E. pitch หาทุน หานักลงทุน หรือขยายตลาด", en: "E. Pitching for funding, investor relations, or market expansion" }, value: 3, cluster: "entrepreneur", riasec: "E", bigFive: "extraversion", code: "E" }
+    ]
   },
   {
     id: "q5",
-    domain: "wellbeing",
-    framework: "Big Five",
+    key: "q5",
+    domain: "Future Vision Goal",
     prompt: {
-      th: "เวลามีความกดดันเรื่องอนาคต คุณอยากฝึกทักษะใดก่อน",
-      en: "When feeling pressure about the future, which skill do you want to practice first?"
+      th: "Q5. ภาพอนาคตแบบไหนทำให้คุณรู้สึก \"อยากค่อย ๆ สร้างไปถึง\" ที่สุด?",
+      en: "Q5. Which future vision makes you feel most motivated to gradually build towards?"
     },
     options: [
-      {
-        label: { th: "เปิดรับทางเลือกใหม่โดยยังไม่รีบตัดสินตัวเอง", en: "Be open to new choices without quickly judging yourself" },
-        value: 2, cluster: "creator", riasec: "A", bigFive: "openness"
-      },
-      {
-        label: { th: "วางแผนเล็ก ๆ ที่ทำได้จริงใน 7 วัน", en: "Make small plans that can actually be done in 7 days" },
-        value: 2, cluster: "builder", riasec: "C", bigFive: "conscientiousness"
-      },
-      {
-        label: { th: "ใช้ข้อมูลช่วยลดความลังเลและความความคิดวน", en: "Use data to reduce hesitation and looping thoughts" },
-        value: 2, cluster: "analyst", riasec: "I", bigFive: "emotional_regulation"
-      },
-      {
-        label: { th: "สื่อสารความคาดหวังกับครอบครัวหรือคนใกล้ตัว", en: "Communicate expectations with family or close ones" },
-        value: 2, cluster: "helper", riasec: "S", bigFive: "agreeableness"
-      },
-    ],
+      { label: { th: "A. มีผลงานสร้างสรรค์ที่สะท้อนตัวตนและคนจดจำ", en: "A. Creative work that reflects identity and is remembered" }, value: 4, cluster: "creator", riasec: "A", bigFive: "openness", code: "A" },
+      { label: { th: "B. สร้าง product หรือระบบที่แก้ปัญหาได้จริง", en: "B. Build products or systems that solve real problems" }, value: 4, cluster: "builder", riasec: "R", bigFive: "conscientiousness", code: "B" },
+      { label: { th: "C. เป็นคนที่คนไว้วางใจให้วิเคราะห์และตัดสินใจด้วยหลักฐาน", en: "C. Be trusted to analyze and make decisions based on evidence" }, value: 4, cluster: "analyst", riasec: "I", bigFive: "emotional_regulation", code: "C" },
+      { label: { th: "D. ทำงานที่ช่วยให้ผู้คนมีชีวิต การเรียน หรือสุขภาวะดีขึ้น", en: "D. Work that improves people's lives, learning, or wellbeing" }, value: 4, cluster: "helper", riasec: "S", bigFive: "agreeableness", code: "D" },
+      { label: { th: "E. สร้างธุรกิจหรือแบรนด์ที่สร้างโอกาสให้ตัวเองและคนอื่น", en: "E. Build a business or brand creating opportunities for all" }, value: 4, cluster: "entrepreneur", riasec: "E", bigFive: "extraversion", code: "E" }
+    ]
   },
   {
     id: "q6",
-    domain: "interest",
-    framework: "RIASEC + Big Five",
+    key: "q6",
+    domain: "Wellbeing Scale",
     prompt: {
-      th: "ภาพอนาคตแบบไหนทำให้คุณรู้สึกอยากค่อย ๆ สร้างไปถึง",
-      en: "Which vision of the future makes you want to gradually build towards it?"
+      th: "Q6. ตอนนี้คุณกังวลเรื่องอนาคตแค่ไหน?",
+      en: "Q6. How anxious are you about the future right now?"
     },
     options: [
-      {
-        label: { th: "มีผลงานสร้างสรรค์ที่สะท้อนตัวตนและคนจดจำ", en: "Creating creative work that reflects your identity and is remembered" },
-        value: 4, cluster: "creator", riasec: "A", bigFive: "openness"
-      },
-      {
-        label: { th: "สร้าง product หรือระบบที่แก้ปัญหาได้จริง", en: "Building a product or system that solves real problems" },
-        value: 4, cluster: "builder", riasec: "R", bigFive: "conscientiousness"
-      },
-      {
-        label: { th: "เป็นคนที่คนไว้วางใจให้วิเคราะห์และตัดสินใจด้วยหลักฐาน", en: "Being trusted to analyze and make decisions based on evidence" },
-        value: 4, cluster: "analyst", riasec: "I", bigFive: "conscientiousness"
-      },
-      {
-        label: { th: "ทำงานที่ช่วยให้ผู้คนมีชีวิต การเรียน หรือสุขภาวะดีขึ้น", en: "Working to improve people's lives, learning, or wellbeing" },
-        value: 4, cluster: "helper", riasec: "S", bigFive: "agreeableness"
-      },
-    ],
+      { label: { th: "1 - ไม่กังวลเลย (มั่นใจมาก)", en: "1 - Not anxious at all" }, value: 1, cluster: "helper", riasec: "S", bigFive: "emotional_regulation" },
+      { label: { th: "2 - กังวลเล็กน้อย", en: "2 - Slightly anxious" }, value: 2, cluster: "builder", riasec: "R", bigFive: "emotional_regulation" },
+      { label: { th: "3 - กังวลปานกลาง", en: "3 - Moderately anxious" }, value: 3, cluster: "analyst", riasec: "I", bigFive: "emotional_regulation" },
+      { label: { th: "4 - กังวลค่อนข้างมาก", en: "4 - Fairly anxious" }, value: 4, cluster: "creator", riasec: "A", bigFive: "emotional_regulation" },
+      { label: { th: "5 - กังวลมากที่สุด", en: "5 - Extremely anxious" }, value: 5, cluster: "entrepreneur", riasec: "E", bigFive: "emotional_regulation" }
+    ]
   },
+  {
+    id: "q7",
+    key: "q7",
+    domain: "PMF Signal",
+    prompt: {
+      th: "Q7. ถ้ามีระบบช่วยสรุปว่า \"คุณเป็นสายไหน และควรลองอะไรต่อ\" คุณอยากเห็นผลลัพธ์ไหม?",
+      en: "Q7. If a system summarizes 'what pathway you are and what to try next', do you want to see results?"
+    },
+    options: [
+      { label: { th: "อยากเห็นมาก", en: "Definitely want to see" }, value: 5, cluster: "creator", riasec: "A", bigFive: "openness" },
+      { label: { th: "อยากเห็น", en: "Want to see" }, value: 4, cluster: "builder", riasec: "R", bigFive: "conscientiousness" },
+      { label: { th: "เฉย ๆ", en: "Neutral" }, value: 3, cluster: "analyst", riasec: "I", bigFive: "openness" },
+      { label: { th: "ไม่ค่อยอยากเห็น", en: "Not really" }, value: 2, cluster: "helper", riasec: "S", bigFive: "agreeableness" },
+      { label: { th: "ไม่อยากเห็น", en: "Don't want to see" }, value: 1, cluster: "entrepreneur", riasec: "E", bigFive: "extraversion" }
+    ]
+  },
+  {
+    id: "q8",
+    key: "q8",
+    domain: "PMF Signal",
+    prompt: {
+      th: "Q8. ถ้ามีคำแนะนำกิจกรรม 7 วันที่เหมาะกับคุณ คุณอยากลองทำไหม?",
+      en: "Q8. If personalized 7-day activities are recommended, do you want to try them?"
+    },
+    options: [
+      { label: { th: "อยากลองมาก", en: "Definitely want to try" }, value: 5, cluster: "creator", riasec: "A", bigFive: "openness" },
+      { label: { th: "อยากลอง", en: "Want to try" }, value: 4, cluster: "builder", riasec: "R", bigFive: "conscientiousness" },
+      { label: { th: "ไม่แน่ใจ", en: "Not sure" }, value: 3, cluster: "analyst", riasec: "I", bigFive: "openness" },
+      { label: { th: "ไม่ค่อยอยากลอง", en: "Not really" }, value: 2, cluster: "helper", riasec: "S", bigFive: "agreeableness" },
+      { label: { th: "ไม่อยากลอง", en: "Don't want to try" }, value: 1, cluster: "entrepreneur", riasec: "E", bigFive: "extraversion" }
+    ]
+  },
+  {
+    id: "q9",
+    key: "q9",
+    domain: "PMF Signal",
+    prompt: {
+      th: "Q9. คุณคิดว่าผลลัพธ์ Future Profile นี้จะช่วยให้คุณตัดสินใจเรื่องอนาคตได้ดีขึ้นแค่ไหน?",
+      en: "Q9. How much do you think Future Profile results will help you decide on your future?"
+    },
+    options: [
+      { label: { th: "ช่วยมาก", en: "Helps very much" }, value: 5, cluster: "creator", riasec: "A", bigFive: "openness" },
+      { label: { th: "ช่วยได้", en: "Helps" }, value: 4, cluster: "builder", riasec: "R", bigFive: "conscientiousness" },
+      { label: { th: "กลางๆ", en: "Moderate" }, value: 3, cluster: "analyst", riasec: "I", bigFive: "openness" },
+      { label: { th: "ช่วยน้อย", en: "Helps little" }, value: 2, cluster: "helper", riasec: "S", bigFive: "agreeableness" },
+      { label: { th: "ไม่ช่วย", en: "Does not help" }, value: 1, cluster: "entrepreneur", riasec: "E", bigFive: "extraversion" }
+    ]
+  },
+  {
+    id: "q10",
+    key: "q10",
+    domain: "PMF Signal",
+    prompt: {
+      th: "Q10. คุณจะแนะนำเพื่อนให้ลองทำแบบสำรวจนี้ไหม?",
+      en: "Q10. Would you recommend this survey to a friend?"
+    },
+    options: [
+      { label: { th: "แนะนำแน่นอน", en: "Definitely recommend" }, value: 5, cluster: "creator", riasec: "A", bigFive: "openness" },
+      { label: { th: "แนะนำ", en: "Recommend" }, value: 4, cluster: "builder", riasec: "R", bigFive: "conscientiousness" },
+      { label: { th: "ไม่แน่ใจ", en: "Not sure" }, value: 3, cluster: "analyst", riasec: "I", bigFive: "openness" },
+      { label: { th: "คงไม่แนะนำ", en: "Probably not" }, value: 2, cluster: "helper", riasec: "S", bigFive: "agreeableness" },
+      { label: { th: "ไม่แนะนำ", en: "Would not recommend" }, value: 1, cluster: "entrepreneur", riasec: "E", bigFive: "extraversion" }
+    ]
+  },
+  {
+    id: "q11",
+    key: "q11",
+    domain: "Need-finding",
+    prompt: {
+      th: "Q11. คุณอยากให้ระบบช่วยเรื่องไหนมากที่สุด?",
+      en: "Q11. What area do you want the system to help you with the most?"
+    },
+    options: [
+      { label: { th: "รู้ว่าตัวเองถนัดอะไร", en: "Know my strengths" }, value: 3, cluster: "creator", riasec: "A", bigFive: "openness" },
+      { label: { th: "รู้ว่าควรเรียนต่อทางไหนดี", en: "Know what major to study" }, value: 3, cluster: "analyst", riasec: "I", bigFive: "conscientiousness" },
+      { label: { th: "รู้ว่าอาชีพไหนน่าลองสำรวจ", en: "Know what careers to explore" }, value: 3, cluster: "builder", riasec: "R", bigFive: "conscientiousness" },
+      { label: { th: "ช่วยทำ Portfolio / ผลงาน", en: "Help build Portfolio / Works" }, value: 3, cluster: "creator", riasec: "A", bigFive: "openness" },
+      { label: { th: "ช่วยหาโอกาส เช่น ค่าย ทุน คอร์ส หรือ mentor", en: "Find opportunities (camps, scholarships, courses, mentors)" }, value: 3, cluster: "entrepreneur", riasec: "E", bigFive: "extraversion" },
+      { label: { th: "ช่วยให้คุยกับพ่อแม่/ครูเรื่องอนาคตง่ายขึ้น", en: "Easier to talk with parents/teachers about future" }, value: 3, cluster: "helper", riasec: "S", bigFive: "agreeableness" },
+      { label: { th: "ยังไม่แน่ใจ", en: "Not sure yet" }, value: 1, cluster: "analyst", riasec: "I", bigFive: "openness" }
+    ]
+  }
 ];
 
 export const thinkingStyleQuestions = [
@@ -2074,10 +2090,10 @@ function showQuizQuestion(index) {
     const question = quizQuestions[index];
     
     questionNumberEl.textContent = isEn 
-      ? `Question ${index + 1} of 6` 
-      : `คำถามที่ ${index + 1} จาก 6`;
+      ? `Question ${index + 1} of 11` 
+      : `คำถามที่ ${index + 1} จาก 11`;
       
-    const pct = Math.round(((index + 1) / 6) * 100);
+    const pct = Math.round(((index + 1) / 11) * 100);
     progressBarEl.style.width = `${pct}%`;
     
     domainTagEl.textContent = question.domain.toUpperCase();
@@ -2098,7 +2114,7 @@ function showQuizQuestion(index) {
         state.answers[question.id] = oIdx;
         btn.classList.add('selected');
         setTimeout(() => {
-          if (currentQuizIdx < 5) {
+          if (currentQuizIdx < 10) {
             showQuizQuestion(currentQuizIdx + 1);
           } else {
             completeCareerQuiz();
