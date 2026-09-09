@@ -6208,4 +6208,8 @@ function setupAdminEventListeners() {
 }
 
 // Launch application on load
-window.addEventListener('DOMContentLoaded', initApp);
+if (document.readyState === 'loading') {
+  window.addEventListener('DOMContentLoaded', initApp);
+} else {
+  initApp();
+}
