@@ -1361,7 +1361,7 @@ function initLiff() {
   
   // Default fallback demo LIFF ID for LifeMap Prototype
   if (!liffId) {
-    liffId = "2006249563-71vBML8b";
+    liffId = "2010476429-j2wObuds";
   }
   
   // Pre-fill the input field in Settings if it exists

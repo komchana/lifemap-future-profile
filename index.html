@@ -1,1421 +1,771 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="th" class="dark-theme">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>LifeMap — สมุดชีวิตและ Future Profile</title>
-  
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LifeMap AI Future Passport — สำหรับนักเรียน</title>
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Anton&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=Prompt:wght@500;600;700;800&display=swap" rel="stylesheet">
-  
-  <!-- LINE LIFF SDK -->
-  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-
-  <style>
-    :root {
-      --bg: #f6f6f4;
-      --ink: #1a1a1a;
-      --ink-soft: #666;
-      --brand-green: #C8FF33;
-      --card: #ffffff;
-      --line: #e6e6e2;
-      --r: 18px;
-
-      /* Profile default theme */
-      --accent: #FF5C8A;
-      --accent-soft: #FFE3EA;
-      --accent-deep: #9A2A4D;
-    }
-
-    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    html, body { height: 100%; margin: 0; padding: 0; }
-    body {
-      background: var(--bg);
-      color: var(--ink);
-      font-family: 'IBM Plex Sans Thai', system-ui, -apple-system, sans-serif;
-      font-size: 16px;
-      line-height: 1.55;
-    }
-
-    .app {
-      max-width: 540px;
-      margin: 0 auto;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      padding: env(safe-area-inset-top) 16px env(safe-area-inset-bottom);
-      position: relative;
-    }
-
-    /* Header */
-    header {
-      padding: 14px 4px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .logo-badge {
-      font-family: 'Prompt', sans-serif;
-      font-weight: 800;
-      font-size: 16px;
-      background: var(--brand-green);
-      color: var(--ink);
-      padding: 6px 14px;
-      border-radius: 10px;
-      letter-spacing: 0.5px;
-      box-shadow: 0 2px 0 rgba(0,0,0,0.08);
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
-    .logo-badge span { font-weight: 500; opacity: 0.8; }
-    .prog-wrap {
-      flex: 1;
-      margin: 0 14px;
-      height: 7px;
-      background: #e3e3df;
-      border-radius: 99px;
-      overflow: hidden;
-    }
-    .prog-fill {
-      height: 100%;
-      background: var(--brand-green);
-      width: 0%;
-      transition: width 0.3s ease;
-    }
-    .step-count {
-      font-family: 'Prompt', sans-serif;
-      font-size: 12.5px;
-      color: var(--ink-soft);
-      min-width: 40px;
-      text-align: right;
-      font-weight: 600;
-    }
-
-    /* Main Content Area */
-    main {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      padding: 8px 0 100px;
-    }
-
-    .screen {
-      display: none;
-      animation: fadeIn 0.25s ease-out;
-    }
-    .screen.active { display: block; }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(6px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Typography */
-    h1 {
-      font-family: 'Prompt', sans-serif;
-      font-weight: 800;
-      font-size: 26px;
-      line-height: 1.3;
-      margin: 0 0 10px;
-      color: var(--ink);
-    }
-    h2 {
-      font-family: 'Prompt', sans-serif;
-      font-weight: 700;
-      font-size: 20px;
-      line-height: 1.35;
-      margin: 0 0 12px;
-      color: var(--ink);
-    }
-    p.lead {
-      color: var(--ink);
-      font-size: 15.5px;
-      line-height: 1.6;
-      margin: 0 0 14px;
-    }
-    p.muted {
-      color: var(--ink-soft);
-      font-size: 13.5px;
-      line-height: 1.55;
-      margin: 8px 0;
-    }
-
-    /* Cards & Containers */
-    .card {
-      background: var(--card);
-      border: 1.5px solid var(--line);
-      border-radius: var(--r);
-      padding: 16px 18px;
-      margin: 12px 0;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-    }
-
-    /* Consent Checkboxes */
-    .consent-group { margin: 16px 0; }
-    .consent-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      background: #fff;
-      border: 1.5px solid var(--line);
-      border-radius: 14px;
-      padding: 14px 16px;
-      margin: 10px 0;
-      cursor: pointer;
-      transition: border-color 0.15s ease, background 0.15s ease;
-    }
-    .consent-item.req {
-      border-color: #E2E2DC;
-      background: #FAFAF7;
-    }
-    .consent-item.checked {
-      border-color: var(--brand-green);
-      background: #F8FFE5;
-    }
-    .consent-item input[type="checkbox"] {
-      width: 22px;
-      height: 22px;
-      margin-top: 2px;
-      accent-color: #1a1a1a;
-      flex-shrink: 0;
-      cursor: pointer;
-    }
-    .consent-item-text b {
-      font-family: 'Prompt', sans-serif;
-      font-size: 14.5px;
-      display: block;
-      margin-bottom: 2px;
-    }
-    .consent-item-text span {
-      font-size: 13px;
-      color: var(--ink-soft);
-      line-height: 1.45;
-      display: block;
-    }
-    .tag-req {
-      display: inline-block;
-      background: #FF4757;
-      color: #fff;
-      font-size: 10.5px;
-      font-family: 'Prompt', sans-serif;
-      font-weight: 700;
-      padding: 1px 6px;
-      border-radius: 4px;
-      margin-left: 6px;
-      vertical-align: middle;
-    }
-    .tag-opt {
-      display: inline-block;
-      background: #e6e6e2;
-      color: var(--ink-soft);
-      font-size: 10.5px;
-      font-family: 'Prompt', sans-serif;
-      font-weight: 600;
-      padding: 1px 6px;
-      border-radius: 4px;
-      margin-left: 6px;
-      vertical-align: middle;
-    }
-
-    /* Options & Radio Cards */
-    .opt {
-      display: block;
-      background: #fff;
-      border: 1.5px solid var(--line);
-      border-radius: 14px;
-      padding: 14px 16px;
-      margin: 10px 0;
-      cursor: pointer;
-      font-size: 15px;
-      line-height: 1.48;
-      transition: all 0.15s ease;
-    }
-    .opt:hover {
-      border-color: var(--brand-green);
-      background: #FBFFE5;
-    }
-    .opt.sel {
-      border-color: var(--brand-green);
-      background: #F4FFCE;
-      font-weight: 500;
-      box-shadow: 0 0 0 3px rgba(200,255,51,0.35);
-    }
-
-    /* Form Fields */
-    label.field {
-      display: block;
-      margin: 14px 0;
-    }
-    label.field span.label-text {
-      display: block;
-      font-size: 13.5px;
-      color: var(--ink-soft);
-      margin-bottom: 6px;
-      font-family: 'Prompt', sans-serif;
-      font-weight: 600;
-    }
-    label.field span.req::after { content: " *"; color: #FF4757; }
-    
-    input[type=text], input[type=email] {
-      width: 100%;
-      padding: 13px 14px;
-      font-size: 15.5px;
-      border: 1.5px solid var(--line);
-      border-radius: 12px;
-      font-family: inherit;
-      background: #fff;
-      color: var(--ink);
-      transition: border-color 0.15s ease;
-    }
-    input[type=text]:focus, input[type=email]:focus {
-      outline: none;
-      border-color: var(--brand-green);
-      box-shadow: 0 0 0 3px rgba(200,255,51,0.35);
-    }
-
-    /* Tiered Grade Picker */
-    .tier-card {
-      background: #fff;
-      border: 1.5px solid var(--line);
-      border-radius: 14px;
-      margin: 8px 0;
-      overflow: hidden;
-      transition: border-color 0.15s ease;
-    }
-    .tier-card.expanded { border-color: var(--brand-green); background: #FBFFE5; }
-    .tier-card.has-pick { border-color: var(--brand-green); background: #F4FFCE; box-shadow: 0 0 0 3px rgba(200,255,51,0.3); }
-    .tier-head {
-      padding: 14px 16px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-family: 'Prompt', sans-serif;
-      font-weight: 600;
-      font-size: 15px;
-    }
-    .tier-head .chev { color: #999; font-size: 13px; transition: transform 0.2s; }
-    .tier-card.expanded .tier-head .chev { transform: rotate(180deg); color: var(--ink); }
-    .pick-badge {
-      background: var(--brand-green);
-      color: var(--ink);
-      font-family: 'Prompt', sans-serif;
-      font-weight: 700;
-      font-size: 12px;
-      padding: 3px 9px;
-      border-radius: 99px;
-      margin-left: 8px;
-    }
-    .tier-items {
-      display: none;
-      padding: 0 12px 12px;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 6px;
-    }
-    .tier-card.expanded .tier-items { display: grid; }
-    .opt-year {
-      background: #fff;
-      border: 1.5px solid var(--brand-green);
-      border-radius: 10px;
-      padding: 9px 4px;
-      text-align: center;
-      cursor: pointer;
-      font-family: 'Prompt', sans-serif;
-      font-weight: 600;
-      font-size: 13.5px;
-      transition: all 0.12s ease;
-    }
-    .opt-year.sel {
-      background: var(--brand-green);
-      border-color: var(--brand-green);
-      box-shadow: 0 0 0 2px rgba(200,255,51,0.5);
-    }
-
-    /* Gender Selection Grid */
-    .gender-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 6px; }
-    .gender-opt {
-      padding: 11px;
-      border: 1.5px solid var(--line);
-      border-radius: 12px;
-      text-align: center;
-      cursor: pointer;
-      font-size: 14px;
-      background: #fff;
-      font-family: 'Prompt', sans-serif;
-    }
-    .gender-opt.sel { border-color: var(--brand-green); background: #F4FFCE; font-weight: 600; }
-
-    /* Scale 1-5 Buttons */
-    .scale-grid {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 8px;
-      margin: 14px 0;
-    }
-    .scale-opt {
-      aspect-ratio: 1/1;
-      background: #fff;
-      border: 1.5px solid var(--line);
-      border-radius: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: 'Prompt', sans-serif;
-      font-size: 20px;
-      font-weight: 700;
-      cursor: pointer;
-      color: #666;
-      transition: all 0.15s ease;
-    }
-    .scale-opt.sel {
-      background: var(--brand-green);
-      border-color: var(--brand-green);
-      color: var(--ink);
-      box-shadow: 0 0 0 3px rgba(200,255,51,0.35);
-    }
-    .scale-labels {
-      display: flex;
-      justify-content: space-between;
-      font-size: 12px;
-      color: var(--ink-soft);
-      margin-top: -4px;
-      font-family: 'Prompt', sans-serif;
-    }
-
-    /* Fixed Footer Navigation */
-    footer {
-      position: fixed;
-      bottom: 0; left: 0; right: 0;
-      max-width: 540px;
-      margin: 0 auto;
-      padding: 14px 16px calc(14px + env(safe-area-inset-bottom));
-      background: rgba(246, 246, 244, 0.96);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-top: 1px solid var(--line);
-      display: flex;
-      gap: 10px;
-      z-index: 100;
-    }
-    footer:empty { display: none; }
-
-    button.btn {
-      flex: 1;
-      padding: 16px;
-      font-size: 16px;
-      font-family: 'Prompt', sans-serif;
-      font-weight: 700;
-      border: 2px solid var(--ink);
-      border-radius: 14px;
-      cursor: pointer;
-      background: var(--ink);
-      color: #fff;
-      transition: all 0.18s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-    button.btn.ghost {
-      background: transparent;
-      border-color: transparent;
-      color: var(--ink-soft);
-      font-weight: 500;
-    }
-    button.btn:disabled {
-      background: #cfcfca;
-      border-color: #cfcfca;
-      color: #fff;
-      cursor: not-allowed;
-      box-shadow: none;
-    }
-    button.btn:not(:disabled):hover {
-      background: var(--brand-green);
-      color: var(--ink);
-      border-color: var(--brand-green);
-      box-shadow: 0 6px 18px rgba(200, 255, 51, 0.4);
-    }
-    button.btn.ghost:not(:disabled):hover {
-      background: transparent;
-      color: var(--ink);
-      box-shadow: none;
-    }
-    button.btn:not(:disabled):active { transform: scale(0.98); }
-
-    /* Dashboard Result Styling */
-    .dashboard-header {
-      background: var(--card);
-      border: 1.5px solid var(--line);
-      border-radius: 20px;
-      padding: 20px;
-      margin-bottom: 14px;
-    }
-    .user-greeting {
-      font-size: 13.5px;
-      color: var(--ink-soft);
-      font-family: 'Prompt', sans-serif;
-      margin-bottom: 2px;
-    }
-    .passport-title {
-      font-family: 'Prompt', sans-serif;
-      font-weight: 800;
-      font-size: 22px;
-      margin: 0 0 14px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    
-    .profile-banner {
-      background: linear-gradient(135deg, var(--accent), var(--accent-soft));
-      border-radius: 18px;
-      padding: 20px;
-      color: #fff;
-      position: relative;
-      overflow: hidden;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.06);
-    }
-    .profile-banner-inner {
-      background: #fff;
-      border-radius: 14px;
-      padding: 18px;
-      color: var(--ink);
-    }
-    .profile-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      background: var(--accent);
-      color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-      margin-bottom: 10px;
-    }
-    .profile-name-en {
-      font-family: 'Anton', sans-serif;
-      font-size: 26px;
-      letter-spacing: 1px;
-      color: var(--accent);
-      margin: 0 0 2px;
-      line-height: 1.1;
-    }
-    .profile-name-th {
-      font-family: 'Prompt', sans-serif;
-      font-weight: 700;
-      font-size: 14px;
-      color: var(--ink-soft);
-      margin: 0 0 10px;
-    }
-
-    .widget-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-      margin: 14px 0;
-    }
-    .widget-card {
-      background: #fff;
-      border: 1.5px solid var(--line);
-      border-radius: 16px;
-      padding: 14px;
-    }
-    .widget-title {
-      font-family: 'Prompt', sans-serif;
-      font-size: 12px;
-      color: var(--ink-soft);
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      margin-bottom: 6px;
-    }
-    .widget-val {
-      font-family: 'Prompt', sans-serif;
-      font-weight: 800;
-      font-size: 20px;
-      color: var(--ink);
-    }
-
-    .mission-card {
-      background: var(--accent-soft);
-      border: 1.5px solid var(--accent);
-      border-radius: 16px;
-      padding: 16px;
-      margin: 14px 0;
-    }
-    .mission-tag {
-      display: inline-block;
-      background: var(--accent);
-      color: #fff;
-      font-size: 11px;
-      font-family: 'Prompt', sans-serif;
-      font-weight: 700;
-      padding: 2px 8px;
-      border-radius: 6px;
-      margin-bottom: 6px;
-    }
-    .mission-title {
-      font-family: 'Prompt', sans-serif;
-      font-weight: 700;
-      font-size: 15px;
-      color: var(--accent-deep);
-      margin-bottom: 4px;
-    }
-
-    .parent-code-box {
-      background: #FFF9E6;
-      border: 1.5px dashed #F0C040;
-      border-radius: 14px;
-      padding: 14px;
-      margin: 14px 0;
-      text-align: center;
-    }
-    .parent-code-val {
-      font-family: 'Anton', sans-serif;
-      font-size: 24px;
-      letter-spacing: 2px;
-      color: #B88600;
-      margin: 4px 0;
-    }
-
-    .action-btn-stack {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-top: 18px;
-    }
-
-    /* Loader */
-    .loader-wrap {
-      text-align: center;
-      padding: 60px 20px;
-    }
-    .spinner {
-      width: 44px;
-      height: 44px;
-      border: 4px solid #e3e3df;
-      border-top-color: var(--brand-green);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-      margin: 0 auto 16px;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* Links & Buttons */
-    .link-subtle {
-      color: var(--ink-soft);
-      font-size: 13px;
-      text-decoration: underline;
-      cursor: pointer;
-      text-align: center;
-      display: block;
-      margin-top: 12px;
-    }
-  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="app">
-    <header>
-      <div class="logo-badge">Life<span>Map</span></div>
-      <div class="prog-wrap"><div class="prog-fill" id="progFill"></div></div>
-      <div class="step-count" id="stepCount"></div>
-    </header>
+  <!-- Background Glows -->
+  <div class="bg-glow-olive"></div>
+  <div class="bg-glow-lime"></div>
 
-    <main id="mainContainer"></main>
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="app-sidebar" style="display: none;">
+      <div class="brand">
+        <div class="brand-icon">
+          <i data-lucide="compass" class="icon-pulse"></i>
+        </div>
+        <div class="brand-text">
+          <h1>LifeMap</h1>
+          <span>AI Future Passport</span>
+        </div>
+      </div>
 
-    <footer id="footerNav"></footer>
+      <div class="student-profile-widget">
+        <div class="avatar">
+          <i data-lucide="user"></i>
+        </div>
+        <div class="info">
+          <h3 id="sidebar-student-name">นักเรียน LifeMap</h3>
+          <span class="badge badge-grade" id="sidebar-grade-badge">ม.4</span>
+        </div>
+      </div>
+
+      <nav class="nav-menu">
+        <button class="nav-item active" data-view="dashboard">
+          <i data-lucide="layout-dashboard"></i>
+          <span>Dashboard</span>
+        </button>
+        <button class="nav-item" data-view="quiz-tab">
+          <i data-lucide="award"></i>
+          <span>Life Profile</span>
+        </button>
+        <button class="nav-item" data-view="missions">
+          <i data-lucide="route"></i>
+          <span>7-Day Missions</span>
+        </button>
+        <button class="nav-item" data-view="review">
+          <i data-lucide="bar-chart-3"></i>
+          <span>Growth Review</span>
+        </button>
+        <button class="nav-item" data-view="parent">
+          <i data-lucide="users"></i>
+          <span>Parent Link</span>
+        </button>
+        <button class="nav-item" data-view="marketplace">
+          <i data-lucide="shopping-bag"></i>
+          <span>Opportunities</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-stats">
+        <div class="stat-row">
+          <span>Tokens:</span>
+          <span class="valueHighlight" id="sidebar-tokens">25</span>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header">
+            <span>Passport Completion</span>
+            <span id="passport-progress-text">0%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="passport-progress-fill" style="width: 0%"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-footer">
+        <button class="btn btn-secondary btn-sm" id="btn-settings" data-view="settings">
+          <i data-lucide="settings"></i> Settings
+        </button>
+        <button class="btn btn-secondary btn-sm" id="btn-sidebar-export">
+          <i data-lucide="download"></i> Backup
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- Header (visible after onboarding) -->
+      <header class="top-header" id="app-header" style="display: none;">
+        <div class="header-info">
+          <h2 id="view-title">Dashboard</h2>
+          <p id="view-subtitle" class="text-muted">ยินดีต้อนรับกลับสู่เส้นทางอนาคตของคุณ</p>
+        </div>
+        
+        <div class="header-actions">
+          <div class="token-pill">
+            <i data-lucide="database"></i>
+            <span id="header-tokens">25</span>
+          </div>
+          <button class="theme-toggle" id="theme-toggle" title="เปลี่ยนธีม">
+            <i data-lucide="sun" class="sun-icon"></i>
+            <i data-lucide="moon" class="moon-icon"></i>
+          </button>
+        </div>
+      </header>
+
+      <!-- View Panels -->
+      <div class="view-viewport">
+        
+        <!-- 1. ONBOARDING & WELCOME (Default first view) -->
+        <div class="view-panel active" id="view-onboarding">
+          <div class="onboarding-card">
+            <div class="onboarding-header">
+              <div class="logo-large">
+                <i data-lucide="compass"></i>
+              </div>
+              <h2>สร้าง Future Passport ของคุณ</h2>
+              <p>ยินดีต้อนรับสู่ LifeMap พื้นที่สำรวจจุดแข็งและสร้างทิศทางอนาคตโดยไม่ตัดสินเลือกแทนคุณ</p>
+            </div>
+
+            <form id="onboarding-form" class="onboarding-body">
+              <div class="form-group">
+                <label for="ob-name">ชื่อของคุณ (แสดงใน Passport)</label>
+                <input type="text" id="ob-name" required placeholder="เช่น พิมพ์ชนก, ศุภกร...">
+              </div>
+
+              <div class="form-group">
+                <label>ระดับชั้นการศึกษา</label>
+                <div class="grade-selector-grid">
+                  <label class="grade-pill-label">
+                    <input type="radio" name="ob-grade" value="m4" required checked>
+                    <div class="grade-pill-card">
+                      <h3>ม.4</h3>
+                      <span>เริ่มค้นหาตัวเองสบายๆ</span>
+                    </div>
+                  </label>
+                  <label class="grade-pill-label">
+                    <input type="radio" name="ob-grade" value="m5">
+                    <div class="grade-pill-card">
+                      <h3>ม.5</h3>
+                      <span>เทียบสายและเก็บสะสมผลงาน</span>
+                    </div>
+                  </label>
+                  <label class="grade-pill-label">
+                    <input type="radio" name="ob-grade" value="m6">
+                    <div class="grade-pill-card">
+                      <h3>ม.6</h3>
+                      <span>จัดอันดับคณะและเตรียมสมัคร</span>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Grade personalized preview widget -->
+              <div class="personalization-preview" id="grade-preview-box">
+                <div class="preview-header">
+                  <i data-lucide="info"></i>
+                  <span id="preview-title-label">โฟกัสพิเศษสำหรับ ม.4</span>
+                </div>
+                <p id="preview-desc-label">LifeMap จะช่วยค้นหาความสนใจเบื้องต้นโดยยังไม่รีบกดดันคุณเรื่องคณะ...</p>
+                
+                <div class="form-group mt-3">
+                  <label id="preview-goal-label">เป้าหมายหลักในการสำรวจตอนนี้:</label>
+                  <select id="ob-goal" class="form-control" required>
+                    <!-- Dynamically populated options -->
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="ob-tone">สไตล์การพูดของ AI Guide</label>
+                <select id="ob-tone" required>
+                  <option value="supportive">อบอุ่นและให้กำลังใจ (Supportive)</option>
+                  <option value="analytical">เป็นระบบและวิเคราะห์ด้วยเหตุผล (Analytical)</option>
+                  <option value="direct">ตรงประเด็นและเน้นลงมือทำ (Direct)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="ob-campaign">รหัสโรงเรียน / แคมเปญแนะนำ (ถ้ามี)</label>
+                <input type="text" id="ob-campaign" placeholder="เช่น SCHOOL-BKK-2026">
+              </div>
+
+              <!-- PDPA Consent Box -->
+              <div class="consent-container">
+                <h3>นโยบายคุ้มครองข้อมูลส่วนบุคคล (PDPA Consent)</h3>
+                <p class="text-muted mb-3">เราให้ความสำคัญกับความเป็นส่วนตัวและสิทธิ์ในการควบคุมข้อมูลของคุณ ข้อมูลประวัติการทำแบบทดสอบและภารกิจทั้งหมดจะถูกจัดเก็บไว้บนอุปกรณ์นี้เป็นหลัก</p>
+                
+                <div class="consent-switches">
+                  <label class="switch-item">
+                    <div class="switch-label">
+                      <span>อนุญาตเก็บข้อมูลเพื่อสร้าง Life Profile</span>
+                      <small class="text-muted">เพื่อใช้วิเคราะห์และสรุปผล Archetype ส่วนตัวของคุณ</small>
+                    </div>
+                    <input type="checkbox" id="consent-profile" checked required>
+                  </label>
+                  
+                  <label class="switch-item">
+                    <div class="switch-label">
+                      <span>อนุญาตใช้ข้อมูลสำหรับ AI Guide</span>
+                      <small class="text-muted">เพื่อให้ AI ประเมินและแนะนำภารกิจอย่างปลอดภัย</small>
+                    </div>
+                    <input type="checkbox" id="consent-ai" checked required>
+                  </label>
+                  
+                  <label class="switch-item">
+                    <div class="switch-label">
+                      <span>อนุญาตการแบ่งปันผ่าน Parent Link (เปิด/ปิดภายหลังได้)</span>
+                      <small class="text-muted">เพื่อส่งข้อมูลบางส่วนให้ผู้ปกครองช่วยเป็นกำลังใจ</small>
+                    </div>
+                    <input type="checkbox" id="consent-parent">
+                  </label>
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-primary btn-block">
+                เริ่มสร้าง Future Passport <i data-lucide="arrow-right"></i>
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <!-- 2. DASHBOARD VIEW -->
+        <div class="view-panel" id="view-dashboard">
+          <div class="dashboard-grid">
+            <!-- Left Side: Profile & Quick Info -->
+            <div class="dashboard-main-col">
+              
+              <!-- Passport Card (Header) -->
+              <div class="passport-display-card">
+                <div class="passport-badge-header">
+                  <div class="passport-chip"></div>
+                  <span>FUTURE PASSPORT</span>
+                </div>
+                <div class="passport-user">
+                  <h3 id="dash-passport-name">พิมพ์ชนก</h3>
+                  <div class="passport-meta">
+                    <span id="dash-passport-grade">ชั้น ม.5</span>
+                    <span class="campaign-tag" id="dash-passport-campaign">SCHOOL-BKK</span>
+                  </div>
+                </div>
+                <div class="passport-badge-status" id="dash-badge-slot">
+                  <!-- Rendered dynamically -->
+                  <div class="badge-card locked">
+                    <i data-lucide="lock"></i>
+                    <span>ทำแบบทดสอบเพื่อรับตราอาชีพ</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Active Mission Progress -->
+              <div class="dashboard-section-card">
+                <div class="section-title">
+                  <i data-lucide="flag"></i>
+                  <h3>ภารกิจการเติบโตปัจจุบัน</h3>
+                </div>
+                <div id="dash-mission-container">
+                  <!-- Rendered dynamically -->
+                </div>
+              </div>
+
+              <!-- Earned Stamps / Tokens log -->
+              <div class="dashboard-section-card">
+                <div class="section-title">
+                  <i data-lucide="verified"></i>
+                  <h3>บันทึกความสำเร็จ (Passport Stamps)</h3>
+                </div>
+                <div class="stamps-grid" id="dash-stamps-grid">
+                  <!-- Rendered dynamically -->
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Right Side: Analytics Preview & Quick actions -->
+            <div class="dashboard-sidebar-col">
+              
+              <!-- Growth Review Summary card -->
+              <div class="dashboard-section-card review-summary-card">
+                <div class="section-title">
+                  <i data-lucide="trending-up"></i>
+                  <h3>ผลประเมินการเติบโต</h3>
+                </div>
+                <p class="text-muted mb-3" id="dash-review-status-text">ทำภารกิจและเช็คอินให้ครบ 3 วันขึ้นไป เพื่อปลดล็อกรายงานมิติการเติบโตอย่างปลอดภัย</p>
+                <div class="progress-bar-sm mb-3">
+                  <div class="progress-fill" id="dash-review-progress-fill" style="width: 0%"></div>
+                </div>
+                <button class="btn btn-secondary btn-block btn-sm" id="btn-dash-go-review">
+                  ดูรายละเอียด Growth Review
+                </button>
+              </div>
+
+              <!-- Parent Link widget -->
+              <div class="dashboard-section-card">
+                <div class="section-title">
+                  <i data-lucide="link"></i>
+                  <h3>Parent Link</h3>
+                </div>
+                <p class="text-muted mb-2">เชิญผู้ปกครองเพื่อเข้าชมข้อมูลจุดแข็งของคุณแบบสนับสนุน ไม่ก้าวก่าย</p>
+                <div class="parent-invite-display">
+                  <span class="invite-code" id="dash-invite-code">LM-4827</span>
+                  <button class="btn btn-secondary btn-sm" id="btn-dash-invite-copy"><i data-lucide="copy"></i></button>
+                </div>
+              </div>
+
+              <!-- Next Best Action Guide -->
+              <div class="dashboard-section-card guide-tip-card">
+                <div class="section-title">
+                  <i data-lucide="help-circle"></i>
+                  <h3 id="dash-guide-title">คำแนะนำจาก AI Guide</h3>
+                </div>
+                <p id="dash-guide-next-action">คุณได้ปลดล็อก Passport แล้ว! ก้าวถัดไปคือการเริ่มทำแบบทดสอบ 6 คำถาม เพื่อเริ่มวิเคราะห์จุดแข็งเป้าหมายหลักในอนาคตของคุณ</p>
+                <button class="btn btn-primary btn-sm mt-3" id="btn-dash-next-action">
+                  เริ่มเลย
+                </button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. QUIZ / PROFILE VIEW -->
+        <div class="view-panel" id="view-quiz-tab">
+          <!-- State A: Quiz needs completion -->
+          <div id="quiz-intro-container" class="quiz-container">
+            <div class="quiz-welcome-header">
+              <i data-lucide="shield-check" class="text-accent large-icon"></i>
+              <h2>แบบทดสอบจุดแข็งและทางเลือกอาชีพ (6 ข้อ)</h2>
+              <p id="quiz-personalized-intro">การแนะแนวเป้าหมายชีวิตแบบไม่ฟันธงเส้นทาง ค้นหา Archetype และวิเคราะห์ RIASEC & Big Five traits</p>
+            </div>
+            <button class="btn btn-primary" id="btn-start-quiz-now">เริ่มแบบทดสอบ (ใช้เวลา ~2 นาที)</button>
+          </div>
+
+          <!-- State B: Quiz is running -->
+          <div id="quiz-engine-container" class="quiz-container" style="display: none;">
+            <div class="quiz-progress-header">
+              <span id="quiz-question-number">คำถามที่ 1 จาก 6</span>
+              <div class="progress-bar-sm">
+                <div class="progress-fill" id="quiz-progress-bar" style="width: 16%"></div>
+              </div>
+            </div>
+            
+            <div class="quiz-question-box">
+              <span class="badge badge-domain" id="quiz-domain-tag">INTEREST</span>
+              <h2 id="quiz-question-prompt">ถ้าเกิดเริ่มโปรเจกต์ใหม่ในโรงเรียน คุณมักจะรับบทบาทใด...</h2>
+              
+              <div class="quiz-options-list" id="quiz-options-list">
+                <!-- Options populated dynamically -->
+              </div>
+            </div>
+
+            <div class="quiz-navigation-actions">
+              <button class="btn btn-secondary" id="btn-quiz-back" style="visibility: hidden;">
+                <i data-lucide="chevron-left"></i> ย้อนกลับ
+              </button>
+              <div style="flex: 1;"></div>
+            </div>
+          </div>
+
+          <!-- State C: Profile Result (Quiz Completed) -->
+          <div id="quiz-result-container" class="profile-layout" style="display: none;">
+            <!-- Left Side: Profile Summary & Badges -->
+            <div class="profile-main-col">
+              
+              <div class="profile-archetype-card">
+                <div class="badge-crown" id="profile-badge-crown">
+                  <!-- Crown indicator based on Top Category -->
+                </div>
+                <span class="badge-tag">YOUR ARCHETYPE</span>
+                <h2 id="profile-archetype-title">Insight Navigator</h2>
+                <p class="headline" id="profile-headline">แนวโน้มเด่นของคุณอยู่ใกล้ด้านวิเคราะห์ด้วยหลักฐานข้อมูล...</p>
+                
+                <div class="strengths-box">
+                  <h4>จุดแข็งสำคัญของคุณ:</h4>
+                  <ul id="profile-strengths-list">
+                    <!-- Populated dynamically -->
+                  </ul>
+                </div>
+              </div>
+
+              <!-- Score Analytics Charts -->
+              <div class="dashboard-section-card">
+                <div class="section-title">
+                  <i data-lucide="radar"></i>
+                  <h3>ผลประเมินความสนใจ (RIASEC Framework)</h3>
+                </div>
+                <div class="chart-layout">
+                  <div class="chart-viz" id="riasec-radar-container">
+                    <svg id="riasec-radar-svg" viewBox="0 0 400 400" style="max-width: 320px; margin: 0 auto; display: block;"></svg>
+                  </div>
+                  <div class="chart-legend-list" id="riasec-scores-list">
+                    <!-- Populated dynamically -->
+                  </div>
+                </div>
+              </div>
+
+              <div class="dashboard-section-card">
+                <div class="section-title">
+                  <i data-lucide="bar-chart-4"></i>
+                  <h3>ลักษณะการเรียนรู้และสุขภาวะ (Big Five Traits)</h3>
+                </div>
+                <div class="learning-style-box mb-3">
+                  <h4 class="mb-1"><i data-lucide="book-open"></i> สไตล์การเรียนรู้ที่แนะนำ:</h4>
+                  <p id="profile-learning-style" class="text-muted">เรียนรู้ได้ดีที่สุดจากการประเมินและเปรียบเทียบข้อมูล...</p>
+                </div>
+                
+                <div class="bigfive-scores-list" id="bigfive-scores-list">
+                  <!-- Populated dynamically -->
+                </div>
+                
+                <div class="wellbeing-box mt-3" id="profile-wellbeing-box">
+                  <h4 class="mb-1"><i data-lucide="heart"></i> คำแนะนำสุขภาวะทางใจ (Wellbeing Note):</h4>
+                  <p id="profile-wellbeing-note" class="text-muted">ระวังความกังวลจากการใช้เวลาประเมินตัวเลือกนานเกินไป...</p>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Right Side: AI Guide and Horoscopes -->
+            <div class="profile-sidebar-col">
+              
+              <!-- AI Guide interactive box -->
+              <div class="dashboard-section-card ai-chat-card">
+                <div class="section-title">
+                  <i data-lucide="message-square"></i>
+                  <h3>ปรึกษา AI Guide ส่วนตัว</h3>
+                </div>
+                <div class="ai-chat-bubble">
+                  <p id="ai-chat-response">สวัสดีคุณยินดีด้วยที่ปลดล็อก Profile สำเร็จ! จากคำตอบและจุดแข็งของคุณ ฉันพร้อมช่วยแนะนำทางเลือก คุยกับพ่อแม่ หรือเลือกภารกิจทดลอง 7 วัน ลองถามฉันสิ</p>
+                </div>
+                <div class="ai-prompts-suggestions" id="ai-prompts-list">
+                  <!-- Prompts populated dynamically -->
+                </div>
+              </div>
+
+              <!-- Career Vibe (Playful reflections) -->
+              <div class="dashboard-section-card horoscope-card">
+                <div class="section-title">
+                  <i data-lucide="sparkles"></i>
+                  <h3>ดูดวงอาชีพ (Career Vibe)</h3>
+                </div>
+                <p class="text-muted mb-3">สะท้อนข้อมูลจุดแข็งของคุณในสไตล์ทำนายเชิงบวก สนุกสนาน เพื่อช่วยคลายเครียด</p>
+                
+                <div class="horoscope-box">
+                  <div class="horoscope-row">
+                    <span class="label">ดวงดาวประจำวิสัยทัศน์:</span>
+                    <strong id="horoscope-constellation">Constellation Analyst</strong>
+                  </div>
+                  <div class="horoscope-row">
+                    <span class="label">สกิลนำโชคสัปดาห์นี้:</span>
+                    <strong id="horoscope-lucky-skill">Decision Matrix</strong>
+                  </div>
+                  <div class="horoscope-row">
+                    <span class="label">กิจวัตรเสริมพลังบวก:</span>
+                    <strong id="horoscope-ritual">ทบทวน 3 ทางเลือกก่อนตัดสินใจ</strong>
+                  </div>
+                </div>
+                
+                <div class="disclaimer-badge">
+                  <i data-lucide="alert-triangle"></i>
+                  <span>ฟีเจอร์นี้เพื่อความบันเทิงเท่านั้น ไม่ใช่การตัดสินโชคชะตาหรือการวินิจฉัยทางการแนะแนวอาชีพ</span>
+                </div>
+              </div>
+
+              <!-- Next moves checklist -->
+              <div class="dashboard-section-card">
+                <div class="section-title">
+                  <i data-lucide="arrow-right-circle"></i>
+                  <h3>ก้าวต่อไปที่ควรลอง (Next Moves)</h3>
+                </div>
+                <ul class="next-moves-bullets" id="profile-next-moves-list">
+                  <!-- Populated dynamically -->
+                </ul>
+              </div>
+
+              <div class="profile-reset-action">
+                <button class="btn btn-secondary btn-block btn-sm text-danger" id="btn-reset-quiz">
+                  <i data-lucide="refresh-cw"></i> ทำแบบทดสอบใหม่
+                </button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. 7-DAY MISSIONS VIEW -->
+        <div class="view-panel" id="view-missions">
+          <div class="missions-layout">
+            <div class="missions-sidebar">
+              <h3>ภารกิจทดลอง 7 วัน</h3>
+              <p class="text-muted mb-3">แปลงผลลัพธ์ของจุดแข็งให้กลายเป็นภารกิจลงมือทำจริง วันละ 1 กิจกรรม เพื่อสะสมหลักฐานใน Passport</p>
+              
+              <!-- Vertical list of days -->
+              <div class="mission-days-list" id="mission-days-list">
+                <!-- Dynamically populated days -->
+              </div>
+            </div>
+
+            <div class="missions-main-panel">
+              <!-- Grid Canvas for Metro Line Rendering -->
+              <div class="metro-canvas-card">
+                <h4>แผนที่ทิศทางภารกิจ (Roadmap Canvas)</h4>
+                <div class="metro-wrapper" id="metro-canvas-wrapper">
+                  <canvas id="metro-canvas" width="600" height="120"></canvas>
+                  <div class="metro-nodes-overlay" id="metro-nodes-overlay"></div>
+                </div>
+              </div>
+
+              <!-- Selected Day Mission Card & Check-in form -->
+              <div class="mission-detail-card" id="mission-detail-card">
+                <div class="detail-header">
+                  <span class="badge" id="mission-detail-day">DAY 1</span>
+                  <h3 id="mission-detail-title">เลือกเรื่องที่อยากสำรวจ</h3>
+                </div>
+                
+                <p id="mission-detail-desc" class="mb-4">เลือกหัวข้อสร้างสรรค์หรือเทคโนโลยีที่คุณสนใจ 1 เรื่อง และเขียนสรุปสั้น ๆ</p>
+                
+                <div class="detail-focus-tags">
+                  <span class="tag"><i data-lucide="compass"></i> โฟกัส: <span id="mission-detail-dimension">Exploration</span></span>
+                  <span class="tag"><i data-lucide="tag"></i> สกิล: <span id="mission-detail-skills">self-awareness</span></span>
+                </div>
+
+                <!-- State A: Form to check-in -->
+                <form id="checkin-form" class="checkin-form-box">
+                  <input type="hidden" id="checkin-mission-id">
+                  <input type="hidden" id="checkin-day-num">
+                  
+                  <div class="form-group">
+                    <label for="checkin-evidence-input" id="checkin-evidence-label">หลักฐานการส่งงาน (บันทึก 1-2 ประโยค):</label>
+                    <textarea id="checkin-evidence-input" required rows="3" placeholder="เขียนสรุปสิ่งที่คุณทำเสร็จหรือลิงก์ส่งงาน..."></textarea>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label for="checkin-rating">ระดับความพึงพอใจ/ความถนัด (1 ถึง 5)</label>
+                      <div class="rating-slider-box">
+                        <input type="range" id="checkin-rating" min="1" max="5" value="3" step="1">
+                        <span class="rating-val" id="checkin-rating-val">3</span>
+                      </div>
+                    </div>
+                    
+                    <div class="form-group">
+                      <label for="checkin-mood">อารมณ์ของคุณวันนี้</label>
+                      <select id="checkin-mood" required>
+                        <option value="curious">สงสัยใคร่รู้ (Curious)</option>
+                        <option value="confident">มั่นใจ (Confident)</option>
+                        <option value="unsure">ไม่แน่ใจ/กังวล (Unsure)</option>
+                        <option value="energized">ตื่นตัว (Energized)</option>
+                        <option value="calm">สงบเรียบง่าย (Calm)</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <button type="submit" class="btn btn-primary mt-3">
+                    <i data-lucide="check-circle"></i> บันทึก Check-in และรับ 20 Tokens
+                  </button>
+                </form>
+
+                <!-- State B: Already checked-in display -->
+                <div class="checked-in-display" id="checked-in-status-box" style="display: none;">
+                  <div class="success-banner">
+                    <i data-lucide="check-circle-2"></i>
+                    <span>ส่งภารกิจเรียบร้อยแล้ว</span>
+                  </div>
+                  
+                  <div class="logged-info mt-3">
+                    <p><strong>บันทึกความรู้สึกของคุณ:</strong></p>
+                    <p class="reflection-text" id="logged-reflection">ข้อความบันทึกการส่งงาน...</p>
+                    
+                    <div class="logged-meta mt-2">
+                      <span>คะแนนตนเอง: <strong id="logged-rating">5</strong>/5</span>
+                      <span>อารมณ์: <strong id="logged-mood">Curious</strong></span>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. GROWTH REVIEW VIEW -->
+        <div class="view-panel" id="view-review">
+          <div class="review-lock-screen" id="review-locked-box">
+            <div class="lock-card">
+              <i data-lucide="lock" class="lock-icon"></i>
+              <h2>ระบบวิเคราะห์ Growth Review กำลังปิดล็อก</h2>
+              <p>ระบบแนะแนวของเราเน้นการสะสมข้อมูลความตั้งใจจริง กรุณาทำภารกิจและเช็คอินความก้าวหน้าอย่างน้อย **3 วัน** เพื่อสรุปคะแนนประเมินการพัฒนาตนเองอย่างมีบริบท</p>
+              <div class="progress-bar-sm mt-3 mb-2" style="max-width: 300px; margin: 16px auto;">
+                <div class="progress-fill" id="review-unlock-progress-fill" style="width: 0%"></div>
+              </div>
+              <span id="review-unlock-ratio-text">0 จาก 3 วันสำเร็จ</span>
+            </div>
+          </div>
+
+          <div class="review-unlocked-screen" id="review-unlocked-box" style="display: none;">
+            <div class="review-header-panel">
+              <h2 id="review-headline">Growth Review: ความสามารถในการสำรวจและทักษะเริ่มชัดขึ้น</h2>
+              <p id="review-summary" class="text-muted">คะแนนเหล่านี้ไม่ใช่ผลสรุปตัดสินคุณค่าของชีวิต แต่เป็นแผนที่สะท้อนทิศทางเพื่อก้าวต่อไปของคุณในสัปดาห์ถัดไป</p>
+            </div>
+
+            <div class="review-grid">
+              <!-- Visual Scores for 5 Dimensions -->
+              <div class="review-scores-card">
+                <h3>คะแนนการพัฒนา 5 มิติ</h3>
+                <div class="dimension-bars-list" id="review-dimension-bars">
+                  <!-- Generated dynamically -->
+                </div>
+              </div>
+
+              <!-- Dynamic Coaching Feedback -->
+              <div class="review-feedback-card">
+                <div class="feedback-box">
+                  <h4>คำแนะนำเพื่อก้าวต่อไป (Next Steps):</h4>
+                  <p id="review-next-step">ภารกิจในสัปดาห์หน้าควรเน้นการลงมือทำกิจกรรม (Action) ให้มากขึ้นเพื่อพัฒนาทักษะวิเคราะห์...</p>
+                </div>
+
+                <div class="disclaimer-badge mt-4">
+                  <i data-lucide="shield-alert"></i>
+                  <p id="review-framework-note">ผลประเมินนี้ใช้เพื่อประกอบความเข้าใจสไตล์การลงมือทำงานและการตั้งคำถามของนักเรียนเท่านั้น ไม่ใช้เปรียบเทียบแข่งขัน และไม่มีผลกระทบต่อวิชาเรียนจริง</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6. PARENT LINK VIEW -->
+        <div class="view-panel" id="view-parent">
+          <div class="parent-link-card">
+            <div class="card-header">
+              <h2>Parent Link (เชื่อมต่อเพื่อความเข้าใจของครอบครัว)</h2>
+              <p>การแนะแนวด้านอาชีพจะอบอุ่นยิ่งขึ้นเมื่อครอบครัวมีส่วนร่วม คุณสามารถส่งรหัสให้ผู้ปกครองเข้าอ่านรายงานเป้าหมายและจุดแข็งของคุณได้ โดยข้อมูลที่จะแชร์อยู่ภายใต้สิทธิ์การควบคุมของนักเรียน 100%</p>
+            </div>
+
+            <div class="parent-link-body">
+              <div class="invite-generation-box">
+                <div class="invite-group">
+                  <span>รหัสคำเชิญสำหรับผู้ปกครอง:</span>
+                  <div class="code-box">
+                    <strong id="parent-invite-code-val">LM-4827</strong>
+                    <button class="btn btn-secondary btn-sm" id="btn-parent-copy-code">คัดลอกรหัส</button>
+                  </div>
+                </div>
+                <p class="info-tip"><i data-lucide="info"></i> ส่งรหัสนี้ให้ผู้ปกครองกรอกในช่อง "รหัสเชิญ" เพื่อดูภาพรวมจุดแข็งและความคืบหน้าของกิจกรรม</p>
+              </div>
+
+              <div class="sharing-controls-box">
+                <h3>การตั้งค่าสิทธิ์การเข้าถึงข้อมูล (Share Settings)</h3>
+                <p class="text-muted mb-3">เปิดหรือปิดข้อมูลบางมิติที่เด็กอนุญาตให้ผู้ปกครองดูได้โดยตรง</p>
+                
+                <div class="consent-switches">
+                  <label class="switch-item">
+                    <div class="switch-label">
+                      <span>แชร์ข้อมูล Life Profile และ Archetype</span>
+                      <small class="text-muted">ผู้ปกครองจะเห็นข้อมูลจุดแข็งและสไตล์การเรียนรู้</small>
+                    </div>
+                    <input type="checkbox" id="parent-share-profile" checked>
+                  </label>
+                  
+                  <label class="switch-item">
+                    <div class="switch-label">
+                      <span>แชร์ข้อมูลความคืบหน้าของภารกิจ (7-Day Mission Logs)</span>
+                      <small class="text-muted">ผู้ปกครองจะเห็นความพยายามและความมุ่งมั่นของภารกิจจริง</small>
+                    </div>
+                    <input type="checkbox" id="parent-share-report">
+                  </label>
+                  
+                  <label class="switch-item">
+                    <div class="switch-label">
+                      <span>แชร์รายชื่อโอกาสและหัวข้อ Bookmark</span>
+                      <small class="text-muted">เพื่อให้ครอบครัวมีส่วนร่วมช่วยเลือกกิจกรรมและศึกษาคณะเพิ่มเติม</small>
+                    </div>
+                    <input type="checkbox" id="parent-share-marketplace">
+                  </label>
+                </div>
+              </div>
+
+              <div class="family-support-notes">
+                <h4><i data-lucide="heart-handshake"></i> หลักเกณฑ์การแชร์ข้อมูลที่อบอุ่น:</h4>
+                <ul>
+                  <li>ระบบจะเน้นคำอธิบายจุดเด่นความถนัดของเด็ก เพื่อลดโอกาสที่จะเกิดการเปรียบเทียบคะแนนหรือจัดอันดับเด็ก</li>
+                  <li>คำแนะนำสำหรับผู้ปกครองจะชูความพยายามและความชอบตามธรรมชาติของนักเรียนเป็นจุดหลัก</li>
+                  <li>ไม่มีระบบบังคับติดตาม และไม่มีการแจ้งเตือนเมื่อเป้าหมายล้มเหลว เพื่อลดความเครียดสะสมในครอบครัว</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 7. OPPORTUNITIES / MARKETPLACE VIEW -->
+        <div class="view-panel" id="view-marketplace">
+          <div class="marketplace-header-box">
+            <h2>คัดสรรโอกาสทางวิชาการและแนะแนว (Opportunities)</h2>
+            <p>ค้นหาคอร์สฝึกสกิล ค่ายจำลอง โอกาสสัมภาษณ์รุ่นพี่ และข้อมูลทุนการศึกษาที่สอดคล้องกับความถนัดของคุณ สามารถบันทึก (Bookmark) หรือปลดล็อกด้วยสิทธิ์ Token สะสม</p>
+          </div>
+
+          <div class="marketplace-grid" id="marketplace-items-grid">
+            <!-- Dynamically populated items -->
+          </div>
+        </div>
+
+        <!-- 8. SETTINGS VIEW -->
+        <div class="view-panel" id="view-settings">
+          <div class="settings-card">
+            <div class="card-header">
+              <h2>ตั้งค่าระบบและบัญชีข้อมูล (Settings)</h2>
+              <p>จัดการสิทธิ์ความเป็นส่วนตัว ตรวจสอบข้อมูล consent และรีเซ็ตระบบ</p>
+            </div>
+            
+            <div class="settings-body">
+              <div class="settings-section">
+                <h3>ข้อมูลสิทธิ์ความปลอดภัย (Privacy & Consent)</h3>
+                <div class="consent-switches">
+                  <label class="switch-item">
+                    <div class="switch-label">
+                      <span>สิทธิ์วิเคราะห์ผลลัพธ์แบบทดสอบ</span>
+                    </div>
+                    <input type="checkbox" id="settings-consent-quiz" checked>
+                  </label>
+                  
+                  <label class="switch-item">
+                    <div class="switch-label">
+                      <span>สิทธิ์ใช้งานคำแนะนำ AI Guide</span>
+                    </div>
+                    <input type="checkbox" id="settings-consent-ai" checked>
+                  </label>
+                  
+                  <label class="switch-item">
+                    <div class="switch-label">
+                      <span>สิทธิ์เชื่อมโยงข้อมูลผู้ปกครอง (Parent Link)</span>
+                    </div>
+                    <input type="checkbox" id="settings-consent-parent" checked>
+                  </label>
+                </div>
+              </div>
+
+              <div class="settings-section mt-4">
+                <h3>สำรองและล้างข้อมูลเครื่อง</h3>
+                <p class="text-muted mb-3">ข้อมูลการสำรวจตัวเองเป็นสิทธิ์ของคุณ คุณสามารถล้างข้อมูลในเครื่องเพื่อสร้าง Passport ใหม่ได้ทุกเมื่อ</p>
+                <div class="settings-actions">
+                  <button class="btn btn-secondary btn-sm" id="btn-settings-export">
+                    <i data-lucide="download"></i> สำรองไฟล์ข้อมูล (JSON Export)
+                  </button>
+                  <button class="btn btn-danger btn-sm" id="btn-settings-reset">
+                    <i data-lucide="trash-2"></i> รีเซ็ตความคืบหน้าทั้งหมด
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
   </div>
 
-  <script>
-    // State machine
-    const state = {
-      step: 0,
-      consents: {
-        profile: true,     // Consent 1: Required
-        research: true,    // Consent 2: Chula research
-        parent_link: false // Consent 3: Parent Link
-      },
-      identity: {
-        full_name: '',
-        school: '',
-        grade: '',
-        grade_year: '',
-        line_id: '',
-        email: '',
-        gender: '',
-        line_user_id: '',
-        line_display_name: ''
-      },
-      answers: {
-        q1: null, q2: null, q3: null, q4: null, q5: null,
-        q6: null, q7: null, q8: null, q9: null, q10: null,
-        q11: null
-      },
-      result: null,
-      parentInviteCode: '',
-      submitted: false
-    };
-
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzWRiSfUtKmjGqQovqYdXL75QaB-r8Ur8zeQJESyBJkimTr8khrjW88g630P969wT-e/exec';
-    const LIFF_ID = '2010476429-j2wObuds';
-
-    // Profile Data Definitions
-    const PROFILES_DATA = {
-      'Creative Story Builder': {
-        code: 'A',
-        nameTh: 'สายครีเอทีฟ — เล่าเรื่อง ออกแบบ ทำให้คนสนใจ',
-        desc: 'คุณเป็นสายสร้างสรรค์ มีจินตนาการ ชอบคิดไอเดีย เล่าเรื่อง หรือสร้างผลงานภาพและสื่อที่สะท้อนความคิดได้อย่างโดดเด่น',
-        accent: '#FF5C8A', soft: '#FFE3EA', deep: '#9A2A4D', icon: '✦',
-        day1Mission: 'สร้างคอนเทนต์ 1 ชิ้นใน 24 ชม. เพื่อเล่าเรื่องที่คุณสนใจมากที่สุดลง portfolio'
-      },
-      'Practical Builder': {
-        code: 'B',
-        nameTh: 'สายลงมือทำ — ทดลอง สร้างของจริง',
-        desc: 'คุณเป็นสายปฏิบัติ ชอบทดลอง สร้างต้นแบบ แก้ปัญหาหน้างาน และเรียนรู้จากประสบการณ์ตรงเพื่อทำให้เกิดขึ้นจริง',
-        accent: '#F08A2D', soft: '#FFEFD9', deep: '#7A3C00', icon: '⚙',
-        day1Mission: 'เลือกปัญหาเล็ก ๆ รอบตัว 1 เรื่อง แล้วลองออกแบบต้นแบบ (Prototype) ใน 7 วัน'
-      },
-      'Insight Navigator': {
-        code: 'C',
-        nameTh: 'สายวิเคราะห์ — ข้อมูล วางแผน เปรียบเทียบ',
-        desc: 'คุณเป็นสายนักคิด มีตรรกะ ชอบค้นหาข้อมูล วิเคราะห์ pattern และวางแผนอย่างเป็นระบบก่อนตัดสินใจ',
-        accent: '#2E6BD9', soft: '#E5EDFF', deep: '#143F8C', icon: '◆',
-        day1Mission: 'เลือก 3 คณะหรืออาชีพที่สนใจ แล้วทำตารางเปรียบเทียบข้อดีข้อเสียอย่างเป็นระบบ'
-      },
-      'Human-Centered Helper': {
-        code: 'D',
-        nameTh: 'สายเข้าใจคน — ช่วยเหลือ ดูแล ทำงานร่วมกับคน',
-        desc: 'คุณเป็นสายประสานใจ เข้าใจความรู้สึกผู้คน ใส่ใจเพื่อนในทีม และอยากสร้างสิ่งที่มีประโยชน์ต่อสังคม',
-        accent: '#2BA876', soft: '#E0F5EA', deep: '#0F5236', icon: '♡',
-        day1Mission: 'สัมภาษณ์เพื่อนหรือคนรอบตัว 1 คนเกี่ยวกับปัญหาอนาคต แล้วบันทึกวิธีที่คุณจะช่วยเขาได้'
-      },
-      'Opportunity Designer': {
-        code: 'E',
-        nameTh: 'สายมองหาโอกาส — คิดโปรเจกต์ ขาย ทำให้ไอเดียเกิดจริง',
-        desc: 'คุณเป็นสายริเริ่ม ชอบเห็นโอกาสใหม่ ๆ กล้าเสนอไอเดีย คิดแคมเปญ หรือหาแนวทางสร้างคุณค่าใหม่ ๆ',
-        accent: '#7C4DFF', soft: '#EDE3FF', deep: '#3A1A99', icon: '◈',
-        day1Mission: 'คิดไอเดียโปรเจกต์ 1 อย่าง แล้วลองถาม feedback จากเพื่อน 3 คนว่าเขาสนใจไหม'
-      }
-    };
-
-    // Initialize LIFF
-    window.addEventListener('DOMContentLoaded', () => {
-      if (typeof liff !== 'undefined') {
-        liff.init({ liffId: LIFF_ID }).then(() => {
-          if (liff.isInClient() && liff.isLoggedIn()) {
-            liff.getProfile().then(profile => {
-              if (profile) {
-                state.identity.line_user_id = profile.userId;
-                state.identity.line_display_name = profile.displayName;
-                if (!state.identity.full_name) state.identity.full_name = profile.displayName;
-                renderStep();
-              }
-            }).catch(e => console.log('LIFF profile error', e));
-          }
-        }).catch(err => console.log('LIFF init error', err));
-      }
-      renderStep();
-    });
-
-    // Step definitions
-    const steps = [
-      {
-        type: 'welcome',
-        render: () => `
-          <div class="screen active">
-            <h1>📔 สมุดชีวิตดิจิทัลของคุณ</h1>
-            <p class="lead">LifeMap ช่วยให้คุณสำรวจตัวเอง ค้นหา Future Profile และเห็นก้าวถัดไปในอนาคตในแบบของคุณเอง</p>
-            
-            <div class="card" style="background:#FFFDF5; border-color:#F0E6C5;">
-              <b style="font-family:'Prompt',sans-serif; font-size:14px; color:#7A5A00;">💡 หลักการความเป็นส่วนตัว</b>
-              <p class="muted" style="margin-top:4px;">"ข้อมูลเป็นของคุณ คุณควบคุมได้ว่าใครเห็นอะไร และลบได้ทุกเมื่อ"</p>
-            </div>
-
-            <div class="consent-group">
-              <div class="consent-item req checked" id="cItem1">
-                <input type="checkbox" id="cbConsent1" checked disabled>
-                <div class="consent-item-text">
-                  <b>1. ยินยอมสร้าง Life Profile <span class="tag-req">จำเป็น</span></b>
-                  <span>เพื่อประมวลผล Future Profile + กิจกรรม 7 วันเฉพาะบุคคล</span>
-                </div>
-              </div>
-
-              <div class="consent-item ${state.consents.research ? 'checked' : ''}" id="cItem2">
-                <input type="checkbox" id="cbConsent2" ${state.consents.research ? 'checked' : ''}>
-                <div class="consent-item-text">
-                  <b>2. ยินยอมใช้เพื่อ Research Validation <span class="tag-opt">ทางเลือก</span></b>
-                  <span>ให้ใช้ข้อมูลแบบไม่ระบุตัวตน ร่วมวิจัยกับคณะจิตวิทยา จุฬาฯ</span>
-                </div>
-              </div>
-
-              <div class="consent-item ${state.consents.parent_link ? 'checked' : ''}" id="cItem3">
-                <input type="checkbox" id="cbConsent3" ${state.consents.parent_link ? 'checked' : ''}>
-                <div class="consent-item-text">
-                  <b>3. เปิดใช้ Parent Link <span class="tag-opt">ทางเลือก</span></b>
-                  <span>สร้างรหัสแชร์สรุปเชิงสนับสนุนให้ผู้ปกครองเห็นบทบาทของคุณ</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        `,
-        bind: () => {
-          const bindCb = (id, key, cardId) => {
-            const cb = document.getElementById(id);
-            const card = document.getElementById(cardId);
-            if (!cb || !card) return;
-            cb.addEventListener('change', (e) => {
-              state.consents[key] = e.target.checked;
-              if (e.target.checked) card.classList.add('checked');
-              else card.classList.remove('checked');
-            });
-          };
-          bindCb('cbConsent2', 'research', 'cItem2');
-          bindCb('cbConsent3', 'parent_link', 'cItem3');
-        },
-        validate: () => true
-      },
-      {
-        type: 'identity',
-        render: () => `
-          <div class="screen active">
-            <h2>📝 ข้อมูลของคุณ</h2>
-            <p class="muted">กรอกข้อมูลสั้น ๆ เพื่อเริ่มต้นบันทึกสมุดชีวิตดิจิทัล</p>
-            
-            <label class="field">
-              <span class="label-text req">ชื่อ-นามสกุล (หรือชื่อเล่น)</span>
-              <input type="text" id="f_name" value="${escapeHtml(state.identity.full_name)}" placeholder="เช่น สมชาย ใจดี">
-            </label>
-
-            <label class="field">
-              <span class="label-text req">สถาบัน (โรงเรียน / มหาวิทยาลัย)</span>
-              <input type="text" id="f_school" value="${escapeHtml(state.identity.school)}" placeholder="เช่น โรงเรียนสวนกุหลาบ / จุฬาฯ">
-            </label>
-
-            <label class="field"><span class="label-text req">ระดับชั้น</span></label>
-            <div id="tierOpts">
-              ${[
-                { tier: 'ม.ต้น', label: 'มัธยมศึกษาตอนต้น', items: ['ม.1', 'ม.2', 'ม.3'] },
-                { tier: 'ม.ปลาย', label: 'มัธยมศึกษาตอนปลาย', items: ['ม.4', 'ม.5', 'ม.6'] },
-                { tier: 'ปวช./ปวส.', label: 'สายอาชีพ (ปวช./ปวส.)', items: ['ปวช.1', 'ปวช.2', 'ปวช.3', 'ปวส.1', 'ปวส.2'] },
-                { tier: 'ป.ตรี', label: 'มหาวิทยาลัย (ป.ตรี)', items: ['ปี 1', 'ปี 2', 'ปี 3', 'ปี 4', 'ปี 5+'] },
-                { tier: 'ป.โท/เอก', label: 'บัณฑิตศึกษา (ป.โท/เอก)', items: ['ป.โท', 'ป.เอก'] },
-                { tier: 'อื่น ๆ', label: 'บุคคลทั่วไป / อื่น ๆ', items: [] }
-              ].map((t, idx) => `
-                <div class="tier-card ${state.identity.grade === t.tier ? 'expanded has-pick' : ''}" data-tier="${t.tier}" data-idx="${idx}">
-                  <div class="tier-head">
-                    <span>${t.label} <span class="pick-badge">${state.identity.grade === t.tier ? (state.identity.grade_year || 'เลือกแล้ว') : ''}</span></span>
-                    <span class="chev">▾</span>
-                  </div>
-                  ${t.items.length ? `<div class="tier-items">${t.items.map(y => `<div class="opt-year ${state.identity.grade_year === y ? 'sel' : ''}" data-val="${y}">${y}</div>`).join('')}</div>` : ''}
-                </div>
-              `).join('')}
-            </div>
-
-            <label class="field">
-              <span class="label-text">💬 LINE ID (ถ้ามี)</span>
-              <input type="text" id="f_lineid" value="${escapeHtml(state.identity.line_id)}" placeholder="LINE ID ของคุณ">
-            </label>
-
-            <label class="field">
-              <span class="label-text">📧 Email (ทางเลือก)</span>
-              <input type="email" id="f_email" value="${escapeHtml(state.identity.email)}" placeholder="name@example.com">
-            </label>
-
-            <label class="field">
-              <span class="label-text">เพศ (ระบุได้)</span>
-              <div class="gender-grid" id="genderGrid">
-                ${['หญิง', 'ชาย', 'อื่น ๆ', 'ไม่ระบุ'].map(g => `<div class="gender-opt ${state.identity.gender === g ? 'sel' : ''}" data-val="${g}">${g}</div>`).join('')}
-              </div>
-            </label>
-          </div>
-        `,
-        bind: () => {
-          const syncInputs = () => {
-            state.identity.full_name = document.getElementById('f_name')?.value.trim() || '';
-            state.identity.school = document.getElementById('f_school')?.value.trim() || '';
-            state.identity.line_id = document.getElementById('f_lineid')?.value.trim() || '';
-            state.identity.email = document.getElementById('f_email')?.value.trim() || '';
-            renderFooter();
-          };
-
-          ['f_name', 'f_school', 'f_lineid', 'f_email'].forEach(id => {
-            document.getElementById(id)?.addEventListener('input', syncInputs);
-          });
-
-          // Tier picker bind
-          const cards = document.querySelectorAll('#tierOpts .tier-card');
-          cards.forEach(card => {
-            const head = card.querySelector('.tier-head');
-            const tier = card.dataset.tier;
-            const idx = parseInt(card.dataset.idx);
-            const isNoItems = (idx === 5); // อื่น ๆ
-
-            head?.addEventListener('click', () => {
-              cards.forEach(c => c.classList.remove('expanded'));
-              card.classList.add('expanded');
-              if (isNoItems) {
-                cards.forEach(c => {
-                  c.classList.remove('has-pick');
-                  const b = c.querySelector('.pick-badge'); if (b) b.textContent = '';
-                });
-                card.classList.add('has-pick');
-                state.identity.grade = tier;
-                state.identity.grade_year = '';
-                syncInputs();
-              }
-            });
-
-            card.querySelectorAll('.opt-year').forEach(yEl => {
-              yEl.addEventListener('click', (e) => {
-                e.stopPropagation();
-                cards.forEach(c => {
-                  c.classList.remove('has-pick');
-                  const b = c.querySelector('.pick-badge'); if (b) b.textContent = '';
-                  c.querySelectorAll('.opt-year').forEach(y => y.classList.remove('sel'));
-                });
-                yEl.classList.add('sel');
-                card.classList.add('has-pick');
-                const badge = card.querySelector('.pick-badge');
-                if (badge) badge.textContent = yEl.dataset.val;
-                state.identity.grade = tier;
-                state.identity.grade_year = yEl.dataset.val;
-                syncInputs();
-              });
-            });
-          });
-
-          // Gender selection bind
-          document.querySelectorAll('#genderGrid .gender-opt').forEach(gEl => {
-            gEl.addEventListener('click', () => {
-              document.querySelectorAll('#genderGrid .gender-opt').forEach(x => x.classList.remove('sel'));
-              gEl.classList.add('sel');
-              state.identity.gender = gEl.dataset.val;
-            });
-          });
-        },
-        validate: () => {
-          const i = state.identity;
-          if (!i.full_name || !i.school || !i.grade) return false;
-          if (i.grade !== 'อื่น ๆ' && !i.grade_year) return false;
-          return true;
-        }
-      },
-      // Q1-Q5 Profile Questions
-      { type: 'choice', key: 'q1', title: 'Q1. ถ้าได้เริ่มโปรเจกต์ใหม่ในโรงเรียน คุณอยากรับบทบาทไหนมากที่สุด?', options: [
-        'A. ออกแบบภาพรวม เล่าเรื่อง และทำคอนเทนต์ให้น่าสนใจ',
-        'B. ทดลองสร้างต้นแบบ ใช้เครื่องมือ และแก้ปัญหาให้ใช้งานได้จริง',
-        'C. ค้นหาข้อมูล วิเคราะห์ pattern และสรุปเหตุผลด้วยหลักฐาน',
-        'D. เข้าใจผู้ใช้ ประสานทีม และช่วยให้ทุกคนทำงานร่วมกันได้ดี',
-        'E. มองหาโอกาส คิดวิธีขยายผล หรือทำให้โปรเจกต์เติบโต'
-      ]},
-      { type: 'choice', key: 'q2', title: 'Q2. เวลาเรียนเรื่องยาก วิธีไหนช่วยให้คุณไปต่อได้ดีที่สุด?', options: [
-        'A. เชื่อมโยงกับภาพ ตัวอย่าง และไอเดียสร้างสรรค์ใหม่ ๆ',
-        'B. แบ่งเป็นขั้นตอน ลองทำจริง และทำซ้ำจนมั่นใจ',
-        'C. ถามคำถามลึก ๆ แล้วหาเหตุผลหรือหลักฐานรองรับ',
-        'D. คุยกับเพื่อนหรือครูเพื่อแลกเปลี่ยนมุมมอง',
-        'E. เชื่อมกับเป้าหมายในอนาคต ว่าจะนำไปใช้ทำอะไรได้'
-      ]},
-      { type: 'choice', key: 'q3', title: 'Q3. กิจกรรมเสริมแบบไหนที่คุณอยากลองเพื่อสำรวจอาชีพ?', options: [
-        'A. ค่ายสื่อ คอนเทนต์ การออกแบบ หรือทำ portfolio creative',
-        'B. ค่าย maker วิศวกรรม หุ่นยนต์ หรือสิ่งประดิษฐ์',
-        'C. data challenge งานวิจัย วิทยาศาสตร์ หรือวิเคราะห์ธุรกิจ',
-        'D. อาสาแนะแนว สุขภาวะ การศึกษา หรือกิจกรรมชุมชน',
-        'E. แข่งขัน startup pitch ทำเพจ หรือลองขายของออนไลน์'
-      ]},
-      { type: 'choice', key: 'q4', title: 'Q4. ถ้าอยู่ในทีมประกวดหรือ startup school project คุณอยากดูแลส่วนไหน?', options: [
-        'A. branding storytelling และการสื่อสารให้คนเชื่อในไอเดีย',
-        'B. prototype, demo หรือการทดสอบกับผู้ใช้จริง',
-        'C. data analysis วางแผนเชิงตัวเลข หรือทำ research',
-        'D. สัมภาษณ์ผู้ใช้ และเข้าใจปัญหาของคนจริง',
-        'E. pitch หาทุน หานักลงทุน หรือขยายตลาด'
-      ]},
-      { type: 'choice', key: 'q5', title: 'Q5. ภาพอนาคตแบบไหนทำให้คุณรู้สึก "อยากค่อย ๆ สร้างไปถึง" ที่สุด?', options: [
-        'A. มีผลงานสร้างสรรค์ที่สะท้อนตัวตนและคนจดจำ',
-        'B. สร้าง product หรือระบบที่แก้ปัญหาได้จริง',
-        'C. เป็นคนที่คนไว้วางใจให้วิเคราะห์และตัดสินใจด้วยหลักฐาน',
-        'D. ทำงานที่ช่วยให้ผู้คนมีชีวิต การเรียน หรือสุขภาวะดีขึ้น',
-        'E. สร้างธุรกิจหรือแบรนด์ที่สร้างโอกาสให้ตัวเองและคนอื่น'
-      ]},
-      // Q6 Wellbeing Scale
-      { type: 'scale', key: 'q6', title: 'Q6. ตอนนี้คุณกังวลเรื่องอนาคตแค่ไหน?', leftLabel: 'ไม่กังวลเลย', rightLabel: 'กังวลมาก' },
-      // Q7-Q10 Engagement & PMF Scale
-      { type: 'choice', key: 'q7', title: 'Q7. ถ้ามีระบบช่วยสรุปว่า "คุณเป็นสายไหน และควรลองอะไรต่อ" คุณอยากเห็นผลลัพธ์ไหม?', options: ['อยากเห็นมาก', 'อยากเห็น', 'เฉย ๆ', 'ไม่ค่อยอยากเห็น', 'ไม่อยากเห็น'] },
-      { type: 'choice', key: 'q8', title: 'Q8. ถ้ามีคำแนะนำกิจกรรม 7 วันที่เหมาะกับคุณ คุณอยากลองทำไหม?', options: ['อยากลองมาก', 'อยากลอง', 'ไม่แน่ใจ', 'ไม่ค่อยอยากลอง', 'ไม่อยากลอง'] },
-      { type: 'choice', key: 'q9', title: 'Q9. คุณคิดว่าผลลัพธ์ Future Profile นี้จะช่วยให้คุณตัดสินใจเรื่องอนาคตได้ดีขึ้นแค่ไหน?', options: ['ช่วยมาก', 'ช่วยได้', 'กลางๆ', 'ช่วยน้อย', 'ไม่ช่วย'] },
-      { type: 'choice', key: 'q10', title: 'Q10. คุณจะแนะนำเพื่อนให้ลองทำแบบสำรวจนี้ไหม?', options: ['แนะนำแน่นอน', 'แนะนำ', 'ไม่แน่ใจ', 'คงไม่แนะนำ', 'ไม่แนะนำ'] },
-      // Q11 Need-finding
-      { type: 'choice', key: 'q11', title: 'Q11. คุณอยากให้ระบบช่วยเรื่องไหนมากที่สุด?', options: [
-        'รู้ว่าตัวเองถนัดอะไร',
-        'รู้ว่าควรเรียนต่อทางไหนดี',
-        'รู้ว่าอาชีพไหนน่าลองสำรวจ',
-        'ช่วยทำ Portfolio / ผลงาน',
-        'ช่วยหาโอกาส เช่น ค่าย ทุน คอร์ส หรือ mentor',
-        'ช่วยให้คุยกับพ่อแม่/ครูเรื่องอนาคตง่ายขึ้น',
-        'ยังไม่แน่ใจ'
-      ]},
-      { type: 'submitting' },
-      { type: 'dashboard' }
-    ];
-
-    function renderStep() {
-      const s = steps[state.step];
-      const main = document.getElementById('mainContainer');
-      updateProgress();
-
-      if (s.type === 'welcome' || s.type === 'identity') {
-        main.innerHTML = s.render();
-        s.bind?.();
-      } else if (s.type === 'choice') {
-        main.innerHTML = `
-          <div class="screen active">
-            <h2>${s.title}</h2>
-            <div id="optsContainer">
-              ${s.options.map(o => `
-                <div class="opt ${state.answers[s.key] === o ? 'sel' : ''}" data-val="${escapeHtml(o)}">${o}</div>
-              `).join('')}
-            </div>
-          </div>
-        `;
-        document.querySelectorAll('#optsContainer .opt').forEach(el => {
-          el.addEventListener('click', () => {
-            document.querySelectorAll('#optsContainer .opt').forEach(x => x.classList.remove('sel'));
-            el.classList.add('sel');
-            state.answers[s.key] = el.dataset.val;
-            renderFooter();
-          });
-        });
-      } else if (s.type === 'scale') {
-        main.innerHTML = `
-          <div class="screen active">
-            <h2>${s.title}</h2>
-            <div class="scale-grid">
-              ${[1,2,3,4,5].map(n => `<div class="scale-opt ${state.answers[s.key] === n ? 'sel' : ''}" data-val="${n}">${n}</div>`).join('')}
-            </div>
-            <div class="scale-labels"><span>${s.leftLabel}</span><span>${s.rightLabel}</span></div>
-          </div>
-        `;
-        document.querySelectorAll('.scale-opt').forEach(el => {
-          el.addEventListener('click', () => {
-            document.querySelectorAll('.scale-opt').forEach(x => x.classList.remove('sel'));
-            el.classList.add('sel');
-            state.answers[s.key] = parseInt(el.dataset.val);
-            renderFooter();
-          });
-        });
-      } else if (s.type === 'submitting') {
-        main.innerHTML = `
-          <div class="screen active">
-            <div class="loader-wrap">
-              <div class="spinner"></div>
-              <h2>กำลังบันทึกและวิเคราะห์สมุดชีวิต...</h2>
-              <p class="muted">ระบบกำลังประมวลผล Future Profile ของคุณ</p>
-            </div>
-          </div>
-        `;
-        processSubmission();
-        renderFooter();
-        return;
-      } else if (s.type === 'dashboard') {
-        renderDashboard();
-        renderFooter();
-        return;
-      } else if (s.type === 'settings') {
-        renderSettings();
-        renderFooter();
-        return;
-      }
-
-      renderFooter();
-    }
-
-    function renderFooter() {
-      const footer = document.getElementById('footerNav');
-      if (state.step >= steps.length - 2) { // submitting or dashboard
-        footer.innerHTML = '';
-        return;
-      }
-
-      const canNext = validateCurrent();
-      const isFirst = state.step === 0;
-      const nextText = state.step === 1 ? 'เริ่มตอบ Quiz' : 'ถัดไป →';
-
-      footer.innerHTML = `
-        ${!isFirst ? `<button class="btn ghost" id="btnBack">← ย้อนกลับ</button>` : ''}
-        <button class="btn" id="btnNext" ${canNext ? '' : 'disabled'}>${nextText}</button>
-      `;
-
-      document.getElementById('btnBack')?.addEventListener('click', () => {
-        state.step--;
-        renderStep();
-        window.scrollTo({ top: 0, behavior: 'instant' });
-      });
-      document.getElementById('btnNext')?.addEventListener('click', () => {
-        state.step++;
-        renderStep();
-        window.scrollTo({ top: 0, behavior: 'instant' });
-      });
-    }
-
-    function validateCurrent() {
-      const s = steps[state.step];
-      if (s.validate) return s.validate();
-      if (s.type === 'choice') return state.answers[s.key] !== null;
-      if (s.type === 'scale') return state.answers[s.key] !== null;
-      return true;
-    }
-
-    function updateProgress() {
-      const fill = document.getElementById('progFill');
-      const text = document.getElementById('stepCount');
-      const total = steps.length - 2; // excluding submission & dashboard
-      if (state.step <= 0) {
-        fill.style.width = '0%';
-        text.textContent = '';
-      } else if (state.step <= total) {
-        const pct = Math.round((state.step / total) * 100);
-        fill.style.width = pct + '%';
-        text.textContent = `${state.step}/${total}`;
-      } else {
-        fill.style.width = '100%';
-        text.textContent = 'สำเร็จ';
-      }
-    }
-
-    // Calculation & Backend POST
-    function calculateResults() {
-      const a = state.answers;
-      const counts = { A: 0, B: 0, C: 0, D: 0, E: 0 };
-      [a.q1, a.q2, a.q3, a.q4, a.q5].forEach(v => {
-        if (v) counts[v[0]] = (counts[v[0]] || 0) + 1;
-      });
-
-      const max = Math.max(...Object.values(counts));
-      const leaders = ['A','B','C','D','E'].filter(L => counts[L] === max);
-      const winner = leaders.length === 1 ? leaders[0]
-                    : (a.q5 && leaders.includes(a.q5[0])) ? a.q5[0] : leaders[0];
-
-      const PROFILES_MAP = {
-        A: 'Creative Story Builder',
-        B: 'Practical Builder',
-        C: 'Insight Navigator',
-        D: 'Human-Centered Helper',
-        E: 'Opportunity Designer'
-      };
-
-      const finalProfileKey = PROFILES_MAP[winner];
-      const profileInfo = PROFILES_DATA[finalProfileKey];
-
-      // Likert mapping for PMF signal
-      const mapLikert = (val) => {
-        if (!val) return 3;
-        if (val.includes('มาก') || val.includes('แน่นอน') || val.includes('ช่วยมาก')) return 5;
-        if (val.includes('อยาก') || val.includes('ช่วยได้') || val.includes('แนะนำ')) return 4;
-        if (val.includes('เฉย') || val.includes('ไม่แน่ใจ') || val.includes('กลาง')) return 3;
-        if (val.includes('ไม่ค่อย') || val.includes('ช่วยน้อย') || val.includes('คงไม่')) return 2;
-        return 1;
-      };
-
-      const engagementScore = (mapLikert(a.q7) + mapLikert(a.q8) + mapLikert(a.q9) + mapLikert(a.q10)) / 4;
-      let pmfSignal = 'Unclassified';
-      if (engagementScore >= 4.5) pmfSignal = 'Strong Signal';
-      else if (engagementScore >= 3.5) pmfSignal = 'Positive Signal';
-      else if (engagementScore >= 2.5) pmfSignal = 'Weak Signal';
-      else pmfSignal = 'No Signal';
-
-      // Generate Parent Invite Code if opt-in
-      let inviteCode = '';
-      if (state.consents.parent_link) {
-        inviteCode = 'LM-' + Math.floor(1000 + Math.random() * 9000);
-      }
-
-      state.result = {
-        key: finalProfileKey,
-        data: profileInfo,
-        pmfSignal: pmfSignal,
-        score: engagementScore
-      };
-      state.parentInviteCode = inviteCode;
-    }
-
-    function processSubmission() {
-      calculateResults();
-      if (state.submitted) {
-        setTimeout(() => { state.step++; renderStep(); }, 600);
-        return;
-      }
-      state.submitted = true;
-
-      const payload = {
-        user_id: state.identity.line_user_id || 'user_' + Date.now(),
-        line_user_id: state.identity.line_user_id || '',
-        line_display_name: state.identity.line_display_name || '',
-        full_name: state.identity.full_name || '',
-        school: state.identity.school || '',
-        grade: state.identity.grade || '',
-        email: state.identity.email || '',
-        phone: state.identity.phone || '',
-        consent_profile: true,
-        consent_research: !!state.consents.research,
-        consent_parent_link: !!state.consents.parent_link,
-        parent_invite_code: state.parentInviteCode || '',
-        primary_archetype: state.result.data ? state.result.data.code : '',
-        primary_profile_title: state.result.key || '',
-        engagement_score: state.result.score || '',
-        engagement_signal: state.result.pmfSignal || '',
-        wellbeing_anxiety: state.answers.q6 || '',
-        q1_answer: state.answers.q1 || '',
-        q2_answer: state.answers.q2 || '',
-        q3_answer: state.answers.q3 || '',
-        q4_answer: state.answers.q4 || '',
-        q5_answer: state.answers.q5 || '',
-        q7_answer: state.answers.q7 || '',
-        q8_answer: state.answers.q8 || '',
-        q9_answer: state.answers.q9 || '',
-        q10_answer: state.answers.q10 || '',
-        q11_answer: state.answers.q11 || '',
-        // Fallback keys
-        consent: 'ยินยอม',
-        q1: state.answers.q1 || '',
-        q2: state.answers.q2 || '',
-        q3: state.answers.q3 || '',
-        q4: state.answers.q4 || '',
-        q5: state.answers.q5 || '',
-        q6: state.answers.q6 || '',
-        q7: state.answers.q7 || '',
-        q8: state.answers.q8 || '',
-        q9: state.answers.q9 || '',
-        q10: state.answers.q10 || '',
-        q11: state.answers.q11 || '',
-        final_profile: state.result.key || '',
-        pmf_signal: state.result.pmfSignal || '',
-        tokens_balance: 25,
-        app_version: 'v2.1'
-      };
-
-      fetch(APPS_SCRIPT_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify(payload)
-      }).then(() => {
-        setTimeout(() => { state.step++; renderStep(); }, 600);
-      }).catch(err => {
-        console.error('Submit error', err);
-        setTimeout(() => { state.step++; renderStep(); }, 600);
-      });
-    }
-
-    // Dashboard View
-    function renderDashboard() {
-      const res = state.result;
-      const p = res.data;
-      const main = document.getElementById('mainContainer');
-
-      // Set CSS variables for active profile
-      document.documentElement.style.setProperty('--accent', p.accent);
-      document.documentElement.style.setProperty('--accent-soft', p.soft);
-      document.documentElement.style.setProperty('--accent-deep', p.deep);
-
-      main.innerHTML = `
-        <div class="screen active">
-          <div class="dashboard-header">
-            <div class="user-greeting">👋 ยินดีต้อนรับสู่สมุดชีวิตดิจิทัล</div>
-            <div class="passport-title">📔 สมุดของ ${escapeHtml(state.identity.full_name)}</div>
-
-            <div class="profile-banner">
-              <div class="profile-banner-inner">
-                <div class="profile-icon">${p.icon}</div>
-                <div class="profile-name-en">${p.nameEn || res.key}</div>
-                <div class="profile-name-th">${p.nameTh}</div>
-                <p class="muted" style="margin:0; font-size:14px;">${p.desc}</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="widget-grid">
-            <div class="widget-card">
-              <div class="widget-title">🪙 LifeMap Tokens</div>
-              <div class="widget-val">25 Tokens</div>
-              <span style="font-size:11.5px; color:#888;">(สำหรับ AI Mentor ในอนาคต)</span>
-            </div>
-            <div class="widget-card">
-              <div class="widget-title">📊 ความคืบหน้า</div>
-              <div class="widget-val">Day 1/7</div>
-              <span style="font-size:11.5px; color:#888;">(เริ่มต้นก้าวแรกสำเร็จ)</span>
-            </div>
-          </div>
-
-          <div class="mission-card">
-            <span class="mission-tag">🎯 ภารกิจถัดไป</span>
-            <div class="mission-title">Mission Day 1</div>
-            <p style="margin:0; font-size:14px; color:var(--ink);">${p.day1Mission}</p>
-          </div>
-
-          <div class="parent-code-box">
-            <b style="font-family:'Prompt',sans-serif; font-size:13.5px; color:#7A5A00;">👨‍👩‍👧 Parent Link (เชื่อมต่อผู้ปกครอง)</b>
-            <div class="parent-code-val">${state.parentInviteCode}</div>
-            <p style="margin:2px 0 8px; font-size:12px; color:#7A5A00;">รหัสสำหรับผู้ปกครองเข้าดูสรุปเชิงสนับสนุน</p>
-            <button class="btn ghost" style="padding:8px 12px; font-size:13px; margin:0 auto;" onclick="copyParentCode('${state.parentInviteCode}')">📋 คัดลอกรหัสแชร์ให้ผู้ปกครอง</button>
-          </div>
-
-          <div class="action-btn-stack">
-            <button class="btn" onclick="shareToLine()">📱 ส่งผลลัพธ์ใน LINE</button>
-            <button class="btn ghost" style="border:1.5px solid var(--ink); color:var(--ink);" onclick="addOfficialLine()">➕ เพิ่ม LifeMap เป็นเพื่อน</button>
-          </div>
-
-          <span class="link-subtle" onclick="openSettings()">⚙️ ตั้งค่าและจัดการข้อมูลของฉัน</span>
-        </div>
-      `;
-    }
-
-    // Settings View
-    function renderSettings() {
-      const main = document.getElementById('mainContainer');
-      main.innerHTML = `
-        <div class="screen active">
-          <h2>⚙️ ตั้งค่าและจัดการข้อมูล (Data Ownership)</h2>
-          <p class="muted">ข้อมูลของคุณเป็นสิทธิ์ของคุณ 100% สามารถปรับแต่งการยินยอมหรือสั่งลบข้อมูลได้ทันที</p>
-
-          <div class="card">
-            <b style="font-family:'Prompt',sans-serif; font-size:15px;">การให้ความยินยอมปัจจุบัน</b>
-            
-            <div class="consent-group" style="margin-top:10px;">
-              <div class="consent-item checked" style="cursor:default;">
-                <input type="checkbox" checked disabled>
-                <div class="consent-item-text">
-                  <b>1. สร้าง Life Profile</b>
-                  <span>เพื่อเปิดใช้งานสมุดชีวิตส่วนตัว</span>
-                </div>
-              </div>
-
-              <div class="consent-item ${state.consents.research ? 'checked' : ''}" onclick="toggleSetting('research')">
-                <input type="checkbox" ${state.consents.research ? 'checked' : ''}>
-                <div class="consent-item-text">
-                  <b>2. ร่วมวิจัยกับ จุฬาฯ</b>
-                  <span>อนุญาตใช้ข้อมูลวิจัยแบบไม่ระบุตัวตน</span>
-                </div>
-              </div>
-
-              <div class="consent-item ${state.consents.parent_link ? 'checked' : ''}" onclick="toggleSetting('parent_link')">
-                <input type="checkbox" ${state.consents.parent_link ? 'checked' : ''}>
-                <div class="consent-item-text">
-                  <b>3. Parent Link</b>
-                  <span>ให้ผู้ปกครองดูสรุปเชิงสนับสนุน</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="card" style="border-color:#FFA8A8; background:#FFF5F5;">
-            <b style="font-family:'Prompt',sans-serif; color:#D63031; font-size:15px;">🗑️ สิทธิ์การลบข้อมูล (Right to Erasure)</b>
-            <p class="muted" style="color:#D63031; font-size:13px;">เมื่อกดปุ่มนี้ ระบบจะส่งคำขอลบข้อมูลคำตอบทั้งหมดออกจากฐานข้อมูล และล้างข้อมูลในเครื่องทันที</p>
-            <button class="btn" style="background:#D63031; border-color:#D63031; color:#fff;" onclick="deleteMyData()">ลบข้อมูลของฉันถาวร</button>
-          </div>
-
-          <button class="btn ghost" style="margin-top:14px; width:100%;" onclick="state.step = steps.length - 1; renderStep();">← กลับไปที่สมุดชีวิต</button>
-        </div>
-      `;
-    }
-
-    function openSettings() {
-      state.step = steps.length; // virtual settings step
-      const main = document.getElementById('mainContainer');
-      document.getElementById('progFill').style.width = '100%';
-      document.getElementById('stepCount').textContent = 'ตั้งค่า';
-      renderSettings();
-      renderFooter();
-    }
-
-    function toggleSetting(key) {
-      state.consents[key] = !state.consents[key];
-      renderSettings();
-    }
-
-    function deleteMyData() {
-      if (confirm('คุณแน่ใจหรือไม่ว่าต้องการลบข้อมูลทั้งหมด? การกระทำนี้ไม่สามารถย้อนกลับได้')) {
-        const payload = {
-          action: 'delete',
-          line_user_id: state.identity.line_user_id,
-          full_name: state.identity.full_name
-        };
-
-        fetch(APPS_SCRIPT_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify(payload)
-        }).finally(() => {
-          alert('ส่งคำขอลบข้อมูลเรียบร้อยแล้ว');
-          window.location.reload();
-        });
-      }
-    }
-
-    // Helpers & Share
-    function shareToLine() {
-      if (typeof liff !== 'undefined' && liff.isInClient()) {
-        liff.shareTargetPicker([{
-          type: 'flex',
-          altText: `Life Profile ของ ${state.identity.full_name}`,
-          contents: {
-            type: 'bubble',
-            body: {
-              type: 'box',
-              layout: 'vertical',
-              contents: [
-                { type: 'text', text: '📔 LifeMap Future Profile', weight: 'bold', size: 'xs', color: '#1A1A1A' },
-                { type: 'text', text: state.result.key, weight: 'bold', size: 'xl', color: state.result.data.accent, margin: 'md' },
-                { type: 'text', text: state.result.data.nameTh, size: 'sm', color: '#666666', wrap: true },
-                { type: 'separator', margin: 'lg' },
-                { type: 'text', text: `สมุดชีวิตของ ${state.identity.full_name}`, size: 'xs', color: '#999999', margin: 'md' }
-              ]
-            }
-          }
-        }]).catch(err => console.log('Share error', err));
-      } else {
-        navigator.clipboard.writeText(window.location.href);
-        alert('คัดลอกลิงก์ LifeMap เรียบร้อยแล้ว! สามารถวางแชร์ใน LINE ได้ทันที');
-      }
-    }
-
-    function addOfficialLine() {
-      window.open('https://lin.ee/Q3cMgjF', '_blank');
-    }
-
-    function copyParentCode(code) {
-      const textToCopy = `สวัสดีครับ/ค่ะ ขอฝากคุณพ่อคุณแม่ช่วยดูสรุปผลลัพธ์ LifeMap สมุดชีวิตของหนู/ผม ได้ที่รหัส Parent Link: ${code}`;
-      if (navigator.clipboard && window.isSecureContext) {
-        navigator.clipboard.writeText(textToCopy).then(() => {
-          alert('คัดลอกรหัสผู้ปกครอง ' + code + ' เรียบร้อยแล้ว! สามารถวางส่งให้คุณพ่อคุณแม่ใน LINE ได้ทันที');
-        }).catch(() => fallbackCopy(textToCopy, code));
-      } else {
-        fallbackCopy(textToCopy, code);
-      }
-    }
-
-    function fallbackCopy(text, code) {
-      const textArea = document.createElement('textarea');
-      textArea.value = text;
-      textArea.style.position = 'fixed';
-      textArea.style.opacity = '0';
-      document.body.appendChild(textArea);
-      textArea.focus();
-      textArea.select();
-      try {
-        document.execCommand('copy');
-        alert('คัดลอกรหัสผู้ปกครอง ' + code + ' เรียบร้อยแล้ว! สามารถวางส่งให้คุณพ่อคุณแม่ใน LINE ได้ทันที');
-      } catch (err) {
-        prompt('โปรดคัดลอกรหัสนี้ส่งให้ผู้ปกครอง:', text);
-      }
-      document.body.removeChild(textArea);
-    }
-
-    function escapeHtml(str) {
-      return (str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-    }
-  </script>
+  <!-- Script Modules -->
+  <script type="module" src="app.js"></script>
 </body>
 </html>
