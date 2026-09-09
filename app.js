@@ -2133,7 +2133,7 @@ export function passCompletion() {
 export function nextBestAction() {
   const completedQuiz = Object.keys(state.answers).length === quizQuestions.length;
   if (!completedQuiz) {
-    return "ก้าวถัดไป: ทำแบบทดสอบความสนใจสั้น ๆ 6 ข้อเพื่อวิเคราะห์ Archetype ของคุณ";
+    return `ก้าวถัดไป: ทำแบบทดสอบความสนใจสั้น ๆ ${quizQuestions.length} ข้อเพื่อวิเคราะห์ Archetype ของคุณ`;
   }
   
   const currentMissions = getGrowthMissionStatus();
@@ -3607,7 +3607,7 @@ function renderMissionsTab() {
   const profile = computeProfile(state.answers);
   if (!profile) {
     // Alert and redirect to profile
-    alert("กรุณาทำแบบทดสอบให้ครบ 6 ข้อก่อนเข้าสู่ภารกิจสำรวจตัวตนครับ");
+    alert(`กรุณาทำแบบทดสอบให้ครบ ${quizQuestions.length} ข้อก่อนเข้าสู่ภารกิจสำรวจตัวตนครับ`);
     switchView('quiz-tab');
     return;
   }
@@ -5473,7 +5473,7 @@ export const translations = {
     // Quiz & Profile Tab
     "quiz-tab-title": "แบบสำรวจความสนใจและจุดแข็ง",
     "quiz-tab-reset-btn": "รีเซ็ตแบบสำรวจ",
-    "quiz-intro-head": "แบบสำรวจความสนใจและจุดแข็งเบื้องต้น (6 ข้อ)",
+    "quiz-intro-head": "แบบสำรวจความสนใจและจุดแข็งเบื้องต้น (11 ข้อ)",
     "quiz-start-btn": "เริ่มทำแบบสำรวจเลย",
     "quiz-back-btn": "ย้อนกลับข้อก่อนหน้า",
     "profile-title": "Holland RIASEC & Big Five Traits",
@@ -5680,7 +5680,7 @@ export const translations = {
     // Quiz & Profile Tab
     "quiz-tab-title": "Strengths Analysis Survey",
     "quiz-tab-reset-btn": "Reset Survey",
-    "quiz-intro-head": "Interests & Strengths Discovery Survey (6 Qs)",
+    "quiz-intro-head": "Interests & Strengths Discovery Survey (11 Qs)",
     "quiz-start-btn": "Start Survey Now",
     "quiz-back-btn": "Back to Previous Question",
     "profile-title": "Holland RIASEC & Big Five Traits",
