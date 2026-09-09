@@ -1255,14 +1255,12 @@
             <p style="margin:0; font-size:14px; color:var(--ink);">${p.day1Mission}</p>
           </div>
 
-          ${state.consents.parent_link && state.parentInviteCode ? `
-            <div class="parent-code-box">
-              <b style="font-family:'Prompt',sans-serif; font-size:13.5px; color:#7A5A00;">👨‍👩‍👧 Parent Link Active</b>
-              <div class="parent-code-val">${state.parentInviteCode}</div>
-              <p style="margin:2px 0 8px; font-size:12px; color:#7A5A00;">รหัสสำหรับผู้ปกครองเข้าดูสรุปเชิงสนับสนุน</p>
-              <button class="btn ghost" style="padding:6px; font-size:13px; margin:0 auto;" onclick="copyParentCode('${state.parentInviteCode}')">📋 คัดลอกรหัสแชร์ให้ผู้ปกครอง</button>
-            </div>
-          ` : ''}
+          <div class="parent-code-box">
+            <b style="font-family:'Prompt',sans-serif; font-size:13.5px; color:#7A5A00;">👨‍👩‍👧 Parent Link (เชื่อมต่อผู้ปกครอง)</b>
+            <div class="parent-code-val">${state.parentInviteCode}</div>
+            <p style="margin:2px 0 8px; font-size:12px; color:#7A5A00;">รหัสสำหรับผู้ปกครองเข้าดูสรุปเชิงสนับสนุน</p>
+            <button class="btn ghost" style="padding:8px 12px; font-size:13px; margin:0 auto;" onclick="copyParentCode('${state.parentInviteCode}')">📋 คัดลอกรหัสแชร์ให้ผู้ปกครอง</button>
+          </div>
 
           <div class="action-btn-stack">
             <button class="btn" onclick="shareToLine()">📱 ส่งผลลัพธ์ใน LINE</button>
@@ -1388,8 +1386,31 @@
     }
 
     function copyParentCode(code) {
-      navigator.clipboard.writeText(code);
-      alert('คัดลอกรหัสผู้ปกครอง ' + code + ' เรียบร้อยแล้ว!');
+      const textToCopy = `สวัสดีครับ/ค่ะ ขอฝากคุณพ่อคุณแม่ช่วยดูสรุปผลลัพธ์ LifeMap สมุดชีวิตของหนู/ผม ได้ที่รหัส Parent Link: ${code}`;
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(textToCopy).then(() => {
+          alert('คัดลอกรหัสผู้ปกครอง ' + code + ' เรียบร้อยแล้ว! สามารถวางส่งให้คุณพ่อคุณแม่ใน LINE ได้ทันที');
+        }).catch(() => fallbackCopy(textToCopy, code));
+      } else {
+        fallbackCopy(textToCopy, code);
+      }
+    }
+
+    function fallbackCopy(text, code) {
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      textArea.style.position = 'fixed';
+      textArea.style.opacity = '0';
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        alert('คัดลอกรหัสผู้ปกครอง ' + code + ' เรียบร้อยแล้ว! สามารถวางส่งให้คุณพ่อคุณแม่ใน LINE ได้ทันที');
+      } catch (err) {
+        prompt('โปรดคัดลอกรหัสนี้ส่งให้ผู้ปกครอง:', text);
+      }
+      document.body.removeChild(textArea);
     }
 
     function escapeHtml(str) {
