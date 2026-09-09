@@ -160,7 +160,7 @@
           <h2 id="view-title">Dashboard</h2>
           <p id="view-subtitle" class="text-muted">ยินดีต้อนรับกลับสู่เส้นทางอนาคตของคุณ</p>
         </div>
-        
+
         <div class="header-actions">
           <div class="token-pill">
             <i data-lucide="database"></i>
@@ -185,7 +185,7 @@
         <!-- 0. WELCOME & AUTH VIEW -->
         <div class="view-panel active" id="view-auth">
           <div class="onboarding-card auth-card">
-            
+
             <!-- Welcome Panel -->
             <div id="welcome-panel">
               <div class="onboarding-header">
@@ -335,7 +335,7 @@
               <!-- Forgot Password Form -->
               <form id="forgot-form" class="onboarding-body auth-form-panel" style="display: none;">
                 <h3 style="font-size: 1rem; color: var(--color-accent); text-align: center; margin-bottom: 8px;" data-i18n="forgot-title">กู้คืนรหัสผ่าน (Password Recovery)</h3>
-                
+
                 <!-- Step 1: Input Username/Email -->
                 <div id="forgot-step-1">
                   <div class="form-group">
@@ -399,10 +399,10 @@
                 <i data-lucide="arrow-left" style="width: 14px; height: 14px;"></i> ย้อนกลับไปหน้าแรก
               </button>
             </div>
-            
+
           </div>
         </div>
-        
+
         <!-- 1. ONBOARDING & WELCOME (Default first view) -->
         <div class="view-panel" id="view-onboarding">
           <div class="onboarding-card">
@@ -507,7 +507,7 @@
                   <span id="preview-title-label">โฟกัสพิเศษสำหรับ ม.4</span>
                 </div>
                 <p id="preview-desc-label">LifeMap จะช่วยค้นหาความสนใจเบื้องต้นโดยยังไม่รีบกดดันคุณเรื่องคณะ...</p>
-                
+
                 <div class="form-group mt-3">
                   <label id="preview-goal-label">เป้าหมายหลักในการสำรวจตอนนี้:</label>
                   <select id="ob-goal" class="form-control" required>
@@ -534,7 +534,7 @@
               <div class="consent-container">
                 <h3 data-i18n="ob-consent-title">นโยบายคุ้มครองข้อมูลส่วนบุคคล (PDPA Consent)</h3>
                 <p class="text-muted mb-3" data-i18n="ob-consent-desc">เราให้ความสำคัญกับความเป็นส่วนตัวและสิทธิ์ในการควบคุมข้อมูลของคุณ ข้อมูลประวัติการทำแบบทดสอบและภารกิจทั้งหมดจะถูกจัดเก็บไว้บนอุปกรณ์นี้เป็นหลัก</p>
-                
+
                 <div class="consent-switches">
                   <label class="switch-item">
                     <div class="switch-label">
@@ -543,7 +543,7 @@
                     </div>
                     <input type="checkbox" id="consent-profile" checked required>
                   </label>
-                  
+
                   <label class="switch-item">
                     <div class="switch-label">
                       <span data-i18n="ob-consent-ai-label">อนุญาตใช้ข้อมูลสำหรับ AI Guide</span>
@@ -551,7 +551,7 @@
                     </div>
                     <input type="checkbox" id="consent-ai" checked required>
                   </label>
-                  
+
                   <label class="switch-item">
                     <div class="switch-label">
                       <span data-i18n="ob-consent-parent-label">อนุญาตการแบ่งปันผ่าน Parent Link (เปิด/ปิดภายหลังได้)</span>
@@ -572,14 +572,14 @@
         <!-- 2. DASHBOARD VIEW -->
         <div class="view-panel" id="view-dashboard">
           <div class="dashboard-grid">
-            
+
             <!-- Column 1: วันนี้ฉันอยู่ตรงไหน -->
             <div class="dashboard-column">
               <div class="column-header">
                 <span class="column-step-num">01</span>
                 <h2 data-i18n="dash-col-1-title">วันนี้ฉันอยู่ตรงไหน</h2>
               </div>
-              
+
               <!-- Daily Spark Check-in Card -->
               <div class="dashboard-section-card daily-checkin-card" id="dash-daily-checkin-card">
                 <div class="section-title" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
@@ -592,9 +592,9 @@
                     <span>Streak: <span id="dash-streak-count">0</span> วัน</span>
                   </div>
                 </div>
-                
+
                 <p class="text-muted mb-3" style="font-size: 0.82rem;" data-i18n="dash-daily-spark-desc">คลิกเลือกอารมณ์ของคุณเพื่อสะท้อนความรู้สึก รับ +5 Tokens สะสมรายวัน!</p>
-                
+
                 <div class="emoji-selector-row" id="dash-emoji-row" style="display: flex; justify-content: space-around; gap: 8px; margin-bottom: 12px; transition: all var(--transition-fast);">
                   <button class="emoji-btn" data-mood="happy" title="มีความสุข / Happy" style="background: transparent; border: none; font-size: 2.2rem; cursor: pointer; transition: transform 0.2s; padding: 6px; border-radius: 50%;">😊</button>
                   <button class="emoji-btn" data-mood="excited" title="ตื่นเต้น / Energetic" style="background: transparent; border: none; font-size: 2.2rem; cursor: pointer; transition: transform 0.2s; padding: 6px; border-radius: 50%;">🤩</button>
@@ -620,14 +620,14 @@
                 </div>
               </div>
             </div>
-            
+
             <!-- Column 2: ฉันค้นพบอะไรเกี่ยวกับตัวเอง -->
             <div class="dashboard-column">
               <div class="column-header">
                 <span class="column-step-num">02</span>
                 <h2 data-i18n="dash-col-2-title">ฉันค้นพบอะไรเกี่ยวกับตัวเอง</h2>
               </div>
-              
+
               <!-- Future Profile Card -->
               <div class="pass-display-card">
                 <div class="pass-badge-header">
@@ -693,14 +693,14 @@
                 </div>
               </div>
             </div>
-            
+
             <!-- Column 3: ก้าวเล็ก ๆ ถัดไปคืออะไร -->
             <div class="dashboard-column">
               <div class="column-header">
                 <span class="column-step-num">03</span>
                 <h2 data-i18n="dash-col-3-title">ก้าวเล็ก ๆ ถัดไปคืออะไร</h2>
               </div>
-              
+
               <!-- AI Advisor Guidance Card -->
               <div class="dashboard-section-card ai-guidance-card">
                 <div class="section-title">
@@ -794,7 +794,7 @@
               <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 20px;" data-i18n="quiz-thinking-intro-desc">
                 ชวนทำความเข้าใจรูปแบบแนวโน้มการรับพลังงาน การเรียนรู้ วิธีตัดสินใจ และลักษณะการจัดการกิจกรรมของคุณ เพื่อประกอบการปรับปรุงคำแนะนำและภารกิจรายบุคคล
               </p>
-              
+
               <!-- Privacy notice card -->
               <div style="background: rgba(var(--color-accent-rgb), 0.05); border: 1px solid rgba(var(--color-accent-rgb), 0.15); border-radius: 12px; padding: 16px; text-align: left; margin-bottom: 24px;">
                 <h4 style="font-size: 0.85rem; font-weight: 700; color: var(--color-accent); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
@@ -816,7 +816,7 @@
                 </label>
               </div>
             </div>
-            
+
             <div style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
               <button class="btn btn-primary" id="btn-start-thinking-quiz" disabled style="padding: 14px; font-weight: 700;">
                 เริ่มตอบแบบสะท้อนสไตล์การคิด (16 ข้อ)
@@ -835,11 +835,11 @@
                 <div class="progress-fill" id="quiz-progress-bar" style="width: 16%"></div>
               </div>
             </div>
-            
+
             <div class="quiz-question-box">
               <span class="badge badge-domain" id="quiz-domain-tag">INTEREST</span>
               <h2 id="quiz-question-prompt">ถ้าเกิดเริ่มโปรเจกต์ใหม่ในโรงเรียน คุณมักจะรับบทบาทใด...</h2>
-              
+
               <div class="quiz-options-list" id="quiz-options-list">
                 <!-- Options populated dynamically -->
               </div>
@@ -873,7 +873,7 @@
 
             <!-- Left Side: Profile Summary & Badges -->
             <div class="profile-main-col">
-              
+
               <div class="profile-archetype-card">
                 <div class="badge-crown" id="profile-badge-crown">
                   <!-- Crown indicator based on Top Category -->
@@ -881,7 +881,7 @@
                 <span class="badge-tag" data-i18n="profile-archetype-label">YOUR ARCHETYPE</span>
                 <h2 id="profile-archetype-title">Insight Navigator</h2>
                 <p class="headline" id="profile-headline">แนวโน้มเด่นของคุณอยู่ใกล้ด้านวิเคราะห์ด้วยหลักฐานข้อมูล...</p>
-                
+
                 <div class="strengths-box">
                   <h4 data-i18n="profile-strengths-label">จุดแข็งสำคัญของคุณ:</h4>
                   <ul id="profile-strengths-list">
@@ -922,11 +922,11 @@
                   <h4 class="mb-1"><i data-lucide="book-open"></i> <span data-i18n="profile-learning-style-label">สไตล์การเรียนรู้ที่แนะนำ:</span></h4>
                   <p id="profile-learning-style" class="text-muted">เรียนรู้ได้ดีที่สุดจากการประเมินและเปรียบเทียบข้อมูล...</p>
                 </div>
-                
+
                 <div class="bigfive-scores-list" id="bigfive-scores-list">
                   <!-- Populated dynamically -->
                 </div>
-                
+
                 <div class="wellbeing-box mt-3" id="profile-wellbeing-box">
                   <h4 class="mb-1"><i data-lucide="heart"></i> <span data-i18n="profile-wellbeing-label">คำแนะนำสุขภาวะทางใจ (Wellbeing Note):</span></h4>
                   <p id="profile-wellbeing-note" class="text-muted">ระวังความกังวลจากการใช้เวลาประเมินตัวเลือกนานเกินไป...</p>
@@ -937,14 +937,14 @@
 
             <!-- Right Side: AI Guide and Horoscopes -->
             <div class="profile-sidebar-col">
-              
+
               <!-- AI Guide interactive box -->
               <div class="dashboard-section-card ai-chat-card">
                 <div class="section-title">
                   <i data-lucide="message-square"></i>
                   <h3 data-i18n="profile-ai-assistant-title">ปรึกษา AI Guide ส่วนตัว</h3>
                 </div>
-                
+
                 <!-- Chat Window Container -->
                 <div class="ai-chat-window" id="ai-chat-window">
                   <div class="ai-chat-history" id="ai-chat-history">
@@ -981,7 +981,7 @@
                   <h3 data-i18n="vibe-title">สะท้อนสไตล์อาชีพ (Career Vibe Reflection)</h3>
                 </div>
                 <p class="text-muted mb-3" data-i18n="vibe-desc">สะท้อนข้อมูลสไตล์และจุดแข็งของคุณด้วยมิติเชิงบวกและสร้างสรรค์ เพื่อช่วยสร้างพลังใจในก้าวต่อไป</p>
-                
+
                 <div class="horoscope-box">
                   <div class="horoscope-row">
                     <span class="label" data-i18n="vibe-star">กลุ่มดาวสไตล์ตัวตน:</span>
@@ -996,7 +996,7 @@
                     <strong id="horoscope-ritual">ทบทวน 3 ทางเลือกก่อนตัดสินใจ</strong>
                   </div>
                 </div>
-                
+
                 <div class="disclaimer-badge">
                   <i data-lucide="info"></i>
                   <span data-i18n="vibe-disclaimer">ข้อมูลนี้เป็นเพียงเครื่องมือสะท้อนทิศทางความถนัดเพื่อให้แรงบันดาลใจเบื้องต้น ไม่ใช่ข้อจำกัดการพัฒนาตนเอง</span>
@@ -1030,7 +1030,7 @@
             <div class="missions-sidebar">
               <h3 data-i18n="missions-title">ภารกิจทดลอง 7 วัน</h3>
               <p class="text-muted mb-3" data-i18n="missions-desc">แปลงผลลัพธ์ของจุดแข็งให้กลายเป็นภารกิจลงมือทำจริง วันละ 1 กิจกรรม เพื่อสะสมหลักฐานใน Future Profile</p>
-              
+
               <!-- Vertical list of days -->
               <div class="mission-days-list" id="mission-days-list">
                 <!-- Dynamically populated days -->
@@ -1056,9 +1056,9 @@
                   <span class="badge" id="mission-detail-day">DAY 1</span>
                   <h3 id="mission-detail-title">เลือกเรื่องที่อยากสำรวจ</h3>
                 </div>
-                
+
                 <p id="mission-detail-desc" class="mb-4">เลือกหัวข้อสร้างสรรค์หรือเทคโนโลยีที่คุณสนใจ 1 เรื่อง และเขียนสรุปสั้น ๆ</p>
-                
+
                 <div class="detail-focus-tags">
                   <span class="tag"><i data-lucide="compass"></i> <span data-i18n="missions-focus-label">โฟกัส:</span> <span id="mission-detail-dimension">Exploration</span></span>
                   <span class="tag"><i data-lucide="tag"></i> <span data-i18n="missions-skill-label">สกิล:</span> <span id="mission-detail-skills">self-awareness</span></span>
@@ -1068,11 +1068,11 @@
                 <form id="checkin-form" class="checkin-form-box">
                   <input type="hidden" id="checkin-mission-id">
                   <input type="hidden" id="checkin-day-num">
-                  
+
                   <div class="form-group">
                     <label for="checkin-evidence-input" id="checkin-evidence-label" data-i18n="missions-evidence-label">หลักฐานการส่งงาน (บันทึก 1-2 ประโยค):</label>
                     <textarea id="checkin-evidence-input" required rows="3" placeholder="เขียนสรุปสิ่งที่คุณทำเสร็จหรือลิงก์ส่งงาน..." data-i18n="missions-evidence-placeholder"></textarea>
-                    
+
                     <div id="checkin-hint-box" style="display: block; margin-top: 8px; font-size: 0.75rem; line-height: 1.4; color: var(--text-muted); font-style: italic; background: rgba(var(--color-accent-rgb), 0.04); padding: 8px 12px; border-radius: 8px; border-left: 3px solid var(--color-accent);">
                       <span style="font-weight: 700; color: var(--color-accent);" data-i18n="missions-hint-title">💡 ตัวอย่างการตอบ:</span>
                       <span id="checkin-hint-text">"เลือกศึกษาการออกแบบ UX/UI..."</span>
@@ -1087,7 +1087,7 @@
                         <span class="rating-val" id="checkin-rating-val">3</span>
                       </div>
                     </div>
-                    
+
                     <div class="form-group">
                       <label for="checkin-mood" data-i18n="missions-mood-label">อารมณ์ของคุณวันนี้</label>
                       <select id="checkin-mood" required>
@@ -1111,11 +1111,11 @@
                     <i data-lucide="check-circle-2"></i>
                     <span data-i18n="missions-success-banner">ส่งภารกิจเรียบร้อยแล้ว</span>
                   </div>
-                  
+
                   <div class="logged-info mt-3">
                     <p><strong data-i18n="missions-logged-reflection-label">บันทึกความรู้สึกของคุณ:</strong></p>
                     <p class="reflection-text" id="logged-reflection">ข้อความบันทึกการส่งงาน...</p>
-                    
+
                     <div class="logged-meta mt-2">
                       <span><span data-i18n="missions-logged-rating-label">คะแนนตนเอง:</span> <strong id="logged-rating">5</strong>/5</span>
                       <span><span data-i18n="missions-logged-mood-label">อารมณ์:</span> <strong id="logged-mood">Curious</strong></span>
@@ -1205,7 +1205,7 @@
               <div class="sharing-controls-box">
                 <h3 data-i18n="parent-settings-title">การตั้งค่าสิทธิ์การเข้าถึงข้อมูล (Share Settings)</h3>
                 <p class="text-muted mb-3" data-i18n="parent-settings-desc">เปิดหรือปิดข้อมูลบางมิติที่เด็กอนุญาตให้ผู้ปกครองดูได้โดยตรง</p>
-                
+
                 <div class="consent-switches">
                   <label class="switch-item">
                     <div class="switch-label">
@@ -1214,7 +1214,7 @@
                     </div>
                     <input type="checkbox" id="parent-share-profile">
                   </label>
-                  
+
                   <label class="switch-item">
                     <div class="switch-label">
                       <span data-i18n="parent-allow-report">แชร์ข้อมูลความคืบหน้าของภารกิจ (7-Day Mission Logs)</span>
@@ -1222,7 +1222,7 @@
                     </div>
                     <input type="checkbox" id="parent-share-report">
                   </label>
-                  
+
                   <label class="switch-item">
                     <div class="switch-label">
                       <span data-i18n="parent-allow-marketplace">แชร์รายชื่อโอกาสและหัวข้อ Bookmark</span>
@@ -1286,7 +1286,7 @@
               <h2>ตั้งค่าระบบและบัญชีข้อมูล (Settings)</h2>
               <p>จัดการสิทธิ์ความเป็นส่วนตัว ตรวจสอบข้อมูล consent และรีเซ็ตระบบ</p>
             </div>
-            
+
             <div class="settings-body">
               <div class="settings-section">
                 <h3>ข้อมูลสิทธิ์ความปลอดภัย (Privacy & Consent)</h3>
@@ -1297,7 +1297,7 @@
                     </div>
                     <input type="checkbox" id="settings-consent-quiz" checked>
                   </label>
-                  
+
                   <label class="switch-item">
                     <div class="switch-label">
                       <span>สิทธิ์ใช้งานคำแนะนำ AI Guide</span>
@@ -1312,21 +1312,21 @@
                     </div>
                     <input type="checkbox" id="settings-consent-thinking-style">
                   </label>
-                  
+
                   <label class="switch-item">
                     <div class="switch-label">
                       <span data-i18n="settings-share-profile-label">แชร์ข้อมูล Life Profile และ Archetype ให้ผู้ปกครอง</span>
                     </div>
                     <input type="checkbox" id="settings-share-profile">
                   </label>
-                  
+
                   <label class="switch-item">
                     <div class="switch-label">
                       <span data-i18n="settings-share-report-label">แชร์ข้อมูลความคืบหน้าของภารกิจให้ผู้ปกครอง (Mission Logs)</span>
                     </div>
                     <input type="checkbox" id="settings-share-report">
                   </label>
-                  
+
                   <label class="switch-item">
                     <div class="switch-label">
                       <span data-i18n="settings-share-marketplace-label">แชร์โอกาสและหัวข้อ Bookmark ให้ผู้ปกครอง</span>
@@ -1473,22 +1473,22 @@
 
             <!-- Configurations form & Seeder -->
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px;">
-              
+
               <!-- Left: System Configs -->
               <div class="settings-section" style="background: var(--glass-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px;">
                 <h3 style="margin-top: 0; margin-bottom: 12px; font-size: 1.1rem;"><i data-lucide="settings-2"></i> บังคับตั้งค่าระบบ (Global Overrides)</h3>
                 <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 14px;">เมื่อเปลี่ยนที่นี่ จะเป็นค่าเริ่มต้นของเด็กทุกคนที่เปิดเข้าเว็บนี้ทันที</p>
-                
+
                 <div class="form-group" style="margin-bottom: 12px;">
                   <label for="admin-liff-id" style="font-size: 0.8rem; font-weight: 600; display: block; margin-bottom: 4px;">LINE LIFF ID:</label>
                   <input type="text" id="admin-liff-id" placeholder="กรอก LIFF ID แคมเปญ..." style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary); font-family: monospace; font-size: 0.85rem;">
                 </div>
-                
+
                 <div class="form-group" style="margin-bottom: 16px;">
                   <label for="admin-gemini-key" style="font-size: 0.8rem; font-weight: 600; display: block; margin-bottom: 4px;">Google Gemini API Key:</label>
                   <input type="password" id="admin-gemini-key" placeholder="คีย์ AI กลาง..." style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary); font-family: monospace; font-size: 0.85rem;">
                 </div>
-                
+
                 <button class="btn btn-primary btn-sm btn-block" id="btn-admin-save-config" style="justify-content: center;"><i data-lucide="save"></i> บันทึกค่าคอนฟิกล่าสุด</button>
               </div>
 
@@ -1568,7 +1568,7 @@
       </div>
       <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary); margin-bottom: 8px;" id="redeem-success-title">ปลดล็อกสำเร็จ!</h3>
       <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 16px;" id="redeem-success-desc">คุณได้ปลดล็อกโอกาสนี้เรียบร้อยแล้ว</p>
-      
+
       <!-- Promo/Access Code Box -->
       <div style="background: var(--bg-secondary); border: 1px dashed var(--color-accent); border-radius: 12px; padding: 12px; margin-bottom: 16px; position: relative;">
         <span style="font-size: 0.65rem; color: var(--text-muted); display: block; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em;" id="redeem-code-label">Access Code / รหัสผ่าน</span>
@@ -1580,7 +1580,7 @@
 
       <!-- Instructions bubble -->
       <p style="font-size: 0.78rem; line-height: 1.4; color: var(--text-muted); text-align: left; padding: 10px; background: rgba(247, 250, 239, 0.03); border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 20px;" id="redeem-instructions">คำแนะนำในการเปิดรับสิทธิ์</p>
-      
+
       <button class="btn btn-primary" id="btn-redeem-close" style="width: 100%;">ตกลง</button>
     </div>
   </div>
