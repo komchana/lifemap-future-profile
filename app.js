@@ -1462,8 +1462,9 @@ export function saveState() {
 
 // Theme Handling
 function initTheme() {
-  const savedTheme = localStorage.getItem('lifemap_theme') || 'dark-theme';
+  const savedTheme = 'dark-theme';
   document.documentElement.className = savedTheme;
+  localStorage.setItem('lifemap_theme', savedTheme);
   updateThemeToggleIcon(savedTheme);
 }
 
