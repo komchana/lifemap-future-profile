@@ -1548,8 +1548,8 @@ export function switchView(viewName) {
   };
 
   const curHeader = headers[viewName] || { title: "LifeMap", subtitle: "" };
-  document.getElementById('view-title').textContent = curHeader.title;
-  document.getElementById('view-subtitle').textContent = curHeader.subtitle;
+  safeSetText('view-title', curHeader.title);
+  safeSetText('view-subtitle', curHeader.subtitle);
 
   // View specific triggers
   if (viewName === 'dashboard') {
@@ -1595,37 +1595,45 @@ export function calculateSelfExplorationProgress() {
 }
 
 // Update Dashboard Widgets & Statistics
+function safeSetText(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = value;
+}
+
+function safeSetStyle(id, prop, val) {
+  const el = document.getElementById(id);
+  if (el && el.style) el.style[prop] = val;
+}
+
 function updateDashboardUI() {
   const isEn = state.language === 'en';
 
   // Stats in sidebar
-  document.getElementById('sidebar-student-name').textContent = state.studentName || (isEn ? "LifeMap Explorer" : "นักเรียน LifeMap");
+  safeSetText('sidebar-student-name', state.studentName || (isEn ? "LifeMap Explorer" : "นักเรียน LifeMap"));
   
   const gradeLabel = state.gradeLevel ? gradePersonalizationMap[state.gradeLevel].label[state.language || 'th'] : (isEn ? "G10" : "ม.4");
-  document.getElementById('sidebar-grade-badge').textContent = gradeLabel;
-  document.getElementById('sidebar-tokens').textContent = state.tokens;
-  document.getElementById('header-tokens').textContent = state.tokens;
+  safeSetText('sidebar-grade-badge', gradeLabel);
+  safeSetText('sidebar-tokens', state.tokens);
+  safeSetText('header-tokens', state.tokens);
 
   // Progress calculations
   const progressVal = passCompletion();
-  document.getElementById('pass-progress-text').textContent = `${progressVal}%`;
-  document.getElementById('pass-progress-fill').style.width = `${progressVal}%`;
+  safeSetText('pass-progress-text', `${progressVal}%`);
+  safeSetText('passport-progress-text', `${progressVal}%`);
+  safeSetStyle('pass-progress-fill', 'width', `${progressVal}%`);
+  safeSetStyle('passport-progress-fill', 'width', `${progressVal}%`);
 
   // Dashboard views
-  document.getElementById('dash-pass-name').textContent = state.studentName || (isEn ? "Explorer" : "นักเรียน");
-  document.getElementById('dash-pass-grade').textContent = state.gradeLevel 
+  safeSetText('dash-pass-name', state.studentName || (isEn ? "Explorer" : "นักเรียน"));
+  safeSetText('dash-pass-grade', state.gradeLevel 
     ? (isEn 
         ? (['pvc', 'pvs', 'uni', 'work'].includes(state.gradeLevel) ? gradePersonalizationMap[state.gradeLevel].label.en : `Grade ${gradePersonalizationMap[state.gradeLevel].label.en}`) 
         : (['work'].includes(state.gradeLevel) ? `${gradePersonalizationMap[state.gradeLevel].label.th}` : `ชั้น ${gradePersonalizationMap[state.gradeLevel].label.th}`)) 
-    : "";
+    : "");
   
-  const passSchoolEl = document.getElementById('dash-pass-school');
-  if (passSchoolEl) {
-    passSchoolEl.textContent = state.schoolName || (isEn ? "Not Specified" : "ไม่ระบุโรงเรียน");
-  }
-
-  document.getElementById('dash-pass-campaign').textContent = state.campaignCode || "GENERAL";
-  document.getElementById('dash-invite-code').textContent = state.parentInviteCode;
+  safeSetText('dash-pass-school', state.schoolName || (isEn ? "Not Specified" : "ไม่ระบุโรงเรียน"));
+  safeSetText('dash-pass-campaign', state.campaignCode || "GENERAL");
+  safeSetText('dash-invite-code', state.parentInviteCode || "");
 
   // Unlocked Stamp indicator inside Future Pass Card
   const badgeSlot = document.getElementById('dash-badge-slot');
