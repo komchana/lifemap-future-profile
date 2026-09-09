@@ -1,6 +1,14 @@
 import { initCanvas, renderCanvas } from './canvas.js';
 import { initWheel, renderWheel } from './wheel.js';
 
+// Global resilience error boundary
+window.addEventListener('error', (e) => {
+  console.warn("Caught runtime error (resilience mode):", e.error || e.message);
+});
+window.addEventListener('unhandledrejection', (e) => {
+  console.warn("Caught unhandled promise rejection:", e.reason);
+});
+
 // --- Domain Models & Data from lifemap.ts ---
 export const gradePersonalizationMap = {
   m4: {
@@ -1091,26 +1099,29 @@ function renderLifeProfileUI() {
     resetBtn.style.display = isParent ? 'none' : 'block';
   }
 
-  document.getElementById('profile-archetype-title').textContent = profile.archetype[lang] || profile.archetype;
-  document.getElementById('profile-headline').textContent = profile.headline[lang] || profile.headline;
+  safeSetText('profile-archetype-title', profile.archetype[lang] || profile.archetype);
+  safeSetText('profile-headline', profile.headline[lang] || profile.headline);
   
   // Strengths
   const strengthsUl = document.getElementById('profile-strengths-list');
-  strengthsUl.innerHTML = '';
-  const strengthsList = profile.strengths[lang] || [];
-  strengthsList.forEach(s => {
-    const li = document.createElement('li');
-    li.textContent = s;
-    strengthsUl.appendChild(li);
-  });
+  if (strengthsUl) {
+    strengthsUl.innerHTML = '';
+    const strengthsList = profile.strengths[lang] || [];
+    strengthsList.forEach(s => {
+      const li = document.createElement('li');
+      li.textContent = s;
+      strengthsUl.appendChild(li);
+    });
+  }
 
   // Learning style & Wellbeing
-  document.getElementById('profile-learning-style').textContent = profile.learningStyle[lang] || profile.learningStyle;
-  document.getElementById('profile-wellbeing-note').textContent = profile.wellbeingNote[lang] || profile.wellbeingNote;
+  safeSetText('profile-learning-style', profile.learningStyle[lang] || profile.learningStyle);
+  safeSetText('profile-wellbeing-note', profile.wellbeingNote[lang] || profile.wellbeingNote);
 
   // Next Moves list
   const nextMovesUl = document.getElementById('profile-next-moves-list');
-  nextMovesUl.innerHTML = '';
+  if (nextMovesUl) {
+    nextMovesUl.innerHTML = '';
   const nextMovesList = profile.nextMoves[lang] || [];
   nextMovesList.forEach(m => {
     const li = document.createElement('li');
@@ -1206,9 +1217,9 @@ function renderLifeProfileUI() {
   
   const curCluster = profile.careerClusters[0]?.id || "creator";
   const curVibe = vibes[curCluster] || vibes.creator;
-  document.getElementById('horoscope-constellation').textContent = curVibe.star[lang] || curVibe.star;
-  document.getElementById('horoscope-lucky-skill').textContent = curVibe.skill[lang] || curVibe.skill;
-  document.getElementById('horoscope-ritual').textContent = curVibe.ritual[lang] || curVibe.ritual;
+  safeSetText('horoscope-constellation', curVibe.star[lang] || curVibe.star);
+  safeSetText('horoscope-lucky-skill', curVibe.skill[lang] || curVibe.skill);
+  safeSetText('horoscope-ritual', curVibe.ritual[lang] || curVibe.ritual);
 
   // AI Prompt bubbles setup
   const promptsList = document.getElementById('ai-prompts-list');
@@ -1685,42 +1696,54 @@ function updateDashboardUI() {
       btnText = isCompleted ? 'ดูความคืบหน้า' : 'เริ่มภารกิจ';
     }
 
-    missionContainer.innerHTML = `
-      <div class="active-mission-card">
-        <div class="mission-details">
-          <h4>${currentMissions.currentMission.title}</h4>
-          <p class="text-muted" style="font-size: 0.85rem;">${currentMissions.currentMission.description}</p>
+    if (missionContainer) {
+      missionContainer.innerHTML = `
+        <div class="active-mission-card">
+          <div class="mission-details">
+            <h4>${currentMissions.currentMission.title}</h4>
+            <p class="text-muted" style="font-size: 0.85rem;">${currentMissions.currentMission.description}</p>
+          </div>
+          <button class="btn btn-primary btn-sm" id="btn-dash-do-mission">${btnText}</button>
         </div>
-        <button class="btn btn-primary btn-sm" id="btn-dash-do-mission">${btnText}</button>
-      </div>
-    `;
-    document.getElementById('btn-dash-do-mission').addEventListener('click', () => {
-      currentSelectedDay = currentMissions.currentMission.day;
-      switchView('missions');
-    });
+      `;
+      const btnDoMission = document.getElementById('btn-dash-do-mission');
+      if (btnDoMission) {
+        btnDoMission.addEventListener('click', () => {
+          currentSelectedDay = currentMissions.currentMission.day;
+          switchView('missions');
+        });
+      }
+    }
   } else if (profile && currentMissions.completedCount >= 7) {
-    missionContainer.innerHTML = `
-      <div class="active-mission-card" style="justify-content: center; text-align: center; padding: 20px;">
-        <div>
-          <i data-lucide="party-popper" style="color: var(--color-accent); width: 28px; height: 28px; margin-bottom: 8px;"></i>
-          <h4>${isEn ? "Congratulations! All 7 days complete!" : "ยินดีด้วย! คุณทำภารกิจครบทั้ง 7 วันแล้ว"}</h4>
-          <p class="text-muted" style="font-size: 0.85rem;">${isEn ? "You have fully explored your potential skills and strengths." : "คุณได้เรียนรู้จุดแข็งและทักษะของตนเองอย่างเต็มเปี่ยมแล้ว"}</p>
+    if (missionContainer) {
+      missionContainer.innerHTML = `
+        <div class="active-mission-card" style="justify-content: center; text-align: center; padding: 20px;">
+          <div>
+            <i data-lucide="party-popper" style="color: var(--color-accent); width: 28px; height: 28px; margin-bottom: 8px;"></i>
+            <h4>${isEn ? "Congratulations! All 7 days complete!" : "ยินดีด้วย! คุณทำภารกิจครบทั้ง 7 วันแล้ว"}</h4>
+            <p class="text-muted" style="font-size: 0.85rem;">${isEn ? "You have fully explored your potential skills and strengths." : "คุณได้เรียนรู้จุดแข็งและทักษะของตนเองอย่างเต็มเปี่ยมแล้ว"}</p>
+          </div>
         </div>
-      </div>
-    `;
+      `;
+    }
   } else {
-    missionContainer.innerHTML = `
-      <div class="active-mission-card">
-        <div class="mission-details">
-          <h4>${isEn ? "Please take the quiz" : "กรุณาทำแบบทดสอบ"}</h4>
-          <p class="text-muted" style="font-size: 0.85rem;">${isEn ? "Take the short interest quiz to assign 7-day growth missions matching your profile." : "ทำแบบทดสอบความสนใจสั้น ๆ เพื่อสุ่มจัดสรรภารกิจ 7 วันที่สอดคล้องกับโปรไฟล์ของคุณ"}</p>
+    if (missionContainer) {
+      missionContainer.innerHTML = `
+        <div class="active-mission-card">
+          <div class="mission-details">
+            <h4>${isEn ? "Please take the quiz" : "กรุณาทำแบบทดสอบ"}</h4>
+            <p class="text-muted" style="font-size: 0.85rem;">${isEn ? "Take the short interest quiz to assign 7-day growth missions matching your profile." : "ทำแบบทดสอบความสนใจสั้น ๆ เพื่อสุ่มจัดสรรภารกิจ 7 วันที่สอดคล้องกับโปรไฟล์ของคุณ"}</p>
+          </div>
+          <button class="btn btn-primary btn-sm" id="btn-dash-go-quiz">${isEn ? "Take Quiz" : "ทำ Quiz"}</button>
         </div>
-        <button class="btn btn-primary btn-sm" id="btn-dash-go-quiz">${isEn ? "Take Quiz" : "ทำ Quiz"}</button>
-      </div>
-    `;
-    document.getElementById('btn-dash-go-quiz').addEventListener('click', () => {
-      switchView('quiz-tab');
-    });
+      `;
+      const btnGoQuiz = document.getElementById('btn-dash-go-quiz');
+      if (btnGoQuiz) {
+        btnGoQuiz.addEventListener('click', () => {
+          switchView('quiz-tab');
+        });
+      }
+    }
   }
 
   // Update Personal Progress Widget
