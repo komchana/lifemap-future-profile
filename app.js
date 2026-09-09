@@ -1365,6 +1365,7 @@ function renderLifeProfileUI() {
     }
     nextMovesUl.appendChild(li);
   });
+  }
 
   // Render Radar Chart for RIASEC
   renderWheel();
