@@ -1,8 +1,9 @@
-import { state, getGrowthMissionStatus, switchView, isDayUnlocked } from './app.js';
-
 let metroCanvas;
 let ctx;
 let overlay;
+let appState = null;
+let getMissionStatusFn = null;
+let isUnlockedFn = null;
 
 const categoryColors = {
   creator: "#8b5cf6",
@@ -12,7 +13,12 @@ const categoryColors = {
   entrepreneur: "#06b6d4",
 };
 
-export function initCanvas() {
+export function initCanvas(deps) {
+  if (deps) {
+    if (deps.state) appState = deps.state;
+    if (deps.getGrowthMissionStatus) getMissionStatusFn = deps.getGrowthMissionStatus;
+    if (deps.isDayUnlocked) isUnlockedFn = deps.isDayUnlocked;
+  }
   metroCanvas = document.getElementById('metro-canvas');
   overlay = document.getElementById('metro-nodes-overlay');
   
@@ -23,11 +29,12 @@ export function initCanvas() {
   resizeCanvas();
   window.addEventListener('resize', () => {
     resizeCanvas();
-    renderCanvas();
+    renderCanvas(deps);
   });
 }
 
 function resizeCanvas() {
+  if (!metroCanvas) return;
   const parent = metroCanvas.parentElement;
   if (!parent) return;
   
@@ -42,15 +49,20 @@ function resizeCanvas() {
   }
 }
 
-export function renderCanvas() {
-  if (!metroCanvas || !ctx) return;
+export function renderCanvas(deps) {
+  if (deps) {
+    if (deps.state) appState = deps.state;
+    if (deps.getGrowthMissionStatus) getMissionStatusFn = deps.getGrowthMissionStatus;
+    if (deps.isDayUnlocked) isUnlockedFn = deps.isDayUnlocked;
+  }
+  if (!metroCanvas || !ctx || !getMissionStatusFn) return;
   
   // Clear overlay and canvas
-  overlay.innerHTML = '';
+  if (overlay) overlay.innerHTML = '';
   ctx.clearRect(0, 0, metroCanvas.width, metroCanvas.height);
 
-  const mStatus = getGrowthMissionStatus();
-  const currentMissions = mStatus.missions;
+  const mStatus = getMissionStatusFn();
+  const currentMissions = mStatus?.missions;
   if (!currentMissions || currentMissions.length === 0) return;
 
   const totalDays = 7;
@@ -73,7 +85,7 @@ export function renderCanvas() {
   ctx.stroke();
 
   // 2. Draw Active/Completed Solid Line Portion
-  const completedCount = mStatus.completedCount;
+  const completedCount = mStatus.completedCount || 0;
   if (completedCount > 0) {
     const endIdx = Math.min(totalDays - 1, completedCount - 1);
     const endX = padding + endIdx * xSpacing;
@@ -97,12 +109,13 @@ export function renderCanvas() {
   for (let i = 0; i < totalDays; i++) {
     const dayNum = i + 1;
     const mission = currentMissions[i];
+    if (!mission) continue;
     const x = padding + i * xSpacing;
     const y = cy;
     
-    const isCompleted = state.checkIns.some(c => c.missionId === mission.id);
+    const isCompleted = appState && appState.checkIns ? appState.checkIns.some(c => c.missionId === mission.id) : false;
     const isActive = mStatus.currentMission && mStatus.currentMission.id === mission.id;
-    const unlocked = isDayUnlocked(dayNum);
+    const unlocked = isUnlockedFn ? isUnlockedFn(dayNum) : true;
     
     // Draw canvas nodes
     ctx.beginPath();
@@ -137,21 +150,22 @@ export function renderCanvas() {
     ctx.fillText(`D${dayNum}`, x, y - 18);
 
     // Create interactive Overlay element
-    const clickNode = document.createElement('div');
-    clickNode.className = 'metro-click-node';
-    clickNode.style.left = `${(x / width) * 100}%`;
-    clickNode.style.top = `${(y / metroCanvas.height) * 100}%`;
-    clickNode.setAttribute('title', unlocked ? `ดูภารกิจ Day ${dayNum}` : `Day ${dayNum} (ยังไม่เปิดล็อก)`);
-    
-    // Day button selection trigger
-    clickNode.addEventListener('click', () => {
-      // Find the day selection button and trigger click
-      const dayBtns = document.querySelectorAll('.day-btn');
-      if (dayBtns[i]) {
-        dayBtns[i].click();
-      }
-    });
-    
-    overlay.appendChild(clickNode);
+    if (overlay) {
+      const clickNode = document.createElement('div');
+      clickNode.className = 'metro-click-node';
+      clickNode.style.left = `${(x / width) * 100}%`;
+      clickNode.style.top = `${(y / metroCanvas.height) * 100}%`;
+      clickNode.setAttribute('title', unlocked ? `ดูภารกิจ Day ${dayNum}` : `Day ${dayNum} (ยังไม่เปิดล็อก)`);
+      
+      // Day button selection trigger
+      clickNode.addEventListener('click', () => {
+        const dayBtns = document.querySelectorAll('.day-btn');
+        if (dayBtns[i]) {
+          dayBtns[i].click();
+        }
+      });
+      
+      overlay.appendChild(clickNode);
+    }
   }
 }

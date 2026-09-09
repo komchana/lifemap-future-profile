@@ -1,20 +1,28 @@
-import { state, computeProfile } from './app.js';
-
 let radarSvg;
+let appState = null;
+let computeProfileFn = null;
 
 const riasecKeys = ['R', 'I', 'A', 'S', 'E', 'C'];
 
-export function initWheel() {
+export function initWheel(deps) {
+  if (deps) {
+    if (deps.state) appState = deps.state;
+    if (deps.computeProfile) computeProfileFn = deps.computeProfile;
+  }
   radarSvg = document.getElementById('riasec-radar-svg');
 }
 
-export function renderWheel() {
+export function renderWheel(deps) {
+  if (deps) {
+    if (deps.state) appState = deps.state;
+    if (deps.computeProfile) computeProfileFn = deps.computeProfile;
+  }
   if (!radarSvg) {
     radarSvg = document.getElementById('riasec-radar-svg');
   }
-  if (!radarSvg) return;
+  if (!radarSvg || !appState || !computeProfileFn) return;
 
-  const profile = computeProfile(state.answers);
+  const profile = computeProfileFn(appState.answers);
   if (!profile) return;
 
   radarSvg.innerHTML = '';

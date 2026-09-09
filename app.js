@@ -1146,7 +1146,7 @@ function renderLifeProfileUI() {
   });
 
   // Render Radar Chart for RIASEC
-  renderWheel();
+  renderWheel({ state, computeProfile });
   
   // Render Bar list for RIASEC scores detail
   const riasecScoresList = document.getElementById('riasec-scores-list');
@@ -1300,8 +1300,8 @@ function initApp() {
 
   checkAuthStatus();
 
-  initCanvas();
-  initWheel();
+  initCanvas({ state, getGrowthMissionStatus, isDayUnlocked });
+  initWheel({ state, computeProfile });
   updateDashboardUI();
   
   // Initialize LINE LIFF
@@ -3500,7 +3500,7 @@ function renderMissionsTab() {
   }
 
   // Draw timeline visual on canvas
-  renderCanvas();
+  renderCanvas({ state, getGrowthMissionStatus, isDayUnlocked });
   lucide.createIcons();
 }
 
