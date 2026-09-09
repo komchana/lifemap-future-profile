@@ -1021,91 +1021,45 @@ function checkAuthStatus() {
   }
 
   // Routing and view toggling logic
-  const loggedInUser = localStorage.getItem('lifemap_logged_in_user');
+  let loggedInUser = localStorage.getItem('lifemap_logged_in_user');
+  if (!loggedInUser) {
+    loggedInUser = 'guest_student';
+    localStorage.setItem('lifemap_logged_in_user', loggedInUser);
+    localStorage.setItem('lifemap_logged_in_role', 'student');
+  }
+
+  if (!state.studentName) state.studentName = "นักเรียน LifeMap";
+  if (!state.gradeLevel) state.gradeLevel = "m4";
+
   const appSidebar = document.getElementById('app-sidebar');
   const appHeader = document.getElementById('app-header');
   const appContainer = document.querySelector('.app-container');
 
-  if (loggedInUser) {
-    // Logged in
-    if (!state.studentName || !state.gradeLevel) {
-      // 1. Onboarding not complete: show onboarding, hide sidebar and header
-      if (appSidebar) appSidebar.style.display = 'none';
-      if (appHeader) appHeader.style.display = 'none';
-      if (appContainer) appContainer.classList.remove('sidebar-visible');
-      
-      // Hide all panels, show view-onboarding
-      document.querySelectorAll('.view-panel').forEach(panel => {
-        panel.classList.remove('active');
-      });
-      const onboardingPanel = document.getElementById('view-onboarding');
-      if (onboardingPanel) {
-        onboardingPanel.classList.add('active');
-        // Initialize personalization form for default "m4" grade
-        updateGradePersonalizationUI("m4");
-      }
-    } else {
-      // 2. Onboarding complete: show dashboard/sidebar/header
-      if (appSidebar) appSidebar.style.display = 'flex';
-      if (appHeader) appHeader.style.display = 'flex';
-      if (appContainer) appContainer.classList.add('sidebar-visible');
-      
-      // Show last active view (default to dashboard)
-      const currentView = localStorage.getItem('lifemap_v2_view') || 'dashboard';
-      
-      // Switch view panel active class
-      document.querySelectorAll('.view-panel').forEach(panel => {
-        panel.classList.toggle('active', panel.id === `view-${currentView}`);
-      });
-      
-      // Update nav menu active state
-      document.querySelectorAll('.nav-menu .nav-item').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.view === currentView);
-      });
-      
-      const settingsBtn = document.getElementById('btn-settings');
-      if (settingsBtn) {
-        settingsBtn.classList.toggle('active', settingsBtn.dataset.view === currentView);
-      }
-      
-      const headerSettingsBtn = document.getElementById('btn-header-settings');
-      if (headerSettingsBtn) {
-        headerSettingsBtn.classList.toggle('active', currentView === 'settings');
-      }
-    }
-  } else {
-    // Guest or Not logged in: show auth panel, hide sidebar/header
-    if (appSidebar) appSidebar.style.display = 'none';
-    if (appHeader) appHeader.style.display = 'none';
-    if (appContainer) appContainer.classList.remove('sidebar-visible');
-    
-    // Check if there is guest state (e.g. started/completed quiz without account)
-    const hasGuestData = state.studentName || Object.keys(state.answers).length > 0;
-    if (hasGuestData) {
-      // Go to quiz view to show results or let them continue
-      document.querySelectorAll('.view-panel').forEach(panel => {
-        panel.classList.remove('active');
-      });
-      const quizPanel = document.getElementById('view-quiz-tab');
-      if (quizPanel) {
-        quizPanel.classList.add('active');
-        renderQuizTab();
-      }
-    } else {
-      // Show welcome auth panel
-      document.querySelectorAll('.view-panel').forEach(panel => {
-        panel.classList.remove('active');
-      });
-      const authPanel = document.getElementById('view-auth');
-      if (authPanel) {
-        authPanel.classList.add('active');
-        // Reset to show welcome panel and hide forms if they were open
-        const welcomePanel = document.getElementById('welcome-panel');
-        if (welcomePanel) welcomePanel.style.display = 'block';
-        const authFormContainer = document.getElementById('auth-form-container');
-        if (authFormContainer) authFormContainer.style.display = 'none';
-      }
-    }
+  if (appSidebar) appSidebar.style.display = 'flex';
+  if (appHeader) appHeader.style.display = 'flex';
+  if (appContainer) appContainer.classList.add('sidebar-visible');
+
+  const currentView = localStorage.getItem('lifemap_v2_view') || 'dashboard';
+  
+  let targetPanel = document.getElementById(`view-${currentView}`);
+  if (!targetPanel) targetPanel = document.getElementById('view-dashboard') || document.getElementById('view-onboarding');
+
+  document.querySelectorAll('.view-panel').forEach(panel => {
+    panel.classList.toggle('active', panel === targetPanel);
+  });
+  
+  document.querySelectorAll('.nav-menu .nav-item').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.view === currentView);
+  });
+  
+  const settingsBtn = document.getElementById('btn-settings');
+  if (settingsBtn) {
+    settingsBtn.classList.toggle('active', settingsBtn.dataset.view === currentView);
+  }
+  
+  const headerSettingsBtn = document.getElementById('btn-header-settings');
+  if (headerSettingsBtn) {
+    headerSettingsBtn.classList.toggle('active', currentView === 'settings');
   }
 }
 
