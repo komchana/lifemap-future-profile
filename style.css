@@ -136,9 +136,15 @@ body {
   display: flex;
   width: 100vw;
   height: 100vh;
-  height: -webkit-fill-available; /* Fix for LINE browser / iOS Safari */
+  min-height: 100vh;
   position: relative;
   z-index: 1;
+}
+
+@supports (-webkit-touch-callout: none) {
+  .app-container {
+    height: -webkit-fill-available;
+  }
 }
 
 /* Sidebar Navigation */
