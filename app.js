@@ -1856,15 +1856,21 @@ function updateDashboardUI() {
   safeSetStyle('passport-progress-fill', 'width', `${progressVal}%`);
 
   // Dashboard views
-  safeSetText('dash-pass-name', state.studentName || (isEn ? "Explorer" : "นักเรียน"));
-  safeSetText('dash-pass-grade', state.gradeLevel 
+  const displayName = state.studentName || (isEn ? "Explorer" : "นักเรียน");
+  const displayGrade = state.gradeLevel 
     ? (isEn 
         ? (['pvc', 'pvs', 'uni', 'work'].includes(state.gradeLevel) ? gradePersonalizationMap[state.gradeLevel].label.en : `Grade ${gradePersonalizationMap[state.gradeLevel].label.en}`) 
         : (['work'].includes(state.gradeLevel) ? `${gradePersonalizationMap[state.gradeLevel].label.th}` : `ชั้น ${gradePersonalizationMap[state.gradeLevel].label.th}`)) 
-    : "");
-  
+    : "";
+  const displayCampaign = state.campaignCode || "GENERAL";
+
+  safeSetText('dash-pass-name', displayName);
+  safeSetText('dash-passport-name', displayName);
+  safeSetText('dash-pass-grade', displayGrade);
+  safeSetText('dash-passport-grade', displayGrade);
   safeSetText('dash-pass-school', state.schoolName || (isEn ? "Not Specified" : "ไม่ระบุโรงเรียน"));
-  safeSetText('dash-pass-campaign', state.campaignCode || "GENERAL");
+  safeSetText('dash-pass-campaign', displayCampaign);
+  safeSetText('dash-passport-campaign', displayCampaign);
   safeSetText('dash-invite-code', state.parentInviteCode || "");
 
   // Unlocked Stamp indicator inside Future Pass Card
@@ -1873,22 +1879,26 @@ function updateDashboardUI() {
   if (profile) {
     const archName = profile.archetype[state.language || 'th'] || profile.archetype;
     const clusterName = profile.careerClusters[0].name;
-    badgeSlot.innerHTML = `
-      <div class="badge-card">
-        <i data-lucide="award"></i>
-        <div class="badge-texts" style="display: flex; flex-direction: column; text-align: left; gap: 2px;">
-          <strong style="font-size: 0.85rem; color: var(--color-accent);">${archName}</strong>
-          <span style="font-size: 0.65rem; color: var(--text-secondary);">${clusterName}</span>
+    if (badgeSlot) {
+      badgeSlot.innerHTML = `
+        <div class="badge-card">
+          <i data-lucide="award"></i>
+          <div class="badge-texts" style="display: flex; flex-direction: column; text-align: left; gap: 2px;">
+            <strong style="font-size: 0.85rem; color: var(--color-accent);">${archName}</strong>
+            <span style="font-size: 0.65rem; color: var(--text-secondary);">${clusterName}</span>
+          </div>
         </div>
-      </div>
-    `;
+      `;
+    }
   } else {
-    badgeSlot.innerHTML = `
-      <div class="badge-card locked">
-        <i data-lucide="lock"></i>
-        <span data-i18n="dash-pass-lock-text">${isEn ? "Complete quiz to unlock badge" : "ทำแบบทดสอบเพื่อรับตราอาชีพ"}</span>
-      </div>
-    `;
+    if (badgeSlot) {
+      badgeSlot.innerHTML = `
+        <div class="badge-card locked">
+          <i data-lucide="lock"></i>
+          <span data-i18n="dash-pass-lock-text">${isEn ? "Complete quiz to unlock badge" : "ทำแบบทดสอบเพื่อรับตราอาชีพ"}</span>
+        </div>
+      `;
+    }
   }
 
   // Action-Oriented AI Guide tip bubble
@@ -1896,8 +1906,8 @@ function updateDashboardUI() {
   if (guideTip) {
     if (!profile) {
       guideTip.textContent = isEn
-        ? "You have unlocked your Future Profile! The next step is to start the 6-question quiz to explore your future interests and career archetype."
-        : "คุณได้ปลดล็อก Future Profile แล้ว! ก้าวถัดไปคือการเริ่มทำแบบทดสอบ 6 คำถาม เพื่อเริ่มวิเคราะห์จุดแข็งเป้าหมายหลักในอนาคตของคุณ";
+        ? "You have unlocked your Future Profile! The next step is to start the 11-question survey to explore your future interests and career archetype."
+        : "คุณได้ปลดล็อก Future Profile แล้ว! ก้าวถัดไปคือการเริ่มทำแบบทดสอบ 11 คำถาม เพื่อเริ่มวิเคราะห์จุดแข็งเป้าหมายหลักในอนาคตของคุณ";
     } else {
       const personalization = gradePersonalizationMap[state.gradeLevel || 'm4'];
       guideTip.textContent = personalization.nextActionText[state.language || 'th'] || personalization.nextActionText;
