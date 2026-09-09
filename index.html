@@ -3,19 +3,64 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LifeMap AI Future Passport — สำหรับนักเรียน</title>
+  <title>LifeMap Future Profile — สำหรับนักเรียน</title>
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
-  <!-- LINE LIFF SDK -->
-  <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <!-- Stylesheet -->
   <link rel="stylesheet" href="style.css">
+  <!-- Inline theme detection to prevent flash of light/dark theme -->
+  <script>
+    (function() {
+      const theme = localStorage.getItem('lifemap_theme') || 'dark-theme';
+      document.documentElement.className = theme;
+      const style = document.createElement('style');
+      style.innerHTML = `
+        #app-splash-screen {
+          background-color: ${theme === 'light-theme' ? '#F7FAEF' : '#10170A'} !important;
+        }
+        #app-splash-screen h2 {
+          color: ${theme === 'light-theme' ? '#10170A' : '#F7FAEF'} !important;
+        }
+        #app-splash-screen p {
+          color: ${theme === 'light-theme' ? '#3D4F2F' : '#C4D1B5'} !important;
+        }
+        @keyframes splashPulse {
+          0%, 100% { transform: scale(1); box-shadow: 0 0 30px rgba(214, 255, 92, 0.1); }
+          50% { transform: scale(1.05); box-shadow: 0 0 50px rgba(214, 255, 92, 0.25); }
+        }
+        @keyframes spinSlow {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        @keyframes loadingBar {
+          0% { left: -100%; width: 100%; }
+          50% { left: 0%; width: 50%; }
+          100% { left: 100%; width: 100%; }
+        }
+      `;
+      document.head.appendChild(style);
+    })();
+  </script>
 </head>
 <body>
+  <!-- Premium Splash Screen Loader to eliminate loading flickers -->
+  <div id="app-splash-screen" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: #10170a; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.4s ease, visibility 0.4s ease;">
+    <div style="text-align: center;">
+      <div style="width: 80px; height: 80px; border-radius: 24px; background: linear-gradient(135deg, rgba(214, 255, 92, 0.1) 0%, rgba(214, 255, 92, 0.02) 100%); border: 1px solid rgba(214, 255, 92, 0.2); display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; box-shadow: 0 0 30px rgba(214,255,92,0.1); position: relative; animation: splashPulse 2s infinite ease-in-out;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#D6FF5C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-compass" style="animation: spinSlow 8s linear infinite;"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+      </div>
+      <h2 style="font-family: 'Poppins', 'Prompt', sans-serif; font-size: 1.8rem; font-weight: 700; color: #F7FAEF; margin-bottom: 8px; letter-spacing: 1px; transition: color 0.3s;">LifeMap</h2>
+      <p style="font-family: 'Poppins', 'Prompt', sans-serif; font-size: 0.85rem; color: #C4D1B5; letter-spacing: 2px; text-transform: uppercase; transition: color 0.3s;">Future Profile</p>
+    </div>
+    <div style="position: absolute; bottom: 60px; width: 140px; height: 3px; background: rgba(247, 250, 239, 0.1); border-radius: 2px; overflow: hidden;">
+      <div style="position: absolute; top: 0; left: 0; height: 100%; background: #D6FF5C; border-radius: 2px; animation: loadingBar 1.5s infinite ease-in-out;"></div>
+    </div>
+  </div>
+
   <!-- Background Glows -->
   <div class="bg-glow-olive"></div>
   <div class="bg-glow-lime"></div>
@@ -29,7 +74,7 @@
         </div>
         <div class="brand-text">
           <h1>LifeMap</h1>
-          <span>AI Future Passport</span>
+          <span>Future Profile</span>
         </div>
       </div>
 
@@ -46,52 +91,63 @@
       <nav class="nav-menu">
         <button class="nav-item active" data-view="dashboard">
           <i data-lucide="layout-dashboard"></i>
-          <span>Dashboard</span>
+          <span data-i18n="nav-dashboard">Dashboard</span>
         </button>
         <button class="nav-item" data-view="quiz-tab">
           <i data-lucide="award"></i>
-          <span>Life Profile</span>
+          <span data-i18n="nav-quiz">Life Profile</span>
         </button>
         <button class="nav-item" data-view="missions">
           <i data-lucide="route"></i>
-          <span>7-Day Missions</span>
+          <span data-i18n="nav-missions">7-Day Missions</span>
         </button>
         <button class="nav-item" data-view="review">
           <i data-lucide="bar-chart-3"></i>
-          <span>Growth Review</span>
+          <span data-i18n="nav-review">Growth Review</span>
         </button>
         <button class="nav-item" data-view="parent">
           <i data-lucide="users"></i>
-          <span>Parent Link</span>
+          <span data-i18n="nav-parent">Parent Link</span>
         </button>
         <button class="nav-item" data-view="marketplace">
           <i data-lucide="shopping-bag"></i>
-          <span>Opportunities</span>
+          <span data-i18n="nav-marketplace">Opportunities</span>
+        </button>
+        <button class="nav-item" data-view="references">
+          <i data-lucide="book-open"></i>
+          <span data-i18n="nav-references">References</span>
+        </button>
+        <button class="nav-item" data-view="admin" id="nav-item-admin" style="display: none;">
+          <i data-lucide="shield-alert" style="color: var(--color-warning);"></i>
+          <span data-i18n="nav-admin" style="font-weight: 700; color: var(--color-warning);">Admin Console</span>
         </button>
       </nav>
 
       <div class="sidebar-stats">
         <div class="stat-row">
-          <span>Tokens:</span>
+          <span data-i18n="sidebar-tokens-label">Tokens:</span>
           <span class="valueHighlight" id="sidebar-tokens">25</span>
         </div>
         <div class="stat-card">
           <div class="stat-header">
-            <span>Passport Completion</span>
-            <span id="passport-progress-text">0%</span>
+            <span data-i18n="sidebar-progress-label">ความคืบหน้าการสำรวจตัวเอง</span>
+            <span id="pass-progress-text">0%</span>
           </div>
           <div class="progress-bar">
-            <div class="progress-fill" id="passport-progress-fill" style="width: 0%"></div>
+            <div class="progress-fill" id="pass-progress-fill" style="width: 0%"></div>
           </div>
         </div>
       </div>
 
       <div class="sidebar-footer">
         <button class="btn btn-secondary btn-sm" id="btn-settings" data-view="settings">
-          <i data-lucide="settings"></i> Settings
+          <i data-lucide="settings"></i> <span data-i18n="nav-settings">Settings</span>
         </button>
         <button class="btn btn-secondary btn-sm" id="btn-sidebar-export">
-          <i data-lucide="download"></i> Backup
+          <i data-lucide="download"></i> <span data-i18n="settings-btn-export">Backup</span>
+        </button>
+        <button class="btn btn-secondary btn-sm text-danger" id="btn-sidebar-logout">
+          <i data-lucide="log-out"></i> <span data-i18n="nav-logout">ออกจากระบบ (Logout)</span>
         </button>
       </div>
     </aside>
@@ -110,55 +166,335 @@
             <i data-lucide="database"></i>
             <span id="header-tokens">25</span>
           </div>
+          <button class="theme-toggle" id="lang-toggle" title="สลับภาษา / Switch Language" style="font-size: 0.8rem; font-weight: 700; font-family: var(--font-secondary);">
+            TH
+          </button>
           <button class="theme-toggle" id="theme-toggle" title="เปลี่ยนธีม">
             <i data-lucide="sun" class="sun-icon"></i>
             <i data-lucide="moon" class="moon-icon"></i>
+          </button>
+          <button class="theme-toggle" id="btn-header-settings" title="ตั้งค่าระบบ">
+            <i data-lucide="settings"></i>
           </button>
         </div>
       </header>
 
       <!-- View Panels -->
       <div class="view-viewport">
+
+        <!-- 0. WELCOME & AUTH VIEW -->
+        <div class="view-panel active" id="view-auth">
+          <div class="onboarding-card auth-card">
+            
+            <!-- Welcome Panel -->
+            <div id="welcome-panel">
+              <div class="onboarding-header">
+                <div class="logo-large">
+                  <i data-lucide="compass"></i>
+                </div>
+                <h2 data-i18n="welcome-title">LifeMap Future Profile</h2>
+                <p data-i18n="welcome-desc">แพลตฟอร์มช่วยนักเรียนค้นหาจุดแข็ง วางแผนอนาคต และเลือกก้าวถัดไปที่เหมาะกับตัวเอง</p>
+                <!-- Preloaded Campaign Badge -->
+                <div id="campaign-badge-container" style="display: none; margin-top: 14px; padding: 8px 12px; background: rgba(6, 199, 85, 0.1); border: 1px solid #06C755; border-radius: 10px; text-align: center;">
+                  <span style="font-size: 0.82rem; font-weight: 600; color: #06C755; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                    <i data-lucide="check-circle" style="width: 16px; height: 16px;"></i>
+                    <span data-i18n="welcome-campaign-badge">เข้าร่วมกิจกรรมโรงเรียน: </span>
+                    <strong id="welcome-campaign-name">SCHOOL-A</strong>
+                  </span>
+                </div>
+              </div>
+
+              <!-- Value Props -->
+              <div class="welcome-value-props" style="margin: 24px 0; display: flex; flex-direction: column; gap: 12px; text-align: left;">
+                <div class="value-prop-item" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: rgba(var(--color-accent-rgb), 0.04); border-radius: 12px; border: 1px solid rgba(var(--color-accent-rgb), 0.08);">
+                  <i data-lucide="sparkles" style="color: var(--color-accent); width: 20px; height: 20px; flex-shrink: 0;"></i>
+                  <span style="font-size: 0.9rem; font-weight: 600;" data-i18n="welcome-val-1">รู้จักจุดแข็งของตัวเอง</span>
+                </div>
+                <div class="value-prop-item" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: rgba(var(--color-accent-rgb), 0.04); border-radius: 12px; border: 1px solid rgba(var(--color-accent-rgb), 0.08);">
+                  <i data-lucide="compass" style="color: var(--color-accent); width: 20px; height: 20px; flex-shrink: 0;"></i>
+                  <span style="font-size: 0.9rem; font-weight: 600;" data-i18n="welcome-val-2">เห็นแนวทางอนาคตที่น่าลอง</span>
+                </div>
+                <div class="value-prop-item" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: rgba(var(--color-accent-rgb), 0.04); border-radius: 12px; border: 1px solid rgba(var(--color-accent-rgb), 0.08);">
+                  <i data-lucide="calendar" style="color: var(--color-accent); width: 20px; height: 20px; flex-shrink: 0;"></i>
+                  <span style="font-size: 0.9rem; font-weight: 600;" data-i18n="welcome-val-3">ได้ก้าวเล็ก ๆ ที่ทำได้จริงใน 7 วัน</span>
+                </div>
+              </div>
+
+              <!-- Buttons -->
+              <div style="display: flex; flex-direction: column; gap: 12px;">
+                <button class="btn btn-primary btn-block" id="btn-welcome-explore" style="padding: 14px; font-size: 1.05rem; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px;" data-i18n="welcome-btn-explore">
+                  เริ่มสำรวจตัวเอง <i data-lucide="arrow-right" style="width: 16px; height: 16px;"></i>
+                </button>
+                <button class="btn btn-line btn-block" id="btn-liff-login" style="padding: 14px; font-size: 1.05rem; font-weight: 700; display: none; align-items: center; justify-content: center; gap: 8px; border-radius: 12px; cursor: pointer;">
+                  <span style="display: inline-flex; align-items: center; justify-content: center; background: white; border-radius: 50%; width: 22px; height: 22px; margin-right: 4px;">
+                    <svg viewBox="0 0 24 24" width="14" height="14" style="fill: #06C755; stroke: none;"><path d="M22 11.08c0-4.9-4.5-8.88-10-8.88S2 6.18 2 11.08c0 4.4 3.56 8.07 8.36 8.78.33.07.78.22.9.5l.27 1.63c.08.45.3.4.63.18l1.78-1.22c1.47-1.02 2.05-1.57 3.32-2.73 3.07-2.6 4.74-5.26 4.74-6.55z"></path></svg>
+                  </span>
+                  <span data-i18n="welcome-btn-liff">เข้าสู่ระบบด้วย LINE</span>
+                </button>
+                <button class="btn btn-secondary btn-block" id="btn-welcome-login" style="background: transparent; border: 1px solid var(--border-color); color: var(--text-primary); padding: 10px; font-weight: 600;" data-i18n="welcome-btn-login">
+                  เข้าสู่ระบบ / ลงทะเบียน
+                </button>
+                <button class="btn btn-link btn-block" id="btn-welcome-school" style="font-size: 0.8rem; color: var(--text-secondary); cursor: pointer; background: none; border: none; text-decoration: underline; padding: 4px;" data-i18n="welcome-btn-school">
+                  เข้าใช้งานด้วยรหัสกิจกรรม / QR โรงเรียน
+                </button>
+              </div>
+
+              <!-- School Code Input Panel (hidden by default) -->
+              <div id="school-code-panel" style="display: none; margin-top: 14px; padding: 12px; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; text-align: left;">
+                <label for="school-code-input" style="font-size: 0.8rem; display: block; margin-bottom: 6px; font-weight: 600;" data-i18n="welcome-school-label">ระบุรหัสกิจกรรมหรือแคมเปญ:</label>
+                <div style="display: flex; gap: 8px;">
+                  <input type="text" id="school-code-input" placeholder="เช่น SCHOOL-BKK" style="flex: 1; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color); font-size: 0.85rem; background: var(--bg-primary); color: var(--text-primary);">
+                  <button class="btn btn-primary btn-sm" id="btn-submit-school-code" data-i18n="welcome-school-submit">ตกลง</button>
+                </div>
+              </div>
+
+              <!-- Privacy Notes -->
+              <div style="margin-top: 24px; text-align: center; border-top: 1px solid var(--border-color); padding-top: 16px;">
+                <p style="font-size: 0.78rem; color: var(--color-accent); font-weight: 600; margin-bottom: 6px;" data-i18n="welcome-privacy-note-1">
+                  ผลลัพธ์เป็นเพียงภาพสะท้อนจากคำตอบของคุณ ไม่ใช่คำตัดสินอนาคต
+                </p>
+                <p style="font-size: 0.72rem; color: var(--text-secondary); line-height: 1.45;" data-i18n="welcome-privacy-note-2">
+                  เราจะใช้ข้อมูลของคุณเพื่อสร้าง Life Profile และคำแนะนำเบื้องต้นเท่านั้น คุณสามารถเลือกบันทึกหรือลบข้อมูลได้ภายหลัง
+                </p>
+              </div>
+            </div>
+
+            <!-- Auth Form Container (hidden by default) -->
+            <div id="auth-form-container" style="display: none;">
+              <div class="onboarding-header">
+                <div class="logo-large">
+                  <i data-lucide="compass"></i>
+                </div>
+                <h2 data-i18n="auth-title">LifeMap Future Profile</h2>
+                <p data-i18n="auth-subtitle">เข้าสู่ระบบหรือสมัครสมาชิกเพื่อบันทึกประวัติการเรียนรู้ของคุณ</p>
+              </div>
+
+              <!-- Tabs for Login / Register -->
+              <div class="auth-tabs">
+                <button class="auth-tab active" id="tab-login-btn" data-i18n="auth-tab-login">เข้าสู่ระบบ</button>
+                <button class="auth-tab" id="tab-register-btn" data-i18n="auth-tab-register">ลงทะเบียน</button>
+              </div>
+
+              <!-- Login Form -->
+              <form id="login-form" class="onboarding-body auth-form-panel">
+                <div class="form-group">
+                  <label for="login-username" data-i18n="auth-label-username">ชื่อผู้ใช้หรืออีเมล</label>
+                  <div class="input-wrapper">
+                    <i data-lucide="user" class="input-icon"></i>
+                    <input type="text" id="login-username" required placeholder="กรอกชื่อผู้ใช้งานหรืออีเมล" data-i18n="auth-placeholder-username">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="login-password" data-i18n="auth-label-password">รหัสผ่าน</label>
+                  <div class="input-wrapper has-toggle">
+                    <i data-lucide="lock" class="input-icon"></i>
+                    <input type="password" id="login-password" required placeholder="กรอกรหัสผ่าน" data-i18n="auth-placeholder-password">
+                    <button type="button" class="btn-toggle-password" tabindex="-1" title="แสดง/ซ่อนรหัสผ่าน">
+                      <i data-lucide="eye" class="eye-icon"></i>
+                    </button>
+                  </div>
+                </div>
+                <div style="text-align: right; margin-top: -4px;">
+                  <button type="button" id="btn-show-forgot" style="background: transparent; border: none; color: var(--color-accent); font-size: 0.8rem; cursor: pointer; text-decoration: underline; padding: 0;" data-i18n="auth-forgot-link">ลืมรหัสผ่าน?</button>
+                </div>
+                <button class="btn btn-primary btn-block mt-2" type="submit" data-i18n="auth-login-btn">เข้าสู่ระบบ</button>
+              </form>
+
+              <!-- Register Form -->
+              <form id="register-form" class="onboarding-body auth-form-panel" style="display: none;">
+                <div class="form-group">
+                  <label for="register-username" data-i18n="auth-label-username">ชื่อผู้ใช้หรืออีเมล</label>
+                  <div class="input-wrapper">
+                    <i data-lucide="user" class="input-icon"></i>
+                    <input type="text" id="register-username" required placeholder="กรอกชื่อผู้ใช้งานหรืออีเมล" data-i18n="auth-placeholder-username">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="register-password" data-i18n="auth-label-password">รหัสผ่าน</label>
+                  <div class="input-wrapper has-toggle">
+                    <i data-lucide="lock" class="input-icon"></i>
+                    <input type="password" id="register-password" required placeholder="สร้างรหัสผ่าน" data-i18n="auth-placeholder-register-password">
+                    <button type="button" class="btn-toggle-password" tabindex="-1" title="แสดง/ซ่อนรหัสผ่าน">
+                      <i data-lucide="eye" class="eye-icon"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="register-confirm-password" data-i18n="auth-label-confirm-password">ยืนยันรหัสผ่าน (Confirm Password)</label>
+                  <div class="input-wrapper has-toggle">
+                    <i data-lucide="shield-check" class="input-icon"></i>
+                    <input type="password" id="register-confirm-password" required placeholder="กรอกรหัสผ่านอีกครั้ง" data-i18n="auth-placeholder-confirm-password">
+                    <button type="button" class="btn-toggle-password" tabindex="-1" title="แสดง/ซ่อนรหัสผ่าน">
+                      <i data-lucide="eye" class="eye-icon"></i>
+                    </button>
+                  </div>
+                </div>
+                <button class="btn btn-primary btn-block mt-2" type="submit" data-i18n="auth-register-btn">ลงทะเบียนและไปตั้งค่าโปรไฟล์</button>
+              </form>
+
+              <!-- Forgot Password Form -->
+              <form id="forgot-form" class="onboarding-body auth-form-panel" style="display: none;">
+                <h3 style="font-size: 1rem; color: var(--color-accent); text-align: center; margin-bottom: 8px;" data-i18n="forgot-title">กู้คืนรหัสผ่าน (Password Recovery)</h3>
+                
+                <!-- Step 1: Input Username/Email -->
+                <div id="forgot-step-1">
+                  <div class="form-group">
+                    <label for="forgot-username" data-i18n="forgot-step1-desc">ชื่อผู้ใช้งาน (Username) หรืออีเมลที่ลงทะเบียน</label>
+                    <div class="input-wrapper">
+                      <i data-lucide="user" class="input-icon"></i>
+                      <input type="text" id="forgot-username" placeholder="กรอกชื่อผู้ใช้งานหรืออีเมล" data-i18n="auth-placeholder-username">
+                    </div>
+                  </div>
+                  <button class="btn btn-primary btn-block mt-3" type="button" id="btn-forgot-send-otp" data-i18n="forgot-send-otp">ส่งรหัสกู้คืน</button>
+                </div>
+
+                <!-- Step 2: Input OTP -->
+                <div id="forgot-step-2" style="display: none;">
+                  <p class="text-muted" style="font-size: 0.8rem; text-align: center; margin-bottom: 14px;" id="otp-status-text" data-i18n="forgot-step2-desc">
+                    ระบบจำลองได้ส่งรหัส OTP กู้คืนไปยังบัญชีของคุณแล้ว
+                  </p>
+                  <div class="form-group">
+                    <label for="forgot-otp" data-i18n="forgot-placeholder-otp">รหัสผ่านทางผ่าน OTP (กรอกรหัส: 8888)</label>
+                    <div class="input-wrapper">
+                      <i data-lucide="key-round" class="input-icon"></i>
+                      <input type="text" id="forgot-otp" placeholder="กรอกรหัส OTP 4 หลัก" data-i18n="forgot-placeholder-otp-input">
+                    </div>
+                  </div>
+                  <button class="btn btn-primary btn-block mt-3" type="button" id="btn-forgot-verify-otp" data-i18n="forgot-verify-otp">ยืนยันรหัส OTP</button>
+                </div>
+
+                <!-- Step 3: Input New Password -->
+                <div id="forgot-step-3" style="display: none;">
+                  <div class="form-group">
+                    <label for="forgot-new-password" data-i18n="forgot-placeholder-new">รหัสผ่านใหม่ (New Password)</label>
+                    <div class="input-wrapper has-toggle">
+                      <i data-lucide="lock" class="input-icon"></i>
+                      <input type="password" id="forgot-new-password" placeholder="สร้างรหัสผ่านใหม่" data-i18n="forgot-placeholder-new-input">
+                      <button type="button" class="btn-toggle-password" tabindex="-1" title="แสดง/ซ่อนรหัสผ่าน">
+                        <i data-lucide="eye" class="eye-icon"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="forgot-confirm-new-password" data-i18n="forgot-placeholder-new-confirm">ยืนยันรหัสผ่านใหม่</label>
+                    <div class="input-wrapper has-toggle">
+                      <i data-lucide="shield-check" class="input-icon"></i>
+                      <input type="password" id="forgot-confirm-new-password" placeholder="กรอกรหัสผ่านใหม่อีกครั้ง" data-i18n="forgot-placeholder-new-confirm-input">
+                      <button type="button" class="btn-toggle-password" tabindex="-1" title="แสดง/ซ่อนรหัสผ่าน">
+                        <i data-lucide="eye" class="eye-icon"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <button class="btn btn-primary btn-block mt-3" type="submit" data-i18n="forgot-submit-btn">ตั้งรหัสผ่านใหม่</button>
+                </div>
+
+                <!-- Back to Login Link -->
+                <button class="btn btn-secondary btn-block mt-2" type="button" id="btn-forgot-back" style="background: transparent; border: 1px solid var(--border-color); color: var(--text-secondary);" data-i18n="forgot-back">
+                  ย้อนกลับไปหน้าเข้าสู่ระบบ
+                </button>
+              </form>
+
+              <!-- Back to Welcome Page Button -->
+              <button class="btn btn-secondary btn-block mt-3" id="btn-auth-back" style="background: transparent; border: 1px solid var(--border-color); color: var(--text-secondary); display: flex; align-items: center; justify-content: center; gap: 6px;" data-i18n="auth-btn-back">
+                <i data-lucide="arrow-left" style="width: 14px; height: 14px;"></i> ย้อนกลับไปหน้าแรก
+              </button>
+            </div>
+            
+          </div>
+        </div>
         
         <!-- 1. ONBOARDING & WELCOME (Default first view) -->
-        <div class="view-panel active" id="view-onboarding">
+        <div class="view-panel" id="view-onboarding">
           <div class="onboarding-card">
             <div class="onboarding-header">
               <div class="logo-large">
                 <i data-lucide="compass"></i>
               </div>
-              <h2>สร้าง Future Passport ของคุณ</h2>
-              <p>ยินดีต้อนรับสู่ LifeMap พื้นที่สำรวจจุดแข็งและสร้างทิศทางอนาคตโดยไม่ตัดสินเลือกแทนคุณ</p>
+              <h2 data-i18n="ob-welcome">สร้าง LifeMap Future Profile ของคุณ</h2>
+              <p data-i18n="ob-welcome-desc">ยินดีต้อนรับสู่ LifeMap พื้นที่สำรวจจุดแข็งและสร้างทิศทางอนาคตโดยไม่ตัดสินเลือกแทนคุณ</p>
+            </div>
+
+            <!-- Student Privacy Notice Box -->
+            <div class="privacy-notice-box" style="background: rgba(247, 250, 239, 0.02); border: 1px solid var(--border-color); border-radius: 16px; padding: 18px; margin-bottom: 24px; box-shadow: inset 0 2px 8px rgba(0,0,0,0.05);">
+              <h4 style="font-size: 0.85rem; font-weight: 700; color: var(--color-accent); margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+                <i data-lucide="shield" style="width: 16px; height: 16px;"></i>
+                <span data-i18n="ob-privacy-title">คำชี้แจงความเป็นส่วนตัวแบบเข้าใจง่าย (Student Privacy Notice)</span>
+              </h4>
+              <ul style="font-size: 0.78rem; color: var(--text-secondary); padding-left: 18px; margin: 0; display: flex; flex-direction: column; gap: 8px; line-height: 1.45; text-align: left;">
+                <li><strong>เราเก็บข้อมูลอะไร:</strong> ชื่อเรียก, ชั้นเรียน, โรงเรียน, คำตอบแบบสำรวจ, อารมณ์รายวัน และบันทึกกิจกรรมพัฒนาตนเอง</li>
+                <li><strong>ใช้เพื่ออะไร:</strong> เพื่อสะท้อนแนวโน้มความถนัด ให้ AI Guide ช่วยประเมินอย่างสร้างสรรค์ และแสดงความคืบหน้าของตัวคุณเอง</li>
+                <li><strong>ใครเห็นข้อมูลได้บ้าง:</strong> ข้อมูลทั้งหมดจะเก็บไว้<strong>ในเครื่องนี้ของคุณเท่านั้น</strong> (ไม่มีเซิร์ฟเวอร์กลางที่เก็บประวัติคุณ) และการเชื่อมต่อให้ผู้ปกครอง (Parent Link) จะเกิดขึ้นก็ต่อเมื่อคุณยินยอมแชร์รหัสเชิญเท่านั้น</li>
+                <li><strong>ลบข้อมูลอย่างไร:</strong> ลบประวัติทั้งหมดอย่างถาวรได้ทันทีผ่านปุ่ม "ล้างข้อมูลระบบทั้งหมด" ในหน้าตั้งค่า (Settings)</li>
+              </ul>
             </div>
 
             <form id="onboarding-form" class="onboarding-body">
               <div class="form-group">
-                <label for="ob-name">ชื่อของคุณ (แสดงใน Passport)</label>
-                <input type="text" id="ob-name" required placeholder="เช่น พิมพ์ชนก, ศุภกร...">
+                <label for="ob-name" data-i18n="ob-label-name">ชื่อของคุณ (แสดงใน Future Profile)</label>
+                <div class="input-wrapper">
+                  <i data-lucide="user" class="input-icon"></i>
+                  <input type="text" id="ob-name" required placeholder="เช่น พิมพ์ชนก, ศุภกร..." data-i18n="ob-placeholder-name">
+                </div>
               </div>
 
               <div class="form-group">
-                <label>ระดับชั้นการศึกษา</label>
+                <label for="ob-school" data-i18n="ob-label-school">โรงเรียนของคุณ</label>
+                <div class="input-wrapper">
+                  <i data-lucide="graduation-cap" class="input-icon"></i>
+                  <input type="text" id="ob-school" required placeholder="เช่น โรงเรียนเตรียมอุดมศึกษา" data-i18n="ob-placeholder-school">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label data-i18n="ob-label-grade">ระดับชั้นการศึกษา</label>
                 <div class="grade-selector-grid">
                   <label class="grade-pill-label">
                     <input type="radio" name="ob-grade" value="m4" required checked>
                     <div class="grade-pill-card">
-                      <h3>ม.4</h3>
-                      <span>เริ่มค้นหาตัวเองสบายๆ</span>
+                      <h3 data-i18n="ob-grade-m4">ม.4</h3>
+                      <span data-i18n="ob-grade-m4-desc">เริ่มค้นหาตัวเองสบายๆ</span>
                     </div>
                   </label>
                   <label class="grade-pill-label">
                     <input type="radio" name="ob-grade" value="m5">
                     <div class="grade-pill-card">
-                      <h3>ม.5</h3>
-                      <span>เทียบสายและเก็บสะสมผลงาน</span>
+                      <h3 data-i18n="ob-grade-m5">ม.5</h3>
+                      <span data-i18n="ob-grade-m5-desc">เทียบสายและเก็บสะสมผลงาน</span>
                     </div>
                   </label>
                   <label class="grade-pill-label">
                     <input type="radio" name="ob-grade" value="m6">
                     <div class="grade-pill-card">
-                      <h3>ม.6</h3>
-                      <span>จัดอันดับคณะและเตรียมสมัคร</span>
+                      <h3 data-i18n="ob-grade-m6">ม.6</h3>
+                      <span data-i18n="ob-grade-m6-desc">จัดอันดับคณะและเตรียมสมัคร</span>
+                    </div>
+                  </label>
+                  <label class="grade-pill-label">
+                    <input type="radio" name="ob-grade" value="pvc">
+                    <div class="grade-pill-card">
+                      <h3 data-i18n="ob-grade-pvc">ปวช.</h3>
+                      <span data-i18n="ob-grade-pvc-desc">เน้นทักษะวิชาชีพและฝึกงานจริง</span>
+                    </div>
+                  </label>
+                  <label class="grade-pill-label">
+                    <input type="radio" name="ob-grade" value="pvs">
+                    <div class="grade-pill-card">
+                      <h3 data-i18n="ob-grade-pvs">ปวส.</h3>
+                      <span data-i18n="ob-grade-pvs-desc">ต่อยอดฝีมือชั้นสูงเตรียมทำงาน</span>
+                    </div>
+                  </label>
+                  <label class="grade-pill-label">
+                    <input type="radio" name="ob-grade" value="uni">
+                    <div class="grade-pill-card">
+                      <h3 data-i18n="ob-grade-uni">มหาวิทยาลัย</h3>
+                      <span data-i18n="ob-grade-uni-desc">ฝึกงานและสร้างโพรไฟล์วิชาชีพ</span>
+                    </div>
+                  </label>
+                  <label class="grade-pill-label">
+                    <input type="radio" name="ob-grade" value="work">
+                    <div class="grade-pill-card">
+                      <h3 data-i18n="ob-grade-work">วัยทำงาน</h3>
+                      <span data-i18n="ob-grade-work-desc">ประเมินทักษะและโอกาสก้าวหน้า</span>
                     </div>
                   </label>
                 </div>
@@ -181,53 +517,53 @@
               </div>
 
               <div class="form-group">
-                <label for="ob-tone">สไตล์การพูดของ AI Guide</label>
+                <label for="ob-tone" data-i18n="ob-label-tone">สไตล์การพูดของ AI Guide</label>
                 <select id="ob-tone" required>
-                  <option value="supportive">อบอุ่นและให้กำลังใจ (Supportive)</option>
-                  <option value="analytical">เป็นระบบและวิเคราะห์ด้วยเหตุผล (Analytical)</option>
-                  <option value="direct">ตรงประเด็นและเน้นลงมือทำ (Direct)</option>
+                  <option value="supportive" data-i18n="ob-tone-supportive">อบอุ่นและให้กำลังใจ (Supportive)</option>
+                  <option value="analytical" data-i18n="ob-tone-analytical">เป็นระบบและวิเคราะห์ด้วยเหตุผล (Analytical)</option>
+                  <option value="direct" data-i18n="ob-tone-direct">ตรงประเด็นและเน้นลงมือทำ (Direct)</option>
                 </select>
               </div>
 
               <div class="form-group">
-                <label for="ob-campaign">รหัสโรงเรียน / แคมเปญแนะนำ (ถ้ามี)</label>
-                <input type="text" id="ob-campaign" placeholder="เช่น SCHOOL-BKK-2026">
+                <label for="ob-campaign" data-i18n="ob-label-campaign">รหัสโรงเรียน / แคมเปญแนะนำ (ถ้ามี)</label>
+                <input type="text" id="ob-campaign" placeholder="เช่น SCHOOL-BKK-2026" data-i18n="ob-placeholder-campaign">
               </div>
 
               <!-- PDPA Consent Box -->
               <div class="consent-container">
-                <h3>นโยบายคุ้มครองข้อมูลส่วนบุคคล (PDPA Consent)</h3>
-                <p class="text-muted mb-3">เราให้ความสำคัญกับความเป็นส่วนตัวและสิทธิ์ในการควบคุมข้อมูลของคุณ ข้อมูลประวัติการทำแบบทดสอบและภารกิจทั้งหมดจะถูกจัดเก็บไว้บนอุปกรณ์นี้เป็นหลัก</p>
+                <h3 data-i18n="ob-consent-title">นโยบายคุ้มครองข้อมูลส่วนบุคคล (PDPA Consent)</h3>
+                <p class="text-muted mb-3" data-i18n="ob-consent-desc">เราให้ความสำคัญกับความเป็นส่วนตัวและสิทธิ์ในการควบคุมข้อมูลของคุณ ข้อมูลประวัติการทำแบบทดสอบและภารกิจทั้งหมดจะถูกจัดเก็บไว้บนอุปกรณ์นี้เป็นหลัก</p>
                 
                 <div class="consent-switches">
                   <label class="switch-item">
                     <div class="switch-label">
-                      <span>อนุญาตเก็บข้อมูลเพื่อสร้าง Life Profile</span>
-                      <small class="text-muted">เพื่อใช้วิเคราะห์และสรุปผล Archetype ส่วนตัวของคุณ</small>
+                      <span data-i18n="ob-consent-profile-label">อนุญาตเก็บข้อมูลเพื่อสร้าง Life Profile</span>
+                      <small class="text-muted" data-i18n="ob-consent-profile-desc">เพื่อใช้วิเคราะห์และสรุปผล Archetype ส่วนตัวของคุณ</small>
                     </div>
                     <input type="checkbox" id="consent-profile" checked required>
                   </label>
                   
                   <label class="switch-item">
                     <div class="switch-label">
-                      <span>อนุญาตใช้ข้อมูลสำหรับ AI Guide</span>
-                      <small class="text-muted">เพื่อให้ AI ประเมินและแนะนำภารกิจอย่างปลอดภัย</small>
+                      <span data-i18n="ob-consent-ai-label">อนุญาตใช้ข้อมูลสำหรับ AI Guide</span>
+                      <small class="text-muted" data-i18n="ob-consent-ai-desc">เพื่อให้ AI ประเมินและแนะนำภารกิจอย่างปลอดภัย</small>
                     </div>
                     <input type="checkbox" id="consent-ai" checked required>
                   </label>
                   
                   <label class="switch-item">
                     <div class="switch-label">
-                      <span>อนุญาตการแบ่งปันผ่าน Parent Link (เปิด/ปิดภายหลังได้)</span>
-                      <small class="text-muted">เพื่อส่งข้อมูลบางส่วนให้ผู้ปกครองช่วยเป็นกำลังใจ</small>
+                      <span data-i18n="ob-consent-parent-label">อนุญาตการแบ่งปันผ่าน Parent Link (เปิด/ปิดภายหลังได้)</span>
+                      <small class="text-muted" data-i18n="ob-consent-parent-desc">เพื่อส่งข้อมูลบางส่วนให้ผู้ปกครองช่วยเป็นกำลังใจ</small>
                     </div>
                     <input type="checkbox" id="consent-parent">
                   </label>
                 </div>
               </div>
 
-              <button type="submit" class="btn btn-primary btn-block">
-                เริ่มสร้าง Future Passport <i data-lucide="arrow-right"></i>
+              <button type="submit" class="btn btn-primary btn-block" data-i18n="ob-submit-btn">
+                เริ่มสร้าง Future Profile <i data-lucide="arrow-right"></i>
               </button>
             </form>
           </div>
@@ -236,101 +572,203 @@
         <!-- 2. DASHBOARD VIEW -->
         <div class="view-panel" id="view-dashboard">
           <div class="dashboard-grid">
-            <!-- Left Side: Profile & Quick Info -->
-            <div class="dashboard-main-col">
+            
+            <!-- Column 1: วันนี้ฉันอยู่ตรงไหน -->
+            <div class="dashboard-column">
+              <div class="column-header">
+                <span class="column-step-num">01</span>
+                <h2 data-i18n="dash-col-1-title">วันนี้ฉันอยู่ตรงไหน</h2>
+              </div>
               
-              <!-- Passport Card (Header) -->
-              <div class="passport-display-card">
-                <div class="passport-badge-header">
-                  <div class="passport-chip"></div>
-                  <span>FUTURE PASSPORT</span>
-                </div>
-                <div class="passport-user">
-                  <h3 id="dash-passport-name">พิมพ์ชนก</h3>
-                  <div class="passport-meta">
-                    <span id="dash-passport-grade">ชั้น ม.5</span>
-                    <span class="campaign-tag" id="dash-passport-campaign">SCHOOL-BKK</span>
+              <!-- Daily Spark Check-in Card -->
+              <div class="dashboard-section-card daily-checkin-card" id="dash-daily-checkin-card">
+                <div class="section-title" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <i data-lucide="sparkles" class="icon-pulse"></i>
+                    <h3 data-i18n="dash-daily-spark-title">พลังงานของคุณวันนี้ (Daily Spark)</h3>
+                  </div>
+                  <div class="streak-pill" id="dash-streak-pill">
+                    <i data-lucide="flame" style="width: 14px; height: 14px;"></i>
+                    <span>Streak: <span id="dash-streak-count">0</span> วัน</span>
                   </div>
                 </div>
-                <div class="passport-badge-status" id="dash-badge-slot">
+                
+                <p class="text-muted mb-3" style="font-size: 0.82rem;" data-i18n="dash-daily-spark-desc">คลิกเลือกอารมณ์ของคุณเพื่อสะท้อนความรู้สึก รับ +5 Tokens สะสมรายวัน!</p>
+                
+                <div class="emoji-selector-row" id="dash-emoji-row" style="display: flex; justify-content: space-around; gap: 8px; margin-bottom: 12px; transition: all var(--transition-fast);">
+                  <button class="emoji-btn" data-mood="happy" title="มีความสุข / Happy" style="background: transparent; border: none; font-size: 2.2rem; cursor: pointer; transition: transform 0.2s; padding: 6px; border-radius: 50%;">😊</button>
+                  <button class="emoji-btn" data-mood="excited" title="ตื่นเต้น / Energetic" style="background: transparent; border: none; font-size: 2.2rem; cursor: pointer; transition: transform 0.2s; padding: 6px; border-radius: 50%;">🤩</button>
+                  <button class="emoji-btn" data-mood="calm" title="ผ่อนคลาย / Peaceful" style="background: transparent; border: none; font-size: 2.2rem; cursor: pointer; transition: transform 0.2s; padding: 6px; border-radius: 50%;">😌</button>
+                  <button class="emoji-btn" data-mood="tired" title="เหนื่อยล้า / Tired" style="background: transparent; border: none; font-size: 2.2rem; cursor: pointer; transition: transform 0.2s; padding: 6px; border-radius: 50%;">😴</button>
+                  <button class="emoji-btn" data-mood="stressed" title="กังวล / Anxious" style="background: transparent; border: none; font-size: 2.2rem; cursor: pointer; transition: transform 0.2s; padding: 6px; border-radius: 50%;">😰</button>
+                </div>
+
+                <div id="checkin-success-msg" style="display: none; text-align: center; color: var(--color-accent); font-weight: 600; font-size: 0.85rem; padding: 10px; background: rgba(214, 255, 92, 0.08); border-radius: 12px; border: 1px solid rgba(214, 255, 92, 0.2); transition: all var(--transition-normal);">
+                  <i data-lucide="check-circle" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle; margin-right: 4px; color: var(--color-accent);"></i>
+                  <span id="checkin-success-text">เช็คอินวันนี้เสร็จสิ้น! รับ +5 Tokens เรียบร้อย</span>
+                </div>
+              </div>
+
+              <!-- Active Mission Card -->
+              <div class="dashboard-section-card active-mission-card">
+                <div class="section-title">
+                  <i data-lucide="calendar"></i>
+                  <h3 data-i18n="dash-active-mission-title">กิจกรรมและภารกิจสะสมวันนี้</h3>
+                </div>
+                <div id="dash-mission-container">
+                  <!-- Rendered dynamically (Active Mission details or Start Quiz button) -->
+                </div>
+              </div>
+            </div>
+            
+            <!-- Column 2: ฉันค้นพบอะไรเกี่ยวกับตัวเอง -->
+            <div class="dashboard-column">
+              <div class="column-header">
+                <span class="column-step-num">02</span>
+                <h2 data-i18n="dash-col-2-title">ฉันค้นพบอะไรเกี่ยวกับตัวเอง</h2>
+              </div>
+              
+              <!-- Future Profile Card -->
+              <div class="pass-display-card">
+                <div class="pass-badge-header">
+                  <div class="pass-chip"></div>
+                  <span data-i18n="dash-pass-header-text">FUTURE PROFILE</span>
+                </div>
+                <div class="pass-user">
+                  <h3 id="dash-pass-name">พิมพ์ชนก</h3>
+                  <div class="pass-meta" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 4px;">
+                    <span id="dash-pass-grade">ชั้น ม.5</span>
+                    <span class="school-tag" id="dash-pass-school">โรงเรียน</span>
+                    <span class="campaign-tag" id="dash-pass-campaign">SCHOOL-BKK</span>
+                  </div>
+                </div>
+                <div class="pass-badge-status" id="dash-badge-slot">
                   <!-- Rendered dynamically -->
                   <div class="badge-card locked">
                     <i data-lucide="lock"></i>
-                    <span>ทำแบบทดสอบเพื่อรับตราอาชีพ</span>
+                    <span data-i18n="dash-pass-lock-text">ทำแบบทดสอบเพื่อรับตราอาชีพ</span>
                   </div>
                 </div>
               </div>
 
-              <!-- Active Mission Progress -->
-              <div class="dashboard-section-card">
+              <!-- Thinking Style Snapshot Widget -->
+              <div class="dashboard-section-card" id="dash-thinking-snapshot" style="display: block; margin-top: 14px;">
                 <div class="section-title">
-                  <i data-lucide="flag"></i>
-                  <h3>ภารกิจการเติบโตปัจจุบัน</h3>
+                  <i data-lucide="brain"></i>
+                  <h3 data-i18n="dash-thinking-title">สไตล์การคิดและวางแผน (Thinking Style)</h3>
                 </div>
-                <div id="dash-mission-container">
-                  <!-- Rendered dynamically -->
+                <div id="dash-thinking-snapshot-container">
+                  <!-- Dynamically populated in app.js -->
                 </div>
               </div>
 
-              <!-- Earned Stamps / Tokens log -->
-              <div class="dashboard-section-card">
+              <!-- Self-Exploration Progress Card -->
+              <div class="dashboard-section-card progress-exploration-card">
                 <div class="section-title">
-                  <i data-lucide="verified"></i>
-                  <h3>บันทึกความสำเร็จ (Passport Stamps)</h3>
+                  <i data-lucide="compass"></i>
+                  <h3 data-i18n="dash-progress-title">ความคืบหน้าการสำรวจตัวเอง</h3>
                 </div>
-                <div class="stamps-grid" id="dash-stamps-grid">
-                  <!-- Rendered dynamically -->
+                <div class="exploration-progress-row" style="display: flex; align-items: center; gap: 12px; margin: 12px 0;">
+                  <div class="progress-percent-display" id="dash-progress-percent" style="font-family: var(--font-secondary); font-size: 1.8rem; font-weight: 800; color: var(--color-accent);">0%</div>
+                  <div style="flex: 1;">
+                    <div class="progress-bar-sm" style="margin-top: 6px;">
+                      <div class="progress-fill" id="dash-progress-fill" style="width: 0%; background: var(--color-accent);"></div>
+                    </div>
+                  </div>
                 </div>
+                <p class="text-muted" style="font-size: 0.8rem; line-height: 1.4;" id="dash-progress-desc">เริ่มต้นเรียนรู้ ตั้งเป้าหมาย และสะท้อนคิดอย่างสบายใจ</p>
               </div>
 
+              <!-- Milestones Card -->
+              <div class="dashboard-section-card">
+                <div class="section-title">
+                  <i data-lucide="award"></i>
+                  <h3 data-i18n="dash-stamps-header">ตราความสำเร็จที่ค้นพบ</h3>
+                </div>
+                <div class="stamps-section">
+                  <p class="text-muted" style="font-size: 0.75rem; margin-bottom: 8px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.05em;" data-i18n="dash-stamps-title">บันทึกความสำเร็จ (Future Profile Stamps)</p>
+                  <div class="stamps-grid" id="dash-stamps-grid">
+                    <!-- Rendered dynamically -->
+                  </div>
+                </div>
+              </div>
             </div>
-
-            <!-- Right Side: Analytics Preview & Quick actions -->
-            <div class="dashboard-sidebar-col">
+            
+            <!-- Column 3: ก้าวเล็ก ๆ ถัดไปคืออะไร -->
+            <div class="dashboard-column">
+              <div class="column-header">
+                <span class="column-step-num">03</span>
+                <h2 data-i18n="dash-col-3-title">ก้าวเล็ก ๆ ถัดไปคืออะไร</h2>
+              </div>
               
+              <!-- AI Advisor Guidance Card -->
+              <div class="dashboard-section-card ai-guidance-card">
+                <div class="section-title">
+                  <i data-lucide="sparkles"></i>
+                  <h3 data-i18n="dash-ai-advisor-title">คู่คิดแนะแนว (AI Advisor)</h3>
+                </div>
+                <div class="ai-guide-tip-bubble" style="background: var(--bg-secondary); border-radius: 12px; padding: 16px; border: 1px solid var(--border-color); position: relative;">
+                  <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                    <i data-lucide="sparkles" style="width: 14px; height: 14px; color: var(--color-accent);"></i>
+                    <strong style="font-size: 0.8rem; color: var(--color-accent); text-transform: uppercase; letter-spacing: 0.05em;" data-i18n="dash-ai-advisor">AI Advisor</strong>
+                  </div>
+                  <p id="dash-guide-next-action" style="font-size: 0.9rem; line-height: 1.5; color: var(--text-secondary);"></p>
+                </div>
+              </div>
+
               <!-- Growth Review Summary card -->
               <div class="dashboard-section-card review-summary-card">
                 <div class="section-title">
                   <i data-lucide="trending-up"></i>
-                  <h3>ผลประเมินการเติบโต</h3>
+                  <h3 data-i18n="dash-review-title">มิติการเรียนรู้และการเติบโต</h3>
                 </div>
-                <p class="text-muted mb-3" id="dash-review-status-text">ทำภารกิจและเช็คอินให้ครบ 3 วันขึ้นไป เพื่อปลดล็อกรายงานมิติการเติบโตอย่างปลอดภัย</p>
+                <p class="text-muted mb-3" style="font-size: 0.85rem;" id="dash-review-status-text" data-i18n="dash-review-status">ทำภารกิจสะสมเพื่อบันทึกประวัติสะท้อนมิติการเรียนรู้ของคุณ</p>
                 <div class="progress-bar-sm mb-3">
                   <div class="progress-fill" id="dash-review-progress-fill" style="width: 0%"></div>
                 </div>
-                <button class="btn btn-secondary btn-block btn-sm" id="btn-dash-go-review">
-                  ดูรายละเอียด Growth Review
+                <button class="btn btn-secondary btn-block btn-sm" id="btn-dash-go-review" data-i18n="dash-review-btn">
+                  ดูประวัติการเรียนรู้ (Growth Review)
                 </button>
               </div>
 
-              <!-- Parent Link widget -->
+              <!-- Parent Link Invite Card -->
               <div class="dashboard-section-card">
                 <div class="section-title">
                   <i data-lucide="link"></i>
-                  <h3>Parent Link</h3>
+                  <h3 data-i18n="dash-connections-title">แชร์ความก้าวหน้า & เชื่อมโยง</h3>
                 </div>
-                <p class="text-muted mb-2">เชิญผู้ปกครองเพื่อเข้าชมข้อมูลจุดแข็งของคุณแบบสนับสนุน ไม่ก้าวก่าย</p>
-                <div class="parent-invite-display">
-                  <span class="invite-code" id="dash-invite-code">LM-4827</span>
-                  <button class="btn btn-secondary btn-sm" id="btn-dash-invite-copy"><i data-lucide="copy"></i></button>
+                <div style="background: var(--bg-secondary); border-radius: 10px; padding: 12px; border: 1px solid var(--border-color);">
+                  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                    <strong style="font-size: 0.8rem; color: var(--text-primary);" data-i18n="dash-parent-invite-label">Parent Link</strong>
+                    <span class="invite-code" id="dash-invite-code" style="font-family: var(--font-secondary); font-size: 0.85rem; font-weight: 700; color: var(--color-accent);">LM-4827</span>
+                  </div>
+                  <p class="text-muted" style="font-size: 0.75rem; margin-bottom: 8px;" data-i18n="dash-parent-invite-desc">เชิญผู้ปกครองเพื่อเข้าชมข้อมูลจุดแข็งของคุณแบบสนับสนุน ไม่ก้าวก่าย</p>
+                  <div style="display: flex; flex-direction: column; gap: 6px;">
+                    <button class="btn btn-secondary btn-sm btn-block" id="btn-dash-invite-copy" style="display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 0.75rem;">
+                      <i data-lucide="copy" style="width: 12px; height: 12px;"></i>
+                      <span data-i18n="dash-parent-copy-btn">คัดลอกรหัส Invite Code</span>
+                    </button>
+                    <button class="btn btn-secondary btn-sm btn-block" id="btn-dash-go-parent" style="display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 0.75rem; background: transparent; border: 1px dashed var(--border-color);">
+                      <i data-lucide="users" style="width: 12px; height: 12px;"></i>
+                      <span data-i18n="dash-parent-go-btn">ตั้งค่าการเชื่อมต่อ Parent Link</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div style="background: var(--bg-secondary); border-radius: 10px; padding: 12px; border: 1px solid var(--border-color); margin-top: 12px;">
+                  <strong style="font-size: 0.8rem; color: var(--text-primary); display: block; margin-bottom: 6px;" data-i18n="dash-share-line-label">LINE Share</strong>
+                  <p class="text-muted" style="font-size: 0.75rem; margin-bottom: 8px;" data-i18n="dash-share-line-desc">แชร์ความก้าวหน้าการสะท้อนจุดแข็งของคุณลงกลุ่มแชท LINE</p>
+                  <button class="btn btn-line btn-sm btn-block" id="btn-dash-share-line" style="display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 0.75rem; font-weight: 600;">
+                    <i data-lucide="message-circle" style="width: 12px; height: 12px;"></i>
+                    <span data-i18n="dash-share-line-btn">แชร์จุดแข็งของฉันไปยัง LINE</span>
+                  </button>
                 </div>
               </div>
-
-              <!-- Next Best Action Guide -->
-              <div class="dashboard-section-card guide-tip-card">
-                <div class="section-title">
-                  <i data-lucide="help-circle"></i>
-                  <h3 id="dash-guide-title">คำแนะนำจาก AI Guide</h3>
-                </div>
-                <p id="dash-guide-next-action">คุณได้ปลดล็อก Passport แล้ว! ก้าวถัดไปคือการเริ่มทำแบบทดสอบ 6 คำถาม เพื่อเริ่มวิเคราะห์จุดแข็งเป้าหมายหลักในอนาคตของคุณ</p>
-                <button class="btn btn-primary btn-sm mt-3" id="btn-dash-next-action">
-                  เริ่มเลย
-                </button>
-              </div>
-
             </div>
+
           </div>
         </div>
+
 
         <!-- 3. QUIZ / PROFILE VIEW -->
         <div class="view-panel" id="view-quiz-tab">
@@ -338,10 +776,55 @@
           <div id="quiz-intro-container" class="quiz-container">
             <div class="quiz-welcome-header">
               <i data-lucide="shield-check" class="text-accent large-icon"></i>
-              <h2>แบบทดสอบจุดแข็งและทางเลือกอาชีพ (6 ข้อ)</h2>
-              <p id="quiz-personalized-intro">การแนะแนวเป้าหมายชีวิตแบบไม่ฟันธงเส้นทาง ค้นหา Archetype และวิเคราะห์ RIASEC & Big Five traits</p>
+              <h2 data-i18n="quiz-intro-head">แบบสำรวจความสนใจและจุดแข็งเบื้องต้น (6 ข้อ)</h2>
+              <p id="quiz-personalized-intro" data-i18n="quiz-intro-desc">การแนะแนวเป้าหมายชีวิตแบบไม่ฟันธงเส้นทาง ค้นหา Archetype และวิเคราะห์ RIASEC & Big Five traits</p>
+              <div class="disclaimer-badge mt-3" style="max-width: 500px; margin: 0 auto; text-align: left;">
+                <i data-lucide="info"></i>
+                <p style="font-size: 0.78rem;" data-i18n="quiz-intro-disclaimer">แบบสำรวจนี้เป็นเครื่องมือช่วยสะท้อนความสนใจเบื้องต้นเพื่อเสนอแนวทางการเรียนรู้ของตัวคุณเอง ไม่ใช่แบบวัดมาตรฐานทางจิตวิทยาหรือการทดสอบวินิจฉัย</p>
+              </div>
             </div>
-            <button class="btn btn-primary" id="btn-start-quiz-now">เริ่มแบบทดสอบ (ใช้เวลา ~2 นาที)</button>
+            <button class="btn btn-primary mt-4" id="btn-start-quiz-now" data-i18n="quiz-start-btn">เริ่มแบบสำรวจ (ใช้เวลา ~2 นาที)</button>
+          </div>
+
+          <!-- State A.5: Thinking Style Consent and Transition -->
+          <div id="quiz-thinking-intro-container" class="quiz-container" style="display: none; text-align: center; max-width: 600px; margin: 0 auto; padding: 24px;">
+            <div class="quiz-welcome-header">
+              <i data-lucide="brain-circuit" class="text-accent large-icon" style="width: 48px; height: 48px; color: var(--color-accent); margin-bottom: 16px;"></i>
+              <h2 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 12px;" data-i18n="quiz-thinking-intro-title">พาร์ทที่ 2: สะท้อนสไตล์การคิดและวางแผน (16 ข้อ)</h2>
+              <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 20px;" data-i18n="quiz-thinking-intro-desc">
+                ชวนทำความเข้าใจรูปแบบแนวโน้มการรับพลังงาน การเรียนรู้ วิธีตัดสินใจ และลักษณะการจัดการกิจกรรมของคุณ เพื่อประกอบการปรับปรุงคำแนะนำและภารกิจรายบุคคล
+              </p>
+              
+              <!-- Privacy notice card -->
+              <div style="background: rgba(var(--color-accent-rgb), 0.05); border: 1px solid rgba(var(--color-accent-rgb), 0.15); border-radius: 12px; padding: 16px; text-align: left; margin-bottom: 24px;">
+                <h4 style="font-size: 0.85rem; font-weight: 700; color: var(--color-accent); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                  <i data-lucide="shield-alert" style="width: 16px; height: 16px;"></i>
+                  <span>การคุ้มครองข้อมูลและความเป็นส่วนตัว (Privacy Notice)</span>
+                </h4>
+                <ul style="font-size: 0.78rem; color: var(--text-secondary); padding-left: 18px; margin: 0; display: flex; flex-direction: column; gap: 6px; line-height: 1.45;">
+                  <li><strong>วัตถุประสงค์:</strong> ข้อมูลสไตล์การคิดใช้จัดสรรแผนงานบอร์ดภารกิจ 7 วัน และปรับการวิเคราะห์ข้อมูลฝั่งหลังบ้านเท่านั้น</li>
+                  <li><strong>ไม่มีการติดป้ายถาวร:</strong> ผลลัพธ์แสดงในรูป \"แนวโน้มชั่วคราว\" ที่ยืดหยุ่นและเปลี่ยนแปลงได้ตลอดเวลาตามวัยและสถานการณ์</li>
+                  <li><strong>สิทธิ์ส่วนบุคคลสูงสุด:</strong> ข้อมูลนี้จะไม่ถูกส่งให้ผู้ปกครองหรือแสดงสถิติรายบุคคลต่อแอดมินโรงเรียน เว้นแต่คุณจะยินยอมเปิดใช้งานเป็นรายฟังก์ชัน</li>
+                </ul>
+              </div>
+
+              <!-- Consent checkbox -->
+              <div style="display: flex; align-items: flex-start; gap: 10px; text-align: left; padding: 12px; background: var(--bg-secondary); border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 24px;">
+                <input type="checkbox" id="consent-thinking-style" style="margin-top: 3px; cursor: pointer;">
+                <label for="consent-thinking-style" style="font-size: 0.8rem; line-height: 1.4; color: var(--text-primary); cursor: pointer; user-select: none;">
+                  ฉันยินยอมให้ประมวลสไตล์การคิดและให้คำแนะนำแบบเฉพาะตัว (หากไม่ติ๊กยินยอม จะไม่สามารถทำพาร์ทนี้ได้)
+                </label>
+              </div>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
+              <button class="btn btn-primary" id="btn-start-thinking-quiz" disabled style="padding: 14px; font-weight: 700;">
+                เริ่มตอบแบบสะท้อนสไตล์การคิด (16 ข้อ)
+              </button>
+              <button class="btn btn-secondary" id="btn-skip-thinking-quiz" style="background: transparent; border: 1px solid var(--border-color); color: var(--text-secondary);">
+                ข้ามไปดูผลลัพธ์จุดแข็งพาร์ทแรกก่อน
+              </button>
+            </div>
           </div>
 
           <!-- State B: Quiz is running -->
@@ -364,14 +847,30 @@
 
             <div class="quiz-navigation-actions">
               <button class="btn btn-secondary" id="btn-quiz-back" style="visibility: hidden;">
-                <i data-lucide="chevron-left"></i> ย้อนกลับ
+                <i data-lucide="chevron-left"></i> <span data-i18n="quiz-back-btn">ย้อนกลับ</span>
               </button>
               <div style="flex: 1;"></div>
             </div>
           </div>
 
-          <!-- State C: Profile Result (Quiz Completed) -->
           <div id="quiz-result-container" class="profile-layout" style="display: none;">
+            <!-- Guest Save Profile Banner -->
+            <div id="guest-save-banner" style="display: none;">
+              <h3 style="font-size: 1.15rem; color: var(--color-accent); margin-bottom: 8px; font-weight: 800;" data-i18n="guest-save-title">บันทึก Life Profile ของคุณ</h3>
+              <p class="text-muted" style="font-size: 0.85rem; max-width: 600px; margin: 0 auto 18px; line-height: 1.5;" data-i18n="guest-save-desc">
+                คุณได้สำรวจจุดแข็งและ Archetype ของคุณเรียบร้อยแล้ว! บันทึกผลลัพธ์นี้เพื่อเปิดใช้งานบอร์ดภารกิจ 7 วัน และบันทึกประวัติการพัฒนาตัวเองต่อไป
+              </p>
+              <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                <button class="btn btn-primary" id="btn-guest-save-profile" style="padding: 12px 28px; font-weight: 700; font-size: 0.95rem;" data-i18n="guest-save-btn">
+                  บันทึก Life Profile ของฉัน
+                </button>
+                <button class="btn btn-line" id="btn-guest-share-line" style="padding: 12px 28px; font-weight: 700; font-size: 0.95rem; display: flex; align-items: center; gap: 8px;">
+                  <i data-lucide="message-circle" style="width: 18px; height: 18px;"></i>
+                  <span data-i18n="guest-share-line-btn">แชร์ไปยัง LINE</span>
+                </button>
+              </div>
+            </div>
+
             <!-- Left Side: Profile Summary & Badges -->
             <div class="profile-main-col">
               
@@ -379,15 +878,22 @@
                 <div class="badge-crown" id="profile-badge-crown">
                   <!-- Crown indicator based on Top Category -->
                 </div>
-                <span class="badge-tag">YOUR ARCHETYPE</span>
+                <span class="badge-tag" data-i18n="profile-archetype-label">YOUR ARCHETYPE</span>
                 <h2 id="profile-archetype-title">Insight Navigator</h2>
                 <p class="headline" id="profile-headline">แนวโน้มเด่นของคุณอยู่ใกล้ด้านวิเคราะห์ด้วยหลักฐานข้อมูล...</p>
                 
                 <div class="strengths-box">
-                  <h4>จุดแข็งสำคัญของคุณ:</h4>
+                  <h4 data-i18n="profile-strengths-label">จุดแข็งสำคัญของคุณ:</h4>
                   <ul id="profile-strengths-list">
                     <!-- Populated dynamically -->
                   </ul>
+                </div>
+              </div>
+
+              <!-- Thinking Style Detailed Section Card -->
+              <div class="dashboard-section-card" id="profile-thinking-style-section" style="display: block;">
+                <div id="profile-thinking-detailed-content">
+                  <!-- Dynamically populated in app.js -->
                 </div>
               </div>
 
@@ -395,7 +901,7 @@
               <div class="dashboard-section-card">
                 <div class="section-title">
                   <i data-lucide="radar"></i>
-                  <h3>ผลประเมินความสนใจ (RIASEC Framework)</h3>
+                  <h3 data-i18n="profile-radar-title">ผลประเมินความสนใจ (RIASEC Framework)</h3>
                 </div>
                 <div class="chart-layout">
                   <div class="chart-viz" id="riasec-radar-container">
@@ -410,10 +916,10 @@
               <div class="dashboard-section-card">
                 <div class="section-title">
                   <i data-lucide="bar-chart-4"></i>
-                  <h3>ลักษณะการเรียนรู้และสุขภาวะ (Big Five Traits)</h3>
+                  <h3 data-i18n="profile-bigfive-title">ลักษณะการเรียนรู้และสุขภาวะ (Big Five Traits)</h3>
                 </div>
                 <div class="learning-style-box mb-3">
-                  <h4 class="mb-1"><i data-lucide="book-open"></i> สไตล์การเรียนรู้ที่แนะนำ:</h4>
+                  <h4 class="mb-1"><i data-lucide="book-open"></i> <span data-i18n="profile-learning-style-label">สไตล์การเรียนรู้ที่แนะนำ:</span></h4>
                   <p id="profile-learning-style" class="text-muted">เรียนรู้ได้ดีที่สุดจากการประเมินและเปรียบเทียบข้อมูล...</p>
                 </div>
                 
@@ -422,7 +928,7 @@
                 </div>
                 
                 <div class="wellbeing-box mt-3" id="profile-wellbeing-box">
-                  <h4 class="mb-1"><i data-lucide="heart"></i> คำแนะนำสุขภาวะทางใจ (Wellbeing Note):</h4>
+                  <h4 class="mb-1"><i data-lucide="heart"></i> <span data-i18n="profile-wellbeing-label">คำแนะนำสุขภาวะทางใจ (Wellbeing Note):</span></h4>
                   <p id="profile-wellbeing-note" class="text-muted">ระวังความกังวลจากการใช้เวลาประเมินตัวเลือกนานเกินไป...</p>
                 </div>
               </div>
@@ -436,13 +942,35 @@
               <div class="dashboard-section-card ai-chat-card">
                 <div class="section-title">
                   <i data-lucide="message-square"></i>
-                  <h3>ปรึกษา AI Guide ส่วนตัว</h3>
+                  <h3 data-i18n="profile-ai-assistant-title">ปรึกษา AI Guide ส่วนตัว</h3>
                 </div>
-                <div class="ai-chat-bubble">
-                  <p id="ai-chat-response">สวัสดีคุณยินดีด้วยที่ปลดล็อก Profile สำเร็จ! จากคำตอบและจุดแข็งของคุณ ฉันพร้อมช่วยแนะนำทางเลือก คุยกับพ่อแม่ หรือเลือกภารกิจทดลอง 7 วัน ลองถามฉันสิ</p>
+                
+                <!-- Chat Window Container -->
+                <div class="ai-chat-window" id="ai-chat-window">
+                  <div class="ai-chat-history" id="ai-chat-history">
+                    <!-- Default welcome message -->
+                    <div class="chat-bubble-wrapper ai-bubble-wrapper">
+                      <div class="chat-bubble-avatar">
+                        <i data-lucide="sparkles"></i>
+                      </div>
+                      <div class="chat-bubble ai-bubble" id="ai-chat-response" data-i18n="profile-ai-welcome-msg">
+                        สวัสดีคุณยินดีด้วยที่ปลดล็อก Profile สำเร็จ! จากคำตอบและจุดแข็งของคุณ ฉันพร้อมช่วยแนะนำทางเลือก คุยกับพ่อแม่ หรือเลือกภารกิจทดลอง 7 วัน ลองถามฉันได้เลยนะ
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div class="ai-prompts-suggestions" id="ai-prompts-list">
-                  <!-- Prompts populated dynamically -->
+
+                <!-- Horizontal Suggestions Capsules -->
+                <div class="ai-prompts-suggestions-row" id="ai-prompts-list">
+                  <!-- Capsules populated dynamically -->
+                </div>
+
+                <!-- Chat Input Row -->
+                <div class="ai-chat-input-row">
+                  <input type="text" id="ai-chat-input" placeholder="พิมพ์ถามคำถามของคุณที่นี่..." data-i18n="profile-ai-input-placeholder">
+                  <button id="ai-chat-send-btn" title="ส่งข้อความ" data-i18n="profile-ai-send-btn-title">
+                    <i data-lucide="send"></i>
+                  </button>
                 </div>
               </div>
 
@@ -450,28 +978,28 @@
               <div class="dashboard-section-card horoscope-card">
                 <div class="section-title">
                   <i data-lucide="sparkles"></i>
-                  <h3>ดูดวงอาชีพ (Career Vibe)</h3>
+                  <h3 data-i18n="vibe-title">สะท้อนสไตล์อาชีพ (Career Vibe Reflection)</h3>
                 </div>
-                <p class="text-muted mb-3">สะท้อนข้อมูลจุดแข็งของคุณในสไตล์ทำนายเชิงบวก สนุกสนาน เพื่อช่วยคลายเครียด</p>
+                <p class="text-muted mb-3" data-i18n="vibe-desc">สะท้อนข้อมูลสไตล์และจุดแข็งของคุณด้วยมิติเชิงบวกและสร้างสรรค์ เพื่อช่วยสร้างพลังใจในก้าวต่อไป</p>
                 
                 <div class="horoscope-box">
                   <div class="horoscope-row">
-                    <span class="label">ดวงดาวประจำวิสัยทัศน์:</span>
+                    <span class="label" data-i18n="vibe-star">กลุ่มดาวสไตล์ตัวตน:</span>
                     <strong id="horoscope-constellation">Constellation Analyst</strong>
                   </div>
                   <div class="horoscope-row">
-                    <span class="label">สกิลนำโชคสัปดาห์นี้:</span>
+                    <span class="label" data-i18n="vibe-lucky">ทักษะเด่นประจำสไตล์:</span>
                     <strong id="horoscope-lucky-skill">Decision Matrix</strong>
                   </div>
                   <div class="horoscope-row">
-                    <span class="label">กิจวัตรเสริมพลังบวก:</span>
+                    <span class="label" data-i18n="vibe-ritual">กิจวัตรทดลองทำและสะท้อนคิด:</span>
                     <strong id="horoscope-ritual">ทบทวน 3 ทางเลือกก่อนตัดสินใจ</strong>
                   </div>
                 </div>
                 
                 <div class="disclaimer-badge">
-                  <i data-lucide="alert-triangle"></i>
-                  <span>ฟีเจอร์นี้เพื่อความบันเทิงเท่านั้น ไม่ใช่การตัดสินโชคชะตาหรือการวินิจฉัยทางการแนะแนวอาชีพ</span>
+                  <i data-lucide="info"></i>
+                  <span data-i18n="vibe-disclaimer">ข้อมูลนี้เป็นเพียงเครื่องมือสะท้อนทิศทางความถนัดเพื่อให้แรงบันดาลใจเบื้องต้น ไม่ใช่ข้อจำกัดการพัฒนาตนเอง</span>
                 </div>
               </div>
 
@@ -479,7 +1007,7 @@
               <div class="dashboard-section-card">
                 <div class="section-title">
                   <i data-lucide="arrow-right-circle"></i>
-                  <h3>ก้าวต่อไปที่ควรลอง (Next Moves)</h3>
+                  <h3 data-i18n="profile-nextmoves-title">ก้าวต่อไปที่ควรลอง (Next Moves)</h3>
                 </div>
                 <ul class="next-moves-bullets" id="profile-next-moves-list">
                   <!-- Populated dynamically -->
@@ -487,8 +1015,8 @@
               </div>
 
               <div class="profile-reset-action">
-                <button class="btn btn-secondary btn-block btn-sm text-danger" id="btn-reset-quiz">
-                  <i data-lucide="refresh-cw"></i> ทำแบบทดสอบใหม่
+                <button class="btn btn-secondary btn-sm text-danger btn-block" id="btn-reset-quiz">
+                  <i data-lucide="refresh-cw"></i> <span data-i18n="profile-reset-btn">ทำแบบทดสอบใหม่</span>
                 </button>
               </div>
 
@@ -500,8 +1028,8 @@
         <div class="view-panel" id="view-missions">
           <div class="missions-layout">
             <div class="missions-sidebar">
-              <h3>ภารกิจทดลอง 7 วัน</h3>
-              <p class="text-muted mb-3">แปลงผลลัพธ์ของจุดแข็งให้กลายเป็นภารกิจลงมือทำจริง วันละ 1 กิจกรรม เพื่อสะสมหลักฐานใน Passport</p>
+              <h3 data-i18n="missions-title">ภารกิจทดลอง 7 วัน</h3>
+              <p class="text-muted mb-3" data-i18n="missions-desc">แปลงผลลัพธ์ของจุดแข็งให้กลายเป็นภารกิจลงมือทำจริง วันละ 1 กิจกรรม เพื่อสะสมหลักฐานใน Future Profile</p>
               
               <!-- Vertical list of days -->
               <div class="mission-days-list" id="mission-days-list">
@@ -512,7 +1040,10 @@
             <div class="missions-main-panel">
               <!-- Grid Canvas for Metro Line Rendering -->
               <div class="metro-canvas-card">
-                <h4>แผนที่ทิศทางภารกิจ (Roadmap Canvas)</h4>
+                <div class="metro-header-bar">
+                  <h4 data-i18n="missions-map-title">แผนที่ทิศทางภารกิจ (Roadmap Canvas)</h4>
+                  <span class="scroll-tip" data-i18n="missions-map-tip"><i data-lucide="arrow-left-right"></i> ปัดซ้าย-ขวาเพื่อเลื่อนดูเส้นทาง</span>
+                </div>
                 <div class="metro-wrapper" id="metro-canvas-wrapper">
                   <canvas id="metro-canvas" width="600" height="120"></canvas>
                   <div class="metro-nodes-overlay" id="metro-nodes-overlay"></div>
@@ -529,8 +1060,8 @@
                 <p id="mission-detail-desc" class="mb-4">เลือกหัวข้อสร้างสรรค์หรือเทคโนโลยีที่คุณสนใจ 1 เรื่อง และเขียนสรุปสั้น ๆ</p>
                 
                 <div class="detail-focus-tags">
-                  <span class="tag"><i data-lucide="compass"></i> โฟกัส: <span id="mission-detail-dimension">Exploration</span></span>
-                  <span class="tag"><i data-lucide="tag"></i> สกิล: <span id="mission-detail-skills">self-awareness</span></span>
+                  <span class="tag"><i data-lucide="compass"></i> <span data-i18n="missions-focus-label">โฟกัส:</span> <span id="mission-detail-dimension">Exploration</span></span>
+                  <span class="tag"><i data-lucide="tag"></i> <span data-i18n="missions-skill-label">สกิล:</span> <span id="mission-detail-skills">self-awareness</span></span>
                 </div>
 
                 <!-- State A: Form to check-in -->
@@ -539,13 +1070,18 @@
                   <input type="hidden" id="checkin-day-num">
                   
                   <div class="form-group">
-                    <label for="checkin-evidence-input" id="checkin-evidence-label">หลักฐานการส่งงาน (บันทึก 1-2 ประโยค):</label>
-                    <textarea id="checkin-evidence-input" required rows="3" placeholder="เขียนสรุปสิ่งที่คุณทำเสร็จหรือลิงก์ส่งงาน..."></textarea>
+                    <label for="checkin-evidence-input" id="checkin-evidence-label" data-i18n="missions-evidence-label">หลักฐานการส่งงาน (บันทึก 1-2 ประโยค):</label>
+                    <textarea id="checkin-evidence-input" required rows="3" placeholder="เขียนสรุปสิ่งที่คุณทำเสร็จหรือลิงก์ส่งงาน..." data-i18n="missions-evidence-placeholder"></textarea>
+                    
+                    <div id="checkin-hint-box" style="display: block; margin-top: 8px; font-size: 0.75rem; line-height: 1.4; color: var(--text-muted); font-style: italic; background: rgba(var(--color-accent-rgb), 0.04); padding: 8px 12px; border-radius: 8px; border-left: 3px solid var(--color-accent);">
+                      <span style="font-weight: 700; color: var(--color-accent);" data-i18n="missions-hint-title">💡 ตัวอย่างการตอบ:</span>
+                      <span id="checkin-hint-text">"เลือกศึกษาการออกแบบ UX/UI..."</span>
+                    </div>
                   </div>
 
                   <div class="form-row">
                     <div class="form-group">
-                      <label for="checkin-rating">ระดับความพึงพอใจ/ความถนัด (1 ถึง 5)</label>
+                      <label for="checkin-rating" data-i18n="missions-rating-label">ระดับความพึงพอใจ/ความถนัด (1 ถึง 5)</label>
                       <div class="rating-slider-box">
                         <input type="range" id="checkin-rating" min="1" max="5" value="3" step="1">
                         <span class="rating-val" id="checkin-rating-val">3</span>
@@ -553,18 +1089,18 @@
                     </div>
                     
                     <div class="form-group">
-                      <label for="checkin-mood">อารมณ์ของคุณวันนี้</label>
+                      <label for="checkin-mood" data-i18n="missions-mood-label">อารมณ์ของคุณวันนี้</label>
                       <select id="checkin-mood" required>
-                        <option value="curious">สงสัยใคร่รู้ (Curious)</option>
-                        <option value="confident">มั่นใจ (Confident)</option>
-                        <option value="unsure">ไม่แน่ใจ/กังวล (Unsure)</option>
-                        <option value="energized">ตื่นตัว (Energized)</option>
-                        <option value="calm">สงบเรียบง่าย (Calm)</option>
+                        <option value="curious" data-i18n="mood-curious">สงสัยใคร่รู้ (Curious)</option>
+                        <option value="confident" data-i18n="mood-confident">มั่นใจ (Confident)</option>
+                        <option value="unsure" data-i18n="mood-unsure">ไม่แน่ใจ/กังวล (Unsure)</option>
+                        <option value="energized" data-i18n="mood-energized">ตื่นตัว (Energized)</option>
+                        <option value="calm" data-i18n="mood-calm">สงบเรียบง่าย (Calm)</option>
                       </select>
                     </div>
                   </div>
 
-                  <button type="submit" class="btn btn-primary mt-3">
+                  <button type="submit" class="btn btn-primary mt-3" data-i18n="missions-submit-btn">
                     <i data-lucide="check-circle"></i> บันทึก Check-in และรับ 20 Tokens
                   </button>
                 </form>
@@ -573,16 +1109,16 @@
                 <div class="checked-in-display" id="checked-in-status-box" style="display: none;">
                   <div class="success-banner">
                     <i data-lucide="check-circle-2"></i>
-                    <span>ส่งภารกิจเรียบร้อยแล้ว</span>
+                    <span data-i18n="missions-success-banner">ส่งภารกิจเรียบร้อยแล้ว</span>
                   </div>
                   
                   <div class="logged-info mt-3">
-                    <p><strong>บันทึกความรู้สึกของคุณ:</strong></p>
+                    <p><strong data-i18n="missions-logged-reflection-label">บันทึกความรู้สึกของคุณ:</strong></p>
                     <p class="reflection-text" id="logged-reflection">ข้อความบันทึกการส่งงาน...</p>
                     
                     <div class="logged-meta mt-2">
-                      <span>คะแนนตนเอง: <strong id="logged-rating">5</strong>/5</span>
-                      <span>อารมณ์: <strong id="logged-mood">Curious</strong></span>
+                      <span><span data-i18n="missions-logged-rating-label">คะแนนตนเอง:</span> <strong id="logged-rating">5</strong>/5</span>
+                      <span><span data-i18n="missions-logged-mood-label">อารมณ์:</span> <strong id="logged-mood">Curious</strong></span>
                     </div>
                   </div>
                 </div>
@@ -597,8 +1133,8 @@
           <div class="review-lock-screen" id="review-locked-box">
             <div class="lock-card">
               <i data-lucide="lock" class="lock-icon"></i>
-              <h2>ระบบวิเคราะห์ Growth Review กำลังปิดล็อก</h2>
-              <p>ระบบแนะแนวของเราเน้นการสะสมข้อมูลความตั้งใจจริง กรุณาทำภารกิจและเช็คอินความก้าวหน้าอย่างน้อย **3 วัน** เพื่อสรุปคะแนนประเมินการพัฒนาตนเองอย่างมีบริบท</p>
+              <h2 data-i18n="review-lock-title">ระบบวิเคราะห์ Growth Review กำลังปิดล็อก</h2>
+              <p data-i18n="review-lock-desc">ระบบแนะแนวของเราเน้นการสะสมข้อมูลความตั้งใจจริง กรุณาทำภารกิจและเช็คอินความก้าวหน้าอย่างน้อย **3 วัน** เพื่อสรุปคะแนนประเมินการพัฒนาตนเองอย่างมีบริบท</p>
               <div class="progress-bar-sm mt-3 mb-2" style="max-width: 300px; margin: 16px auto;">
                 <div class="progress-fill" id="review-unlock-progress-fill" style="width: 0%"></div>
               </div>
@@ -615,7 +1151,7 @@
             <div class="review-grid">
               <!-- Visual Scores for 5 Dimensions -->
               <div class="review-scores-card">
-                <h3>คะแนนการพัฒนา 5 มิติ</h3>
+                <h3 data-i18n="review-scores-title">คะแนนการพัฒนา 5 มิติ</h3>
                 <div class="dimension-bars-list" id="review-dimension-bars">
                   <!-- Generated dynamically -->
                 </div>
@@ -624,15 +1160,24 @@
               <!-- Dynamic Coaching Feedback -->
               <div class="review-feedback-card">
                 <div class="feedback-box">
-                  <h4>คำแนะนำเพื่อก้าวต่อไป (Next Steps):</h4>
-                  <p id="review-next-step">ภารกิจในสัปดาห์หน้าควรเน้นการลงมือทำกิจกรรม (Action) ให้มากขึ้นเพื่อพัฒนาทักษะวิเคราะห์...</p>
+                  <h4 data-i18n="review-next-steps-title">คำแนะนำเพื่อก้าวต่อไป (Next Steps):</h4>
+                  <p id="review-next-step">ภารกิจ in progress หรือเริ่มต้นใหม่ตามลักษณะของผู้เรียน...</p>
                 </div>
 
                 <div class="disclaimer-badge mt-4">
                   <i data-lucide="shield-alert"></i>
-                  <p id="review-framework-note">ผลประเมินนี้ใช้เพื่อประกอบความเข้าใจสไตล์การลงมือทำงานและการตั้งคำถามของนักเรียนเท่านั้น ไม่ใช้เปรียบเทียบแข่งขัน และไม่มีผลกระทบต่อวิชาเรียนจริง</p>
+                  <p id="review-framework-note" data-i18n="review-framework-note">ผลประเมินนี้ใช้เพื่อประกอบความเข้าใจสไตล์การลงมือทำงานและการตั้งคำถามของนักเรียนเท่านั้น ไม่ใช้เปรียบเทียบแข่งขัน และไม่มีผลกระทบต่อวิชาเรียนจริง</p>
                 </div>
               </div>
+
+              <!-- Thinking Style Trends (percentages) -->
+              <div class="review-scores-card" id="review-thinking-trends-card" style="display: none; grid-column: 1 / -1; margin-top: 16px;">
+                <h3 data-i18n="review-thinking-trends-title">สัดส่วนแนวโน้มสไตล์การคิด (Thinking Style Trends)</h3>
+                <div id="review-thinking-trends-container" style="display: flex; flex-direction: column; gap: 16px; margin-top: 14px;">
+                  <!-- Dynamically populated in app.js -->
+                </div>
+              </div>
+
             </div>
           </div>
         </div>
@@ -641,47 +1186,47 @@
         <div class="view-panel" id="view-parent">
           <div class="parent-link-card">
             <div class="card-header">
-              <h2>Parent Link (เชื่อมต่อเพื่อความเข้าใจของครอบครัว)</h2>
-              <p>การแนะแนวด้านอาชีพจะอบอุ่นยิ่งขึ้นเมื่อครอบครัวมีส่วนร่วม คุณสามารถส่งรหัสให้ผู้ปกครองเข้าอ่านรายงานเป้าหมายและจุดแข็งของคุณได้ โดยข้อมูลที่จะแชร์อยู่ภายใต้สิทธิ์การควบคุมของนักเรียน 100%</p>
+              <h2 data-i18n="parent-title">Parent Link (เชื่อมต่อเพื่อความเข้าใจของครอบครัว)</h2>
+              <p data-i18n="parent-desc">การแนะแนวด้านอาชีพจะอบอุ่นยิ่งขึ้นเมื่อครอบครัวมีส่วนร่วม คุณสามารถส่งรหัสให้ผู้ปกครองเข้าอ่านรายงานเป้าหมายและจุดแข็งของคุณได้ โดยข้อมูลที่จะแชร์อยู่ภายใต้สิทธิ์การควบคุมของนักเรียน 100%</p>
             </div>
 
             <div class="parent-link-body">
               <div class="invite-generation-box">
                 <div class="invite-group">
-                  <span>รหัสคำเชิญสำหรับผู้ปกครอง:</span>
+                  <span data-i18n="parent-invite-header">รหัสคำเชิญสำหรับผู้ปกครอง:</span>
                   <div class="code-box">
                     <strong id="parent-invite-code-val">LM-4827</strong>
-                    <button class="btn btn-secondary btn-sm" id="btn-parent-copy-code">คัดลอกรหัส</button>
+                    <button class="btn btn-secondary btn-sm" id="btn-parent-copy-code" data-i18n="parent-copy-invite">คัดลอกรหัส</button>
                   </div>
                 </div>
-                <p class="info-tip"><i data-lucide="info"></i> ส่งรหัสนี้ให้ผู้ปกครองกรอกในช่อง "รหัสเชิญ" เพื่อดูภาพรวมจุดแข็งและความคืบหน้าของกิจกรรม</p>
+                <p class="info-tip"><i data-lucide="info"></i> <span data-i18n="parent-invite-tip">ส่งรหัสนี้ให้ผู้ปกครองกรอกในช่อง "รหัสเชิญ" เพื่อดูภาพรวมจุดแข็งและความคืบหน้าของกิจกรรม</span></p>
               </div>
 
               <div class="sharing-controls-box">
-                <h3>การตั้งค่าสิทธิ์การเข้าถึงข้อมูล (Share Settings)</h3>
-                <p class="text-muted mb-3">เปิดหรือปิดข้อมูลบางมิติที่เด็กอนุญาตให้ผู้ปกครองดูได้โดยตรง</p>
+                <h3 data-i18n="parent-settings-title">การตั้งค่าสิทธิ์การเข้าถึงข้อมูล (Share Settings)</h3>
+                <p class="text-muted mb-3" data-i18n="parent-settings-desc">เปิดหรือปิดข้อมูลบางมิติที่เด็กอนุญาตให้ผู้ปกครองดูได้โดยตรง</p>
                 
                 <div class="consent-switches">
                   <label class="switch-item">
                     <div class="switch-label">
-                      <span>แชร์ข้อมูล Life Profile และ Archetype</span>
-                      <small class="text-muted">ผู้ปกครองจะเห็นข้อมูลจุดแข็งและสไตล์การเรียนรู้</small>
+                      <span data-i18n="parent-allow-profile">แชร์ข้อมูล Life Profile และ Archetype</span>
+                      <small class="text-muted" data-i18n="parent-allow-profile-desc">ผู้ปกครองจะเห็นข้อมูลจุดแข็งและสไตล์การเรียนรู้</small>
                     </div>
-                    <input type="checkbox" id="parent-share-profile" checked>
+                    <input type="checkbox" id="parent-share-profile">
                   </label>
                   
                   <label class="switch-item">
                     <div class="switch-label">
-                      <span>แชร์ข้อมูลความคืบหน้าของภารกิจ (7-Day Mission Logs)</span>
-                      <small class="text-muted">ผู้ปกครองจะเห็นความพยายามและความมุ่งมั่นของภารกิจจริง</small>
+                      <span data-i18n="parent-allow-report">แชร์ข้อมูลความคืบหน้าของภารกิจ (7-Day Mission Logs)</span>
+                      <small class="text-muted" data-i18n="parent-allow-report-desc">ผู้ปกครองจะเห็นความพยายามและความมุ่งมั่นของภารกิจจริง</small>
                     </div>
                     <input type="checkbox" id="parent-share-report">
                   </label>
                   
                   <label class="switch-item">
                     <div class="switch-label">
-                      <span>แชร์รายชื่อโอกาสและหัวข้อ Bookmark</span>
-                      <small class="text-muted">เพื่อให้ครอบครัวมีส่วนร่วมช่วยเลือกกิจกรรมและศึกษาคณะเพิ่มเติม</small>
+                      <span data-i18n="parent-allow-marketplace">แชร์รายชื่อโอกาสและหัวข้อ Bookmark</span>
+                      <small class="text-muted" data-i18n="parent-allow-marketplace-desc">เพื่อให้ครอบครัวมีส่วนร่วมช่วยเลือกกิจกรรมและศึกษาคณะเพิ่มเติม</small>
                     </div>
                     <input type="checkbox" id="parent-share-marketplace">
                   </label>
@@ -689,11 +1234,11 @@
               </div>
 
               <div class="family-support-notes">
-                <h4><i data-lucide="heart-handshake"></i> หลักเกณฑ์การแชร์ข้อมูลที่อบอุ่น:</h4>
+                <h4><i data-lucide="heart-handshake"></i> <span data-i18n="parent-guidelines-title">หลักเกณฑ์การแชร์ข้อมูลที่อบอุ่น:</span></h4>
                 <ul>
-                  <li>ระบบจะเน้นคำอธิบายจุดเด่นความถนัดของเด็ก เพื่อลดโอกาสที่จะเกิดการเปรียบเทียบคะแนนหรือจัดอันดับเด็ก</li>
-                  <li>คำแนะนำสำหรับผู้ปกครองจะชูความพยายามและความชอบตามธรรมชาติของนักเรียนเป็นจุดหลัก</li>
-                  <li>ไม่มีระบบบังคับติดตาม และไม่มีการแจ้งเตือนเมื่อเป้าหมายล้มเหลว เพื่อลดความเครียดสะสมในครอบครัว</li>
+                  <li data-i18n="parent-guidelines-item1">ระบบจะเน้นคำอธิบายจุดเด่นความถนัดของเด็ก เพื่อลดโอกาสที่จะเกิดการเปรียบเทียบคะแนนหรือจัดอันดับเด็ก</li>
+                  <li data-i18n="parent-guidelines-item2">คำแนะนำสำหรับผู้ปกครองจะชูความพยายามและความชอบตามธรรมชาติของนักเรียนเป็นจุดหลัก</li>
+                  <li data-i18n="parent-guidelines-item3">ไม่มีระบบบังคับติดตาม และไม่มีการแจ้งเตือนเมื่อเป้าหมายล้มเหลว เพื่อลดความเครียดสะสมในครอบครัว</li>
                 </ul>
               </div>
             </div>
@@ -709,6 +1254,28 @@
 
           <div class="marketplace-grid" id="marketplace-items-grid">
             <!-- Dynamically populated items -->
+          </div>
+        </div>
+        <!-- 7.5 REFERENCES VIEW -->
+        <div class="view-panel" id="view-references">
+          <div class="marketplace-header-box" style="margin-bottom: 24px;">
+            <h2 data-i18n="references-title">แหล่งอ้างอิงแบบทดสอบ (References)</h2>
+            <p data-i18n="references-subtitle">ทฤษฎีและแหล่งอ้างอิงทางจิตวิทยาที่ใช้ศึกษาอ้างอิงในการพัฒนาแบบทดสอบและการประเมินในระบบ LifeMap</p>
+          </div>
+
+          <div class="dashboard-section-card" style="margin-bottom: 24px;">
+            <!-- Search Bar -->
+            <div style="display: flex; gap: 12px; margin-bottom: 20px; width: 100%;">
+              <div class="input-wrapper" style="flex: 1;">
+                <i data-lucide="search" class="input-icon"></i>
+                <input type="text" id="ref-search-input" placeholder="ค้นหาชื่อแบบทดสอบหรือแหล่งอ้างอิง... (Search references...)" style="padding: 12px 12px 12px 42px; border-radius: 12px; font-size: 0.9rem; width: 100%;">
+              </div>
+            </div>
+
+            <!-- List of References -->
+            <div class="references-container" id="references-list" style="display: flex; flex-direction: column; gap: 16px; max-height: calc(100vh - 300px); overflow-y: auto; padding-right: 8px;">
+              <!-- Javascript will render this dynamically to make search work and support multi-language translation -->
+            </div>
           </div>
         </div>
 
@@ -737,25 +1304,86 @@
                     </div>
                     <input type="checkbox" id="settings-consent-ai" checked>
                   </label>
+
+                  <label class="switch-item">
+                    <div class="switch-label">
+                      <span>สิทธิ์วิเคราะห์วิจัยสไตล์การคิดและวางแผน (Thinking Style Reflection)</span>
+                      <small class="text-muted" style="display: block; margin-top: 2px;">เปิดเพื่อให้ระบบประเมิน 16 มิติแกนบุคลิกภาพสำหรับแนะนำภารกิจและแนะแนว AI</small>
+                    </div>
+                    <input type="checkbox" id="settings-consent-thinking-style">
+                  </label>
                   
                   <label class="switch-item">
                     <div class="switch-label">
-                      <span>สิทธิ์เชื่อมโยงข้อมูลผู้ปกครอง (Parent Link)</span>
+                      <span data-i18n="settings-share-profile-label">แชร์ข้อมูล Life Profile และ Archetype ให้ผู้ปกครอง</span>
                     </div>
-                    <input type="checkbox" id="settings-consent-parent" checked>
+                    <input type="checkbox" id="settings-share-profile">
+                  </label>
+                  
+                  <label class="switch-item">
+                    <div class="switch-label">
+                      <span data-i18n="settings-share-report-label">แชร์ข้อมูลความคืบหน้าของภารกิจให้ผู้ปกครอง (Mission Logs)</span>
+                    </div>
+                    <input type="checkbox" id="settings-share-report">
+                  </label>
+                  
+                  <label class="switch-item">
+                    <div class="switch-label">
+                      <span data-i18n="settings-share-marketplace-label">แชร์โอกาสและหัวข้อ Bookmark ให้ผู้ปกครอง</span>
+                    </div>
+                    <input type="checkbox" id="settings-share-marketplace">
                   </label>
                 </div>
               </div>
 
               <div class="settings-section mt-4">
+                <h3>ตั้งค่าการเชื่อมต่อ AI (AI Service Settings)</h3>
+                <p class="text-muted mb-3">กรอก Google Gemini API Key ของคุณเพื่อเริ่มทำ Personalization วิเคราะห์จุดแข็ง และใช้แชทบอต AI Guide ตามจริงแบบเรียลไทม์ (ข้อมูลจะถูกจัดเก็บเฉพาะในบราวเซอร์ของคุณเท่านั้น)</p>
+                <div class="form-group">
+                  <label for="settings-gemini-key">Google Gemini API Key:</label>
+                  <div style="display: flex; gap: 8px; margin-top: 6px;">
+                    <input type="password" id="settings-gemini-key" placeholder="AIzaSy..." style="flex: 1; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary); font-family: monospace;">
+                    <button class="btn btn-primary btn-sm" id="btn-save-api-key" style="white-space: nowrap;">บันทึก Key</button>
+                  </div>
+                  <span id="api-key-status" style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-top: 6px;">
+                    สถานะ: ยังไม่มี API Key (ใช้ระบบ AI จำลอง)
+                  </span>
+                </div>
+              </div>
+
+              <div class="settings-section mt-4" id="settings-liff-section">
+                <h3>การตั้งค่า LINE LIFF (LINE Integration)</h3>
+                <p class="text-muted mb-3">ปรับแต่งรหัส LINE LIFF ID ของคุณ เพื่อเชื่อมต่อโปรไฟล์ คณะ และกลุ่มแชทเข้ากับแอปพลิเคชัน LINE</p>
+                <div class="form-group">
+                  <label for="settings-liff-id">LINE LIFF ID:</label>
+                  <div style="display: flex; gap: 8px; margin-top: 6px;">
+                    <input type="text" id="settings-liff-id" placeholder="ตัวอย่าง: 2006249563-71vBML8b" style="flex: 1; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary); font-family: monospace;">
+                    <button class="btn btn-primary btn-sm" id="btn-save-liff-id" style="white-space: nowrap;">บันทึก ID</button>
+                  </div>
+                  <div id="liff-status-info" style="font-size: 0.78rem; margin-top: 8px; display: flex; align-items: center; gap: 6px;">
+                    <span style="color: var(--text-muted);" id="liff-connection-status">สถานะ: ไม่ได้เชื่อมต่อผ่าน LINE LIFF (ใช้เว็บทั่วไป)</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="settings-section mt-4">
                 <h3>สำรองและล้างข้อมูลเครื่อง</h3>
-                <p class="text-muted mb-3">ข้อมูลการสำรวจตัวเองเป็นสิทธิ์ของคุณ คุณสามารถล้างข้อมูลในเครื่องเพื่อสร้าง Passport ใหม่ได้ทุกเมื่อ</p>
+                <p class="text-muted mb-3">ข้อมูลการสำรวจตัวเองเป็นสิทธิ์ของคุณ คุณสามารถล้างข้อมูลในเครื่องเพื่อสร้าง Future Profile ใหม่ได้ทุกเมื่อ</p>
                 <div class="settings-actions">
                   <button class="btn btn-secondary btn-sm" id="btn-settings-export">
                     <i data-lucide="download"></i> สำรองไฟล์ข้อมูล (JSON Export)
                   </button>
+                  <button class="btn btn-secondary btn-sm" id="btn-settings-references" style="display: flex; align-items: center; justify-content: center; gap: 6px;">
+                    <i data-lucide="book-open"></i> <span data-i18n="settings-btn-references">ดูแหล่งข้อมูลอ้างอิง (References)</span>
+                  </button>
                   <button class="btn btn-danger btn-sm" id="btn-settings-reset">
                     <i data-lucide="trash-2"></i> รีเซ็ตความคืบหน้าทั้งหมด
+                  </button>
+                  <button class="btn btn-danger btn-sm" id="btn-settings-reset-thinking" style="background: rgba(239, 68, 68, 0.08); border-color: rgba(239, 68, 68, 0.15); color: #ef4444; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                    <i data-lucide="brain"></i> ล้างข้อมูลสไตล์การคิดแยกเฉพาะ
+                  </button>
+                  <button class="btn btn-danger btn-sm" id="btn-settings-logout" style="background: transparent; border: 1px solid var(--border-color); color: #ef4444;">
+                    <i data-lucide="log-out"></i> ออกจากระบบ (Logout)
                   </button>
                 </div>
               </div>
@@ -763,11 +1391,203 @@
           </div>
         </div>
 
+        <!-- 9. ADMIN DASHBOARD VIEW -->
+        <div class="view-panel" id="view-admin" style="overflow-y: auto; padding: 24px 16px;">
+          <div class="settings-card" style="max-width: 1000px; margin: 0 auto;">
+            <div class="card-header" style="background: linear-gradient(135deg, rgba(var(--color-accent-rgb), 0.08) 0%, rgba(var(--color-accent-rgb), 0.02) 100%); border-radius: 16px; padding: 24px; margin-bottom: 24px; border: 1px solid rgba(var(--color-accent-rgb), 0.1);">
+              <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+                <i data-lucide="shield-alert" style="width: 28px; height: 28px; color: var(--color-warning);"></i>
+                <h2 style="margin: 0; font-size: 1.6rem; color: var(--text-primary);">LifeMap Admin Console</h2>
+              </div>
+              <p style="margin: 0; color: var(--text-muted);">ระบบจัดการกิจกรรม แคมเปญออกตลาดวิเคราะห์จุดแข็งโรงเรียน และการตั้งค่ากลางของบริษัท</p>
+            </div>
+
+            <!-- Stats grid -->
+            <div class="admin-stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px;">
+              <div class="stat-card" style="background: var(--glass-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 18px; display: flex; align-items: center; gap: 16px;">
+                <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(37, 99, 235, 0.1); color: var(--color-primary); display: flex; align-items: center; justify-content: center;"><i data-lucide="users" style="width: 24px; height: 24px;"></i></div>
+                <div>
+                  <span style="font-size: 0.8rem; color: var(--text-muted); display: block;">นักเรียนทั้งหมดในระบบ</span>
+                  <strong style="font-size: 1.6rem; color: var(--text-primary);" id="admin-stat-users">0</strong>
+                </div>
+              </div>
+              <div class="stat-card" style="background: var(--glass-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 18px; display: flex; align-items: center; gap: 16px;">
+                <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(16, 185, 129, 0.1); color: var(--color-success); display: flex; align-items: center; justify-content: center;"><i data-lucide="award" style="width: 24px; height: 24px;"></i></div>
+                <div>
+                  <span style="font-size: 0.8rem; color: var(--text-muted); display: block;">ทำควิซเสร็จสิ้นแล้ว</span>
+                  <strong style="font-size: 1.6rem; color: var(--text-primary);" id="admin-stat-quiz">0</strong>
+                </div>
+              </div>
+              <div class="stat-card" style="background: var(--glass-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 18px; display: flex; align-items: center; gap: 16px;">
+                <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(245, 158, 11, 0.1); color: var(--color-warning); display: flex; align-items: center; justify-content: center;"><i data-lucide="school" style="width: 24px; height: 24px;"></i></div>
+                <div>
+                  <span style="font-size: 0.8rem; color: var(--text-muted); display: block;">แคมเปญโรงเรียนที่สแกน</span>
+                  <strong style="font-size: 1.6rem; color: var(--text-primary);" id="admin-stat-campaigns">0</strong>
+                </div>
+              </div>
+            </div>
+
+            <!-- Campaign Analytics Table -->
+            <div class="settings-section" style="margin-bottom: 24px; background: var(--glass-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px;">
+              <h3 style="margin-top: 0; margin-bottom: 14px; font-size: 1.1rem; display: flex; align-items: center; gap: 8px;"><i data-lucide="bar-chart-2"></i> สถิติรายแคมเปญ / โรงเรียน (Campaign Analytics)</h3>
+              <div style="overflow-x: auto;">
+                <table class="admin-table" style="width: 100%; border-collapse: collapse; font-size: 0.88rem; text-align: left;">
+                  <thead>
+                    <tr style="border-bottom: 2px solid var(--border-color); color: var(--text-muted); font-weight: bold;">
+                      <th style="padding: 10px;">รหัสแคมเปญ / โรงเรียน</th>
+                      <th style="padding: 10px;">นักเรียนที่เล่น (คน)</th>
+                      <th style="padding: 10px;">ทำควิซครบ (%)</th>
+                      <th style="padding: 10px;">ความชอบส่วนใหญ่ (Top Archetype)</th>
+                      <th style="padding: 10px;">แต้มโทเค็นเฉลี่ย</th>
+                    </tr>
+                  </thead>
+                  <tbody id="admin-campaign-table-body">
+                    <!-- JS will render this -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Campaign Thinking Style Distribution -->
+            <div class="settings-section" style="margin-bottom: 24px; background: var(--glass-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px;">
+              <h3 style="margin-top: 0; margin-bottom: 14px; font-size: 1.1rem; display: flex; align-items: center; gap: 8px;"><i data-lucide="brain-circuit"></i> สัดส่วนสไตล์การคิดและวางแผนระดับโรงเรียน/แคมเปญ (Aggregate Thinking Styles Distribution)</h3>
+              <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 14px;">แสดงภาพรวมของแคมเปญที่มีนักเรียนทำแบบสำรวจสไตล์การคิดอย่างน้อย 1 คน เพื่อปกป้องความเป็นส่วนตัวของเด็กแต่ละคน โดยไม่ระบุตัวตนรายบุคคล</p>
+              <div style="overflow-x: auto;">
+                <table class="admin-table" style="width: 100%; border-collapse: collapse; font-size: 0.88rem; text-align: left;">
+                  <thead>
+                    <tr style="border-bottom: 2px solid var(--border-color); color: var(--text-muted); font-weight: bold;">
+                      <th style="padding: 10px;">รหัสแคมเปญ</th>
+                      <th style="padding: 10px;">ทำควิซสไตล์การคิด (คน)</th>
+                      <th style="padding: 10px;">มิติพลังงาน (Reflective / Interactive)</th>
+                      <th style="padding: 10px;">มิติมุมมอง (Practical / Future)</th>
+                      <th style="padding: 10px;">มิติการตัดสินใจ (Logic / Value)</th>
+                      <th style="padding: 10px;">มิติการวางแผน (Structured / Adaptive)</th>
+                    </tr>
+                  </thead>
+                  <tbody id="admin-thinking-styles-table-body">
+                    <!-- JS will render this -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Configurations form & Seeder -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px;">
+              
+              <!-- Left: System Configs -->
+              <div class="settings-section" style="background: var(--glass-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px;">
+                <h3 style="margin-top: 0; margin-bottom: 12px; font-size: 1.1rem;"><i data-lucide="settings-2"></i> บังคับตั้งค่าระบบ (Global Overrides)</h3>
+                <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 14px;">เมื่อเปลี่ยนที่นี่ จะเป็นค่าเริ่มต้นของเด็กทุกคนที่เปิดเข้าเว็บนี้ทันที</p>
+                
+                <div class="form-group" style="margin-bottom: 12px;">
+                  <label for="admin-liff-id" style="font-size: 0.8rem; font-weight: 600; display: block; margin-bottom: 4px;">LINE LIFF ID:</label>
+                  <input type="text" id="admin-liff-id" placeholder="กรอก LIFF ID แคมเปญ..." style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary); font-family: monospace; font-size: 0.85rem;">
+                </div>
+                
+                <div class="form-group" style="margin-bottom: 16px;">
+                  <label for="admin-gemini-key" style="font-size: 0.8rem; font-weight: 600; display: block; margin-bottom: 4px;">Google Gemini API Key:</label>
+                  <input type="password" id="admin-gemini-key" placeholder="คีย์ AI กลาง..." style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary); font-family: monospace; font-size: 0.85rem;">
+                </div>
+                
+                <button class="btn btn-primary btn-sm btn-block" id="btn-admin-save-config" style="justify-content: center;"><i data-lucide="save"></i> บันทึกค่าคอนฟิกล่าสุด</button>
+              </div>
+
+              <!-- Right: Developer Tools & Seeder -->
+              <div class="settings-section" style="background: var(--glass-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                  <h3 style="margin-top: 0; margin-bottom: 12px; font-size: 1.1rem; color: var(--color-warning);"><i data-lucide="terminal"></i> เครื่องมือทดสอบสำหรับทีมงาน (Demo Tools)</h3>
+                  <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 14px;">สร้างข้อมูลสุ่มนักเรียนจำนวน 15 คน เพื่อให้การนำเสนอสถิติแคมเปญบนตารางมีสีสันและพร้อมวิเคราะห์ทันที</p>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                  <button class="btn btn-line btn-sm btn-block" id="btn-admin-seed-data" style="justify-content: center; font-weight: 700; background: linear-gradient(135deg, #10b981 0%, #059669 100%);"><i data-lucide="database"></i> สร้างข้อมูลนักเรียนจำลอง (Seed 15 Users)</button>
+                  <button class="btn btn-danger btn-sm btn-block" id="btn-admin-reset-db" style="justify-content: center;"><i data-lucide="trash-2"></i> ลบและล้างฐานข้อมูลระบบทั้งหมด</button>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Users DB Table -->
+            <div class="settings-section" style="background: var(--glass-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px;">
+              <h3 style="margin-top: 0; margin-bottom: 14px; font-size: 1.1rem;"><i data-lucide="folder-open"></i> รายชื่อบัญชีผู้ใช้ในฐานข้อมูลหลัก (User Database)</h3>
+              <div style="overflow-x: auto; max-height: 300px;">
+                <table class="admin-table" style="width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: left;">
+                  <thead>
+                    <tr style="border-bottom: 2px solid var(--border-color); color: var(--text-muted); font-weight: bold;">
+                      <th style="padding: 10px;">Username / Email</th>
+                      <th style="padding: 10px;">ระดับชั้น</th>
+                      <th style="padding: 10px;">ชื่อโรงเรียน</th>
+                      <th style="padding: 10px;">แคมเปญ</th>
+                      <th style="padding: 10px;">Tokens</th>
+                      <th style="padding: 10px;">การจัดการ</th>
+                    </tr>
+                  </thead>
+                  <tbody id="admin-users-table-body">
+                    <!-- JS will render this -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
       </div>
     </main>
   </div>
 
+  <!-- Custom Brand Alert Modal -->
+  <div class="brand-alert-overlay" id="brand-alert-modal">
+    <div class="brand-alert-card">
+      <div class="brand-alert-icon">
+        <i data-lucide="info"></i>
+      </div>
+      <p class="brand-alert-message" id="brand-alert-message">ข้อความแจ้งเตือน</p>
+      <button class="btn btn-primary" id="brand-alert-ok-btn" style="width: 100%; margin-top: 20px;">ตกลง</button>
+    </div>
+  </div>
+
+  <!-- Custom Brand Confirm Modal -->
+  <div class="brand-alert-overlay" id="brand-confirm-modal">
+    <div class="brand-alert-card">
+      <div class="brand-alert-icon">
+        <i data-lucide="help-circle"></i>
+      </div>
+      <p class="brand-alert-message" id="brand-confirm-message">คำถามเพื่อยืนยัน</p>
+      <div style="display: flex; gap: 12px; width: 100%; margin-top: 20px;">
+        <button class="btn btn-secondary" id="brand-confirm-cancel-btn" style="flex: 1;">ยกเลิก</button>
+        <button class="btn btn-primary" id="brand-confirm-ok-btn" style="flex: 1;">ตกลง</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Marketplace Redeem Success Modal -->
+  <div class="brand-alert-overlay" id="marketplace-redeem-modal">
+    <div class="brand-alert-card" style="max-width: 420px; text-align: center;">
+      <div class="brand-alert-icon" style="background: rgba(214, 255, 92, 0.1); color: var(--color-accent); margin: 0 auto 16px auto; width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 20px rgba(214, 255, 92, 0.2);">
+        <i data-lucide="party-popper" style="width: 32px; height: 32px;"></i>
+      </div>
+      <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary); margin-bottom: 8px;" id="redeem-success-title">ปลดล็อกสำเร็จ!</h3>
+      <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 16px;" id="redeem-success-desc">คุณได้ปลดล็อกโอกาสนี้เรียบร้อยแล้ว</p>
+      
+      <!-- Promo/Access Code Box -->
+      <div style="background: var(--bg-secondary); border: 1px dashed var(--color-accent); border-radius: 12px; padding: 12px; margin-bottom: 16px; position: relative;">
+        <span style="font-size: 0.65rem; color: var(--text-muted); display: block; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em;" id="redeem-code-label">Access Code / รหัสผ่าน</span>
+        <strong style="font-size: 1.2rem; font-family: monospace; color: var(--color-accent); letter-spacing: 1px;" id="redeem-promo-code">CODE-12345</strong>
+        <button id="btn-copy-redeem-code" class="btn btn-secondary btn-sm" style="display: flex; align-items: center; justify-content: center; gap: 4px; margin: 8px auto 0 auto; font-size: 0.7rem; padding: 4px 8px;">
+          <i data-lucide="copy" style="width: 10px; height: 10px;"></i> <span id="copy-btn-text">คัดลอกรหัส</span>
+        </button>
+      </div>
+
+      <!-- Instructions bubble -->
+      <p style="font-size: 0.78rem; line-height: 1.4; color: var(--text-muted); text-align: left; padding: 10px; background: rgba(247, 250, 239, 0.03); border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 20px;" id="redeem-instructions">คำแนะนำในการเปิดรับสิทธิ์</p>
+      
+      <button class="btn btn-primary" id="btn-redeem-close" style="width: 100%;">ตกลง</button>
+    </div>
+  </div>
+
+  <!-- LINE LIFF SDK -->
+  <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <!-- Script Modules -->
-  <script type="module" src="app.js?v=2.1.2"></script>
+  <script type="module" src="app.js?v=restore-compatible-page-1"></script>
 </body>
 </html>
