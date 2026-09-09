@@ -1183,6 +1183,8 @@ export const initialState = {
   thinkingStyleCompleted: undefined,
   thinkingStyle: null,
   tokens: 25,
+  careerQuizRewarded: false,
+  thinkingStyleRewarded: false,
   claimedBadges: [],
   bookmarks: [],
   growthMissions: [],
@@ -1285,27 +1287,7 @@ function checkAuthStatus() {
   if (appContainer) appContainer.classList.add('sidebar-visible');
 
   const currentView = localStorage.getItem('lifemap_v2_view') || 'dashboard';
-  
-  let targetPanel = document.getElementById(`view-${currentView}`);
-  if (!targetPanel) targetPanel = document.getElementById('view-dashboard') || document.getElementById('view-onboarding');
-
-  document.querySelectorAll('.view-panel').forEach(panel => {
-    panel.classList.toggle('active', panel === targetPanel);
-  });
-  
-  document.querySelectorAll('.nav-menu .nav-item').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.view === currentView);
-  });
-  
-  const settingsBtn = document.getElementById('btn-settings');
-  if (settingsBtn) {
-    settingsBtn.classList.toggle('active', settingsBtn.dataset.view === currentView);
-  }
-  
-  const headerSettingsBtn = document.getElementById('btn-header-settings');
-  if (headerSettingsBtn) {
-    headerSettingsBtn.classList.toggle('active', currentView === 'settings');
-  }
+  switchView(currentView);
 }
 
 function renderLifeProfileUI() {
@@ -1439,6 +1421,10 @@ function renderLifeProfileUI() {
   
   const curCluster = profile.careerClusters[0]?.id || "creator";
   const curVibe = vibes[curCluster] || vibes.creator;
+
+  const horoscopeCard = document.querySelector('.horoscope-card');
+  if (horoscopeCard) horoscopeCard.style.display = 'block';
+
   safeSetText('horoscope-constellation', curVibe.star[lang] || curVibe.star);
   safeSetText('horoscope-lucky-skill', curVibe.skill[lang] || curVibe.skill);
   safeSetText('horoscope-ritual', curVibe.ritual[lang] || curVibe.ritual);
@@ -2455,12 +2441,16 @@ function completeThinkingStyleQuiz() {
 }
 
 function completeQuiz() {
-  // Reward tokens for career quiz completion (50 tokens)
-  state.tokens += 50;
+  // Reward tokens for career quiz completion ONCE (50 tokens)
+  if (!state.careerQuizRewarded) {
+    state.tokens = (state.tokens || 0) + 50;
+    state.careerQuizRewarded = true;
+  }
   
-  // Extra 50 tokens if they did thinking style
-  if (state.thinkingStyleCompleted) {
-    state.tokens += 50;
+  // Extra 50 tokens if they did thinking style ONCE
+  if (state.thinkingStyleCompleted && !state.thinkingStyleRewarded) {
+    state.tokens = (state.tokens || 0) + 50;
+    state.thinkingStyleRewarded = true;
   }
   
   const profile = computeProfile(state.answers);
@@ -4687,6 +4677,8 @@ function setupEventListeners() {
       state.thinkingStyleAnswers = {};
       state.thinkingStyleCompleted = undefined;
       state.thinkingStyle = null;
+      state.careerQuizRewarded = false;
+      state.thinkingStyleRewarded = false;
       saveState();
       renderQuizTab();
     }

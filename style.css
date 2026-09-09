@@ -1288,6 +1288,8 @@ select:focus, textarea:focus {
 .horoscope-row {
   display: flex;
   justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
   font-size: 0.8rem;
   margin-bottom: 8px;
 }
@@ -1296,6 +1298,7 @@ select:focus, textarea:focus {
 }
 .horoscope-row .label {
   color: var(--text-secondary);
+  flex-shrink: 0;
 }
 .horoscope-row strong {
   color: var(--color-accent);
@@ -1305,6 +1308,8 @@ select:focus, textarea:focus {
   transition: all 0.2s ease;
   border: 1px solid transparent;
   display: inline-block;
+  text-align: right;
+  word-break: break-word;
 }
 .horoscope-row strong:hover {
   background: rgba(var(--color-accent-rgb), 0.15);
