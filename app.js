@@ -1,6 +1,3 @@
-import { initCanvas, renderCanvas } from './canvas.js';
-import { initWheel, renderWheel } from './wheel.js';
-
 // Global resilience error boundary
 window.addEventListener('error', (e) => {
   console.warn("Caught runtime error (resilience mode):", e.error || e.message);
@@ -8,6 +5,230 @@ window.addEventListener('error', (e) => {
 window.addEventListener('unhandledrejection', (e) => {
   console.warn("Caught unhandled promise rejection:", e.reason);
 });
+
+// --- Metro Canvas & Radar Wheel Visual Helpers (Inlined) ---
+let metroCanvas;
+let ctx;
+let overlay;
+const categoryColors = {
+  creator: "#8b5cf6",
+  builder: "#10b981",
+  analyst: "#f59e0b",
+  helper: "#f43f5e",
+  entrepreneur: "#06b6d4",
+};
+
+function initCanvas() {
+  metroCanvas = document.getElementById('metro-canvas');
+  overlay = document.getElementById('metro-nodes-overlay');
+  if (!metroCanvas) return;
+  ctx = metroCanvas.getContext('2d');
+  resizeCanvas();
+  window.addEventListener('resize', () => {
+    resizeCanvas();
+    renderCanvas();
+  });
+}
+
+function resizeCanvas() {
+  if (!metroCanvas) return;
+  const parent = metroCanvas.parentElement;
+  if (!parent) return;
+  let width = parent.getBoundingClientRect().width;
+  if (width < 600) width = 600;
+  metroCanvas.width = width;
+  metroCanvas.style.width = `${width}px`;
+  if (overlay) overlay.style.width = `${width}px`;
+}
+
+function renderCanvas() {
+  if (!metroCanvas || !ctx) return;
+  if (overlay) overlay.innerHTML = '';
+  ctx.clearRect(0, 0, metroCanvas.width, metroCanvas.height);
+  const mStatus = getGrowthMissionStatus();
+  const currentMissions = mStatus?.missions;
+  if (!currentMissions || currentMissions.length === 0) return;
+
+  const totalDays = 7;
+  const padding = 50;
+  const cy = metroCanvas.height / 2;
+  const width = metroCanvas.width;
+  const xSpacing = (width - padding * 2) / (totalDays - 1);
+  const currentCluster = currentMissions[0]?.cluster || "creator";
+  const lineColor = categoryColors[currentCluster] || categoryColors.creator;
+
+  ctx.beginPath();
+  ctx.moveTo(padding, cy);
+  ctx.lineTo(width - padding, cy);
+  ctx.strokeStyle = "var(--border-color)";
+  ctx.lineWidth = 4;
+  ctx.setLineDash([5, 8]);
+  ctx.stroke();
+
+  const completedCount = mStatus.completedCount || 0;
+  if (completedCount > 0) {
+    const endIdx = Math.min(totalDays - 1, completedCount - 1);
+    const endX = padding + endIdx * xSpacing;
+    ctx.beginPath();
+    ctx.moveTo(padding, cy);
+    ctx.lineTo(endX, cy);
+    ctx.strokeStyle = lineColor;
+    ctx.lineWidth = 5;
+    ctx.setLineDash([]);
+    ctx.stroke();
+    ctx.shadowBlur = 12;
+    ctx.shadowColor = lineColor;
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+  }
+
+  for (let i = 0; i < totalDays; i++) {
+    const dayNum = i + 1;
+    const mission = currentMissions[i];
+    if (!mission) continue;
+    const x = padding + i * xSpacing;
+    const y = cy;
+    const isCompleted = state.checkIns ? state.checkIns.some(c => c.missionId === mission.id) : false;
+    const isActive = mStatus.currentMission && mStatus.currentMission.id === mission.id;
+    const unlocked = isDayUnlocked(dayNum);
+    
+    ctx.beginPath();
+    ctx.arc(x, y, isActive ? 10 : 8, 0, Math.PI * 2);
+    if (isCompleted) {
+      ctx.fillStyle = lineColor;
+      ctx.strokeStyle = "var(--text-primary)";
+      ctx.lineWidth = 2;
+    } else if (isActive) {
+      ctx.fillStyle = "var(--bg-primary)";
+      ctx.strokeStyle = "var(--color-accent)";
+      ctx.lineWidth = 3;
+    } else if (unlocked) {
+      ctx.fillStyle = "var(--bg-secondary)";
+      ctx.strokeStyle = "var(--border-color)";
+      ctx.lineWidth = 2;
+    } else {
+      ctx.fillStyle = "rgba(30, 43, 20, 0.4)";
+      ctx.strokeStyle = "rgba(247, 250, 239, 0.15)";
+      ctx.lineWidth = 1.5;
+    }
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.font = "bold 9px 'Plus Jakarta Sans'";
+    ctx.fillStyle = isActive ? "var(--color-accent)" : isCompleted ? lineColor : "var(--text-muted)";
+    ctx.textAlign = "center";
+    ctx.fillText(`D${dayNum}`, x, y - 18);
+
+    if (overlay) {
+      const clickNode = document.createElement('div');
+      clickNode.className = 'metro-click-node';
+      clickNode.style.left = `${(x / width) * 100}%`;
+      clickNode.style.top = `${(y / metroCanvas.height) * 100}%`;
+      clickNode.setAttribute('title', unlocked ? `ดูภารกิจ Day ${dayNum}` : `Day ${dayNum} (ยังไม่เปิดล็อก)`);
+      clickNode.addEventListener('click', () => {
+        const dayBtns = document.querySelectorAll('.day-btn');
+        if (dayBtns[i]) dayBtns[i].click();
+      });
+      overlay.appendChild(clickNode);
+    }
+  }
+}
+
+let radarSvg;
+const riasecKeys = ['R', 'I', 'A', 'S', 'E', 'C'];
+
+function initWheel() {
+  radarSvg = document.getElementById('riasec-radar-svg');
+}
+
+function renderWheel() {
+  if (!radarSvg) radarSvg = document.getElementById('riasec-radar-svg');
+  if (!radarSvg) return;
+  const profile = computeProfile(state.answers);
+  if (!profile) return;
+  radarSvg.innerHTML = '';
+  const cx = 200, cy = 200, rMax = 130;
+  const angles = riasecKeys.map((_, i) => (i * Math.PI) / 3 - Math.PI / 2);
+  const levels = [4, 8, 12, 16, 20, 24];
+  levels.forEach(l => {
+    const radius = (l / 24) * rMax;
+    const pts = angles.map(a => `${cx + radius * Math.cos(a)},${cy + radius * Math.sin(a)}`).join(' ');
+    const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+    poly.setAttribute('points', pts);
+    poly.setAttribute('fill', 'none');
+    poly.setAttribute('stroke', 'var(--border-color)');
+    poly.setAttribute('stroke-width', '1');
+    radarSvg.appendChild(poly);
+    if (l === 24) return;
+    const firstAngle = angles[0];
+    const textY = cy + radius * Math.sin(firstAngle) + 4;
+    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    text.setAttribute('x', cx - 8);
+    text.setAttribute('y', textY);
+    text.setAttribute('fill', 'var(--text-muted)');
+    text.setAttribute('font-size', '8px');
+    text.setAttribute('font-family', 'var(--font-secondary)');
+    text.setAttribute('text-anchor', 'end');
+    text.textContent = l;
+    radarSvg.appendChild(text);
+  });
+
+  riasecKeys.forEach((key, i) => {
+    const angle = angles[i];
+    const outerX = cx + rMax * Math.cos(angle);
+    const outerY = cy + rMax * Math.sin(angle);
+    const axis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    axis.setAttribute('x1', cx);
+    axis.setAttribute('y1', cy);
+    axis.setAttribute('x2', outerX);
+    axis.setAttribute('y2', outerY);
+    axis.setAttribute('stroke', 'var(--border-color)');
+    axis.setAttribute('stroke-dasharray', '3 3');
+    radarSvg.appendChild(axis);
+
+    const txtDist = rMax + 20;
+    const tx = cx + txtDist * Math.cos(angle);
+    const ty = cy + txtDist * Math.sin(angle) + 4;
+    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    text.setAttribute('x', tx);
+    text.setAttribute('y', ty);
+    text.setAttribute('text-anchor', 'middle');
+    text.setAttribute('fill', 'var(--text-secondary)');
+    text.setAttribute('font-size', '11px');
+    text.setAttribute('font-family', 'var(--font-primary)');
+    text.setAttribute('font-weight', '700');
+    text.textContent = key;
+    radarSvg.appendChild(text);
+  });
+
+  const scoreMap = Object.fromEntries(profile.riasecScores.map(s => [s.id, s.score]));
+  const scorePts = riasecKeys.map((key, i) => {
+    const scoreVal = scoreMap[key] || 0;
+    const radius = (scoreVal / 24) * rMax;
+    return `${cx + radius * Math.cos(angles[i])},${cy + radius * Math.sin(angles[i])}`;
+  }).join(' ');
+
+  const fillArea = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+  fillArea.setAttribute('points', scorePts);
+  fillArea.setAttribute('fill', 'rgba(214, 255, 92, 0.14)');
+  fillArea.setAttribute('stroke', 'var(--color-accent)');
+  fillArea.setAttribute('stroke-width', '2.5');
+  fillArea.style.filter = "drop-shadow(0px 0px 4px rgba(214, 255, 92, 0.3))";
+  radarSvg.appendChild(fillArea);
+
+  riasecKeys.forEach((key, i) => {
+    const scoreVal = scoreMap[key] || 0;
+    const radius = (scoreVal / 24) * rMax;
+    const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    dot.setAttribute('cx', cx + radius * Math.cos(angles[i]));
+    dot.setAttribute('cy', cy + radius * Math.sin(angles[i]));
+    dot.setAttribute('r', '4');
+    dot.setAttribute('fill', 'var(--bg-primary)');
+    dot.setAttribute('stroke', 'var(--color-accent)');
+    dot.setAttribute('stroke-width', '1.5');
+    radarSvg.appendChild(dot);
+  });
+}
 
 // --- Domain Models & Data from lifemap.ts ---
 export const gradePersonalizationMap = {
@@ -1146,7 +1367,7 @@ function renderLifeProfileUI() {
   });
 
   // Render Radar Chart for RIASEC
-  renderWheel({ state, computeProfile });
+  renderWheel();
   
   // Render Bar list for RIASEC scores detail
   const riasecScoresList = document.getElementById('riasec-scores-list');
@@ -1300,8 +1521,8 @@ function initApp() {
 
   checkAuthStatus();
 
-  initCanvas({ state, getGrowthMissionStatus, isDayUnlocked });
-  initWheel({ state, computeProfile });
+  initCanvas();
+  initWheel();
   updateDashboardUI();
   
   // Initialize LINE LIFF
@@ -3500,7 +3721,7 @@ function renderMissionsTab() {
   }
 
   // Draw timeline visual on canvas
-  renderCanvas({ state, getGrowthMissionStatus, isDayUnlocked });
+  renderCanvas();
   lucide.createIcons();
 }
 
