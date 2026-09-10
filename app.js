@@ -1830,7 +1830,7 @@ function updateDashboardUI() {
   // Stats in sidebar
   safeSetText('sidebar-student-name', state.studentName || (isEn ? "LifeMap Explorer" : "นักเรียน LifeMap"));
   
-  const gradeLabel = state.gradeLevel ? gradePersonalizationMap[state.gradeLevel].label[state.language || 'th'] : (isEn ? "G10" : "ม.4");
+  const gradeLabel = (state.gradeLevel && gradePersonalizationMap[state.gradeLevel]) ? gradePersonalizationMap[state.gradeLevel].label[state.language || 'th'] : (isEn ? "G10" : "ม.4");
   safeSetText('sidebar-grade-badge', gradeLabel);
   safeSetText('sidebar-tokens', state.tokens);
   safeSetText('header-tokens', state.tokens);
@@ -2440,7 +2440,169 @@ function completeThinkingStyleQuiz() {
   completeQuiz();
 }
 
-function completeQuiz() {
+// --- Survey Data Sync & Privacy Architecture Module ---
+export function getRespondentId() {
+  let id = localStorage.getItem('lifemap_anon_id');
+  if (!id) {
+    id = 'anon_student_' + Math.random().toString(36).substring(2, 10);
+    localStorage.setItem('lifemap_anon_id', id);
+  }
+  return id;
+}
+
+export function getDeletionToken() {
+  let token = localStorage.getItem('lifemap_deletion_token');
+  if (!token) {
+    token = 'del_sec_' + Math.random().toString(36).substring(2, 10) + Math.random().toString(36).substring(2, 10);
+    localStorage.setItem('lifemap_deletion_token', token);
+  }
+  return token;
+}
+
+export function buildSurveyPayload() {
+  const respondentId = getRespondentId();
+  const deletionToken = getDeletionToken();
+  let submissionId = localStorage.getItem('lifemap_submission_id');
+  if (!submissionId) {
+    submissionId = `sub_v3_${respondentId}_${Date.now()}`;
+    localStorage.setItem('lifemap_submission_id', submissionId);
+  }
+
+  const answersList = quizQuestions.map(q => {
+    const ansIdx = state.answers[q.id];
+    const option = q.options[ansIdx];
+    return {
+      questionId: q.id,
+      optionIndex: ansIdx !== undefined ? ansIdx : null,
+      code: option ? (option.code || String(option.value)) : null
+    };
+  });
+
+  return {
+    submissionId,
+    respondentId,
+    deletionToken,
+    quizVersion: "v3_11q",
+    scoringVersion: "v2.1_riasec_bigfive",
+    consentVersion: "v1.2_pdpa",
+    consent: {
+      profile: !!(state.consent && state.consent.profile),
+      ai: !!(state.consent && state.consent.aiGuide),
+      parent: !!(state.consent && state.consent.parentLink),
+      thinkingStyle: !!(state.consent && state.consent.thinkingStyle)
+    },
+    consentTimestamp: new Date().toISOString(),
+    answers: answersList
+  };
+}
+
+export async function syncSurveyQueue(targetEndpoint = 'http://localhost:8088/api/test/survey/submit') {
+  const queueRaw = localStorage.getItem('lifemap_offline_queue');
+  let queue = queueRaw ? JSON.parse(queueRaw) : [];
+
+  const pending = queue.filter(item => item.status === 'PENDING' || item.status === 'FAILED_RETRY');
+  if (pending.length === 0) return;
+
+  for (const item of pending) {
+    try {
+      const res = await fetch(targetEndpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(item.payload)
+      });
+      const data = await res.json();
+      if (res.ok && data.status === 'success' && data.submissionId === item.payload.submissionId) {
+        item.status = 'SYNCED';
+        item.syncedAt = new Date().toISOString();
+        item.serverMessage = data.message;
+        state.syncStatus = 'SYNCED';
+      } else {
+        item.status = 'FAILED_RETRY';
+        item.lastError = data.message || 'Server error';
+        state.syncStatus = 'PENDING';
+      }
+    } catch (err) {
+      item.status = 'FAILED_RETRY';
+      item.lastError = err.message || 'Network error';
+      state.syncStatus = 'PENDING';
+    }
+  }
+
+  localStorage.setItem('lifemap_offline_queue', JSON.stringify(queue));
+  saveStateData();
+}
+
+export function enqueueAndSyncSurvey(targetEndpoint = 'http://localhost:8088/api/test/survey/submit') {
+  if (Object.keys(state.answers).length < quizQuestions.length) return;
+
+  const payload = buildSurveyPayload();
+  const queueRaw = localStorage.getItem('lifemap_offline_queue');
+  let queue = queueRaw ? JSON.parse(queueRaw) : [];
+
+  const existingIdx = queue.findIndex(item => item.payload.submissionId === payload.submissionId);
+  if (existingIdx >= 0) {
+    if (queue[existingIdx].status !== 'SYNCED') {
+      queue[existingIdx].payload = payload;
+      queue[existingIdx].status = 'PENDING';
+    }
+  } else {
+    queue.push({
+      id: 'q_item_' + Date.now(),
+      payload: payload,
+      status: 'PENDING',
+      enqueuedAt: new Date().toISOString()
+    });
+  }
+
+  state.syncStatus = queue.some(i => i.payload.submissionId === payload.submissionId && i.status === 'SYNCED')
+    ? 'SYNCED'
+    : 'PENDING';
+
+  localStorage.setItem('lifemap_offline_queue', JSON.stringify(queue));
+  saveStateData();
+
+  syncSurveyQueue(targetEndpoint);
+}
+
+export async function deleteUserSurveyData(deleteEndpoint = 'http://localhost:8088/api/test/survey/delete') {
+  const respondentId = getRespondentId();
+  const deletionToken = getDeletionToken();
+
+  // 1. Purge offline queue FIRST to prevent deleted data from being sent back
+  const queueRaw = localStorage.getItem('lifemap_offline_queue');
+  let queue = queueRaw ? JSON.parse(queueRaw) : [];
+  queue = queue.filter(item => item.payload.respondentId !== respondentId);
+  localStorage.setItem('lifemap_offline_queue', JSON.stringify(queue));
+
+  // 2. Clear local submission IDs and survey state
+  localStorage.removeItem('lifemap_submission_id');
+  state.answers = {};
+  state.careerQuizRewarded = false;
+  state.thinkingStyleRewarded = false;
+  state.syncStatus = undefined;
+  saveStateData();
+
+  // 3. Call Right-to-Erasure Endpoint with authorization proof
+  try {
+    const res = await fetch(deleteEndpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ respondentId, deletionToken })
+    });
+    const data = await res.json();
+    return data;
+  } catch (err) {
+    return { status: 'error', message: err.message };
+  }
+}
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('online', () => {
+    syncSurveyQueue();
+  });
+}
+
+export function completeQuiz() {
   // Reward tokens for career quiz completion ONCE (50 tokens)
   if (!state.careerQuizRewarded) {
     state.tokens = (state.tokens || 0) + 50;
@@ -2458,6 +2620,7 @@ function completeQuiz() {
 
   saveState();
   renderQuizTab();
+  enqueueAndSyncSurvey();
 }
 
 function renderDetailedThinkingStyleProfile() {
