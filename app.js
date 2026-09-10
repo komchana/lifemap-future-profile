@@ -1385,13 +1385,14 @@ function renderLifeProfileUI() {
   const bigFiveList = document.getElementById('bigfive-scores-list');
   bigFiveList.innerHTML = '';
   profile.bigFiveScores.forEach(s => {
-    const pct = Math.round((s.score / 24) * 100);
+    const maxScore = s.maxScore || 24;
+    const pct = Math.min(100, Math.round((s.score / maxScore) * 100));
     const item = document.createElement('div');
     item.className = 'bigfive-item';
     item.innerHTML = `
       <div class="bf-name-val">
         <span>${s.name}</span>
-        <span>${s.score}/24</span>
+        <span>${s.score}/${maxScore}</span>
       </div>
       <div class="progress-bar">
         <div class="progress-fill" style="width: ${pct}%"></div>
@@ -1707,7 +1708,7 @@ export function saveState() {
 
 // Theme Handling
 function initTheme() {
-  const savedTheme = 'dark-theme';
+  const savedTheme = localStorage.getItem('lifemap_theme') || 'light-theme';
   document.documentElement.className = savedTheme;
   localStorage.setItem('lifemap_theme', savedTheme);
   updateThemeToggleIcon(savedTheme);
@@ -3415,6 +3416,7 @@ export function computeProfile(answers) {
   const rawRiasec = { R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 };
   const rawBigFive = { openness: 0, conscientiousness: 0, extraversion: 0, agreeableness: 0, emotional_regulation: 0 };
 
+  const maxBigFive = { openness: 0, conscientiousness: 0, extraversion: 0, agreeableness: 0, emotional_regulation: 0 };
   quizQuestions.forEach(q => {
     const ansIdx = answers[q.id];
     const option = q.options[ansIdx];
@@ -3424,6 +3426,15 @@ export function computeProfile(answers) {
       rawBigFive[option.bigFive] += option.value;
       if (option.riasec === "E" || q.domain === "career") rawClusters.entrepreneur += 1;
     }
+    const maxPerTrait = {};
+    q.options.forEach(opt => {
+      if (opt.bigFive) {
+        maxPerTrait[opt.bigFive] = Math.max(maxPerTrait[opt.bigFive] || 0, opt.value || 0);
+      }
+    });
+    Object.entries(maxPerTrait).forEach(([tr, val]) => {
+      maxBigFive[tr] = (maxBigFive[tr] || 0) + val;
+    });
   });
 
   const createScoreRows = (scores, labels) =>
@@ -3431,9 +3442,14 @@ export function computeProfile(answers) {
       .map(([id, score]) => ({ id, name: labels[id][state.language || 'th'], score: Number(score) }))
       .sort((a, b) => b.score - a.score);
 
+  const createBigFiveRows = (scores, labels, maxScores) =>
+    Object.entries(scores)
+      .map(([id, score]) => ({ id, name: labels[id][state.language || 'th'], score: Number(score), maxScore: maxScores[id] || 24 }))
+      .sort((a, b) => b.score - a.score);
+
   const careerClusters = createScoreRows(rawClusters, clusterLabels);
   const riasecScores = createScoreRows(rawRiasec, riasecLabels);
-  const bigFiveScores = createScoreRows(rawBigFive, bigFiveLabels);
+  const bigFiveScores = createBigFiveRows(rawBigFive, bigFiveLabels, maxBigFive);
   
   const top = careerClusters[0];
   const topRiasec = riasecScores[0];
