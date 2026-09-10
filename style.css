@@ -34,30 +34,35 @@
   --scrollbar-thumb: #1E2B14;
 }
 
-/* Light Theme Variables (adapted to preserve the brand essence) */
+/* Light Theme Variables (LifeMap UI/UX Brief v1 Specification) */
 .light-theme {
-  --bg-primary: #F7FAEF;
+  --bg-primary: #FAFAFC;
   --bg-secondary: #FFFFFF;
-  --bg-tertiary: #E8EFE0;
-  --border-color: rgba(16, 23, 10, 0.1);
+  --bg-tertiary: #EAF2FF;
+  --border-color: #DDE2EC;
   
-  --text-primary: #10170A;
-  --text-secondary: #3D4F2F;
-  --text-muted: #647B53;
+  --text-primary: #111638;
+  --text-secondary: #59627A;
+  --text-muted: #59627A;
   
-  --glass-bg: rgba(255, 255, 255, 0.85);
-  --glass-border: rgba(16, 23, 10, 0.08);
-  --glass-highlight: rgba(214, 255, 92, 0.1);
-  --shadow-premium: 0 10px 40px -10px rgba(16, 23, 10, 0.06), 0 0 1px 1px rgba(16, 23, 10, 0.02) inset;
-  --accent-glow: rgba(214, 255, 92, 0.05);
+  --color-accent: #C4F82A; /* Lime Green Primary */
+  --color-accent-hover: #B4E622;
+  --color-accent-text: #111638; /* Dark Navy text on lime buttons */
+  --color-accent-rgb: 196, 248, 42;
   
-  --scrollbar-bg: #F7FAEF;
-  --scrollbar-thumb: #E8EFE0;
+  --accent-purple: #5754D6;
+  --accent-blue-light: #EAF2FF;
+  --answer-selected-bg: #F0EEFF;
+  --answer-selected-border: #5754D6;
   
-  /* Accent changes slightly for readability on light backgrounds */
-  --color-accent: #82B300; 
-  --color-accent-hover: #628700;
-  --color-accent-rgb: 130, 179, 0;
+  --glass-bg: #FFFFFF;
+  --glass-border: #DDE2EC;
+  --glass-highlight: rgba(196, 248, 42, 0.1);
+  --shadow-premium: 0 4px 20px rgba(17, 22, 56, 0.05);
+  --accent-glow: rgba(196, 248, 42, 0.08);
+  
+  --scrollbar-bg: #FAFAFC;
+  --scrollbar-thumb: #DDE2EC;
 }
 
 /* Global Reset & Base */
@@ -377,7 +382,9 @@ body {
 }
 .btn-primary {
   background: var(--color-accent);
-  color: var(--bg-primary);
+  color: var(--color-accent-text, #111638);
+  border-radius: 16px;
+  min-height: 48px;
   box-shadow: 0 4px 15px rgba(var(--color-accent-rgb), 0.2);
 }
 .btn-primary:hover {
@@ -1125,22 +1132,27 @@ select:focus, textarea:focus {
   color: var(--text-primary);
   text-align: left;
   padding: 16px 20px;
-  border-radius: 12px;
+  min-height: 64px;
+  border-radius: 16px;
   font-family: var(--font-primary);
   font-size: 0.95rem;
+  line-height: 1.5;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
   transition: all var(--transition-fast);
 }
 .quiz-option-btn:hover {
-  border-color: var(--color-accent);
-  background: rgba(var(--color-accent-rgb), 0.08);
-  color: var(--text-primary);
+  border-color: var(--accent-purple, #5754D6);
+  background: var(--accent-blue-light, #EAF2FF);
 }
 .quiz-option-btn.selected {
-  background: var(--color-accent);
-  border-color: var(--color-accent);
-  color: var(--bg-primary);
+  background: var(--answer-selected-bg, #F0EEFF);
+  border-color: var(--accent-purple, #5754D6);
+  color: var(--text-primary);
   font-weight: 700;
+  box-shadow: 0 0 0 2px var(--accent-purple, #5754D6);
 }
 
 /* Profile Result State views */
