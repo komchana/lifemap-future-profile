@@ -1570,6 +1570,11 @@ function initLiff() {
     settingsLiffInput.value = liffId;
   }
 
+  if (window.ENABLE_SERVER_SYNC === false || typeof liff === 'undefined') {
+    console.log("Local Test Mode / Offline: Skipping LINE LIFF network initialization.");
+    return;
+  }
+
   liff.init({ liffId: liffId })
     .then(() => {
       console.log("LINE LIFF initialized successfully with ID:", liffId);
@@ -5273,7 +5278,16 @@ function setupEventListeners() {
 
   // Logout Actions
   const handleLogout = async () => {
-    const confirmed = await showBrandConfirm(state.language === 'en' ? "Are you sure you want to log out?" : "คุณต้องการออกจากระบบหรือไม่?");
+    const isGuest = !localStorage.getItem('lifemap_logged_in_user') || localStorage.getItem('lifemap_logged_in_user') === 'guest_student';
+    const confirmMsg = isGuest
+      ? (state.language === 'en'
+          ? "You are leaving Guest Mode. Unsaved survey results and tokens on this device will be reset. Confirm?"
+          : "คุณกำลังออกจากโหมดผู้เยี่ยมชม ข้อมูลผลลัพธ์และ Tokens บนเครื่องนี้จะถูกรีเซ็ต ต้องการยืนยันหรือไม่?")
+      : (state.language === 'en'
+          ? "Are you sure you want to log out?"
+          : "คุณต้องการออกจากระบบหรือไม่?");
+
+    const confirmed = await showBrandConfirm(confirmMsg);
     if (confirmed) {
       if (typeof liff !== 'undefined' && liff.isLoggedIn()) {
         try {
