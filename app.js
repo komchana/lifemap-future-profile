@@ -1253,11 +1253,8 @@ export function showBrandConfirm(message) {
 
 // Auth status check and routing helper
 function checkAuthStatus() {
-  // Load state first to see if guest data exists
   loadState();
-  updateDashboardUI();
 
-  // Sync campaign inputs and welcome badge
   const obCampaign = document.getElementById('ob-campaign');
   if (obCampaign) {
     obCampaign.value = state.campaignCode || "";
@@ -1267,24 +1264,35 @@ function checkAuthStatus() {
     schoolCodeInput.value = state.campaignCode || "";
   }
 
-  // Routing and view toggling logic
-  let loggedInUser = localStorage.getItem('lifemap_logged_in_user');
-  if (!loggedInUser) {
-    loggedInUser = 'guest_student';
-    localStorage.setItem('lifemap_logged_in_user', loggedInUser);
-    localStorage.setItem('lifemap_logged_in_role', 'student');
-  }
-
-  if (!state.studentName) state.studentName = "นักเรียน LifeMap";
-  if (!state.gradeLevel) state.gradeLevel = "m4";
-
   const appSidebar = document.getElementById('app-sidebar');
   const appHeader = document.getElementById('app-header');
   const appContainer = document.querySelector('.app-container');
 
+  const loggedInUser = localStorage.getItem('lifemap_logged_in_user');
+
+  if (!loggedInUser) {
+    // Unauthenticated / Fresh Visitor: Hide sidebar/header, show Welcome View cleanly
+    if (appSidebar) appSidebar.style.display = 'none';
+    if (appHeader) appHeader.style.display = 'none';
+    if (appContainer) appContainer.classList.remove('sidebar-visible');
+
+    document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
+    const viewAuth = document.getElementById('view-auth');
+    if (viewAuth) viewAuth.classList.add('active');
+
+    const welcomePanel = document.getElementById('welcome-panel');
+    const authFormContainer = document.getElementById('auth-form-container');
+    if (welcomePanel) welcomePanel.style.display = 'block';
+    if (authFormContainer) authFormContainer.style.display = 'none';
+    return;
+  }
+
+  // User is logged in or actively exploring
   if (appSidebar) appSidebar.style.display = 'flex';
   if (appHeader) appHeader.style.display = 'flex';
   if (appContainer) appContainer.classList.add('sidebar-visible');
+
+  updateDashboardUI();
 
   const currentView = localStorage.getItem('lifemap_v2_view') || 'dashboard';
   switchView(currentView);
@@ -1721,7 +1729,7 @@ function updateThemeToggleIcon(theme) {
 
 // Navigation / View Switching
 export function switchView(viewName) {
-  if (!state.studentName || !state.gradeLevel) {
+  if (viewName !== 'auth' && viewName !== 'onboarding' && (!state.studentName || !state.gradeLevel)) {
     // Cannot leave onboarding until form submitted
     return;
   }
@@ -1797,17 +1805,14 @@ export function switchView(viewName) {
 // Calculate Self-Exploration Progress dynamically based on user progress (0 to 110 points)
 export function calculateSelfExplorationProgress() {
   let pts = 0;
-  if (state.studentName && state.gradeLevel) pts += 10;
   
   const completedQuiz = Object.keys(state.answers).length === quizQuestions.length;
-  if (completedQuiz) pts += 20;
+  if (completedQuiz) pts += 30;
   
-  pts += (state.checkIns || []).length * 10; // Up to 70 pts (7 missions * 10)
-  if (state.claimedBadges.includes("guide")) pts += 5;
-  if (state.claimedBadges.includes("parent")) pts += 5;
+  pts += Math.min((state.checkIns || []).length * 10, 70); // Up to 70 pts from 7 day check-ins
   
-  pts = Math.min(pts, 110);
-  const progressPercent = Math.round((pts / 110) * 100);
+  pts = Math.min(pts, 100);
+  const progressPercent = Math.round((pts / 100) * 100);
   
   return {
     percent: progressPercent,
@@ -1828,29 +1833,42 @@ function safeSetStyle(id, prop, val) {
 
 function updateDashboardUI() {
   const isEn = state.language === 'en';
+  const isGuest = !localStorage.getItem('lifemap_logged_in_user') || localStorage.getItem('lifemap_logged_in_user') === 'guest_student';
 
   // Stats in sidebar
-  safeSetText('sidebar-student-name', state.studentName || (isEn ? "LifeMap Explorer" : "นักเรียน LifeMap"));
+  const defaultName = isGuest ? (isEn ? "Guest Explorer" : "ผู้เยี่ยมชม") : (isEn ? "LifeMap Explorer" : "นักเรียน LifeMap");
+  safeSetText('sidebar-student-name', state.studentName || defaultName);
   
-  const gradeLabel = (state.gradeLevel && gradePersonalizationMap[state.gradeLevel]) ? gradePersonalizationMap[state.gradeLevel].label[state.language || 'th'] : (isEn ? "G10" : "ม.4");
+  const gradeLabel = (state.gradeLevel && gradePersonalizationMap[state.gradeLevel]) ? gradePersonalizationMap[state.gradeLevel].label[state.language || 'th'] : "-";
   safeSetText('sidebar-grade-badge', gradeLabel);
   safeSetText('sidebar-tokens', state.tokens);
   safeSetText('header-tokens', state.tokens);
 
-  // Progress calculations
-  const progressVal = passCompletion();
+  // Update logout button label dynamically
+  const sidebarLogoutBtn = document.getElementById('btn-sidebar-logout');
+  if (sidebarLogoutBtn) {
+    const logoutSpan = sidebarLogoutBtn.querySelector('span[data-i18n="nav-logout"]');
+    if (logoutSpan) {
+      logoutSpan.textContent = isGuest 
+        ? (isEn ? "Exit Guest Mode" : "ออกจากโหมดผู้เยี่ยมชม")
+        : (isEn ? "Logout" : "ออกจากระบบ");
+    }
+  }
+
+  // Unified Progress calculations (consistent across sidebar and center dashboard)
+  const progressVal = calculateSelfExplorationProgress().percent;
   safeSetText('pass-progress-text', `${progressVal}%`);
   safeSetText('passport-progress-text', `${progressVal}%`);
   safeSetStyle('pass-progress-fill', 'width', `${progressVal}%`);
   safeSetStyle('passport-progress-fill', 'width', `${progressVal}%`);
 
   // Dashboard views
-  const displayName = state.studentName || (isEn ? "Explorer" : "นักเรียน");
-  const displayGrade = state.gradeLevel 
+  const displayName = state.studentName || defaultName;
+  const displayGrade = (state.gradeLevel && gradePersonalizationMap[state.gradeLevel])
     ? (isEn 
         ? (['pvc', 'pvs', 'uni', 'work'].includes(state.gradeLevel) ? gradePersonalizationMap[state.gradeLevel].label.en : `Grade ${gradePersonalizationMap[state.gradeLevel].label.en}`) 
         : (['work'].includes(state.gradeLevel) ? `${gradePersonalizationMap[state.gradeLevel].label.th}` : `ชั้น ${gradePersonalizationMap[state.gradeLevel].label.th}`)) 
-    : "";
+    : "-";
   const displayCampaign = state.campaignCode || "GENERAL";
 
   safeSetText('dash-pass-name', displayName);
@@ -2210,22 +2228,26 @@ function handleOnboardingSubmit(e) {
   // Transition UI
   document.getElementById('view-onboarding').classList.remove('active');
   
-  const loggedInUser = localStorage.getItem('lifemap_logged_in_user');
-  if (loggedInUser) {
-    document.getElementById('app-sidebar').style.display = 'flex';
-    document.getElementById('app-header').style.display = 'flex';
-    document.querySelector('.app-container').classList.add('sidebar-visible');
-    switchView('dashboard');
-    alert(state.language === 'en' ? "Your Future Profile has been unlocked!" : "Future Profile ของคุณได้รับการปลดล็อกแล้ว!");
-  } else {
-    // Guest flow: go straight to quiz and start it!
-    document.getElementById('app-sidebar').style.display = 'none';
-    document.getElementById('app-header').style.display = 'none';
-    document.querySelector('.app-container').classList.remove('sidebar-visible');
-    document.getElementById('view-quiz-tab').classList.add('active');
-    renderQuizTab();
-    startQuiz();
+  let loggedInUser = localStorage.getItem('lifemap_logged_in_user');
+  if (!loggedInUser) {
+    loggedInUser = 'guest_student';
+    localStorage.setItem('lifemap_logged_in_user', loggedInUser);
+    localStorage.setItem('lifemap_logged_in_role', 'student');
   }
+
+  saveState();
+
+  const appSidebar = document.getElementById('app-sidebar');
+  const appHeader = document.getElementById('app-header');
+  const appContainer = document.querySelector('.app-container');
+
+  if (appSidebar) appSidebar.style.display = 'flex';
+  if (appHeader) appHeader.style.display = 'flex';
+  if (appContainer) appContainer.classList.add('sidebar-visible');
+
+  // Direct user straight to quiz-tab to begin the 11-question survey
+  switchView('quiz-tab');
+  startQuiz();
 }
 
 // --- QUIZ & PROFILE MODULE RENDERING ---
