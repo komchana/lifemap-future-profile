@@ -2604,12 +2604,20 @@ export async function deleteUserSurveyData(deleteEndpoint = 'http://localhost:80
   // 2. Clear local submission IDs and survey state
   localStorage.removeItem('lifemap_submission_id');
   state.answers = {};
-  state.careerQuizRewarded = false;
-  state.thinkingStyleRewarded = false;
   state.syncStatus = undefined;
   saveStateData();
 
-  // 3. Call Right-to-Erasure Endpoint with authorization proof
+  if (!window.ENABLE_SERVER_SYNC) {
+    return {
+      status: 'success',
+      localOnly: true,
+      respondentId: respondentId,
+      message: 'ลบข้อมูลทดสอบในเครื่องเรียบร้อยแล้ว (โหมดทดสอบ)',
+      deletedAt: new Date().toISOString()
+    };
+  }
+
+  // 3. Call Right-to-Erasure Endpoint with authorization proof (only in server sync mode)
   try {
     const res = await fetch(deleteEndpoint, {
       method: 'POST',
@@ -3118,9 +3126,24 @@ export function handleCustomChatSubmit() {
   sendUserMessage(message, message);
 }
 
-function triggerAiChatResponse(promptMessage, loadingBubbleId) {
+export function triggerAiChatResponse(promptMessage, loadingBubbleId) {
   const chatBubble = document.getElementById(loadingBubbleId);
   const lang = state.language || 'th';
+
+  if (!window.ENABLE_SERVER_SYNC) {
+    setTimeout(() => {
+      if (chatBubble) {
+        chatBubble.textContent = lang === 'en'
+          ? "🌱 [AI Guide] System is currently in local test mode and not connected to external AI services."
+          : "🌱 [AI Guide] ระบบอยู่ในโหมดทดสอบในเครื่อง ไม่ได้เชื่อมต่อบริการ AI ภายนอกครับ (โหมดทดสอบการแสดงผลหน้าเว็บ)";
+        const wrapper = chatBubble.closest('.chat-bubble-wrapper');
+        if (wrapper) wrapper.classList.remove('loading-bubble');
+      }
+      claimGuideBadge();
+      scrollToBottom();
+    }, 300);
+    return;
+  }
   
   const apiKey = localStorage.getItem('lifemap_gemini_api_key') || 'AQ.Ab8RN6L4Y3HKnrmDGyixD9tfPnH2d_7B76_7GE3XQ5Ahc16lGA';
   console.log("DEBUG: triggerAiChatResponse - Retrieved apiKey:", apiKey ? (apiKey === 'AQ.Ab8RN6L4Y3HKnrmDGyixD9tfPnH2d_7B76_7GE3XQ5Ahc16lGA' ? "Default/Mock Key" : `User Key (length: ${apiKey.length}, starts with: ${apiKey.substring(0, 6)}...)`) : "None");
@@ -4867,8 +4890,7 @@ function setupEventListeners() {
       state.thinkingStyleAnswers = {};
       state.thinkingStyleCompleted = undefined;
       state.thinkingStyle = null;
-      state.careerQuizRewarded = false;
-      state.thinkingStyleRewarded = false;
+      // Note: Preserve careerQuizRewarded & thinkingStyleRewarded so retaking quiz yields 0 extra tokens
       saveState();
       renderQuizTab();
     }
