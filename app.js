@@ -1294,6 +1294,8 @@ function renderLifeProfileUI() {
   const profile = computeProfile(state.answers);
   if (!profile) return;
 
+  updateStorageStatusUI();
+
   const lang = state.language || 'th';
   const isParent = localStorage.getItem('lifemap_logged_in_role') === 'parent';
 
@@ -2496,7 +2498,30 @@ export function buildSurveyPayload() {
   };
 }
 
+// Global flag for server sync vs local test mode (default false for UI testing)
+window.ENABLE_SERVER_SYNC = false;
+
+export function updateStorageStatusUI() {
+  const el = document.getElementById('storage-status-text');
+  if (el) {
+    if (!window.ENABLE_SERVER_SYNC || state.syncStatus === 'LOCAL_TEST_STORED') {
+      el.textContent = "เก็บในเครื่องทดสอบ ยังไม่ได้ส่งฐานข้อมูล";
+    } else if (state.syncStatus === 'SYNCED') {
+      el.textContent = "บันทึกสำเร็จ (ส่งข้อมูลเรียบร้อย)";
+    } else {
+      el.textContent = "เก็บในเครื่องทดสอบ ยังไม่ได้ส่งฐานข้อมูล";
+    }
+  }
+}
+
 export async function syncSurveyQueue(targetEndpoint = 'http://localhost:8088/api/test/survey/submit') {
+  if (!window.ENABLE_SERVER_SYNC) {
+    state.syncStatus = 'LOCAL_TEST_STORED';
+    updateStorageStatusUI();
+    saveStateData();
+    return;
+  }
+
   const queueRaw = localStorage.getItem('lifemap_offline_queue');
   let queue = queueRaw ? JSON.parse(queueRaw) : [];
 
@@ -2529,6 +2554,7 @@ export async function syncSurveyQueue(targetEndpoint = 'http://localhost:8088/ap
   }
 
   localStorage.setItem('lifemap_offline_queue', JSON.stringify(queue));
+  updateStorageStatusUI();
   saveStateData();
 }
 
@@ -2543,25 +2569,26 @@ export function enqueueAndSyncSurvey(targetEndpoint = 'http://localhost:8088/api
   if (existingIdx >= 0) {
     if (queue[existingIdx].status !== 'SYNCED') {
       queue[existingIdx].payload = payload;
-      queue[existingIdx].status = 'PENDING';
+      queue[existingIdx].status = window.ENABLE_SERVER_SYNC ? 'PENDING' : 'LOCAL_TEST_STORED';
     }
   } else {
     queue.push({
       id: 'q_item_' + Date.now(),
       payload: payload,
-      status: 'PENDING',
+      status: window.ENABLE_SERVER_SYNC ? 'PENDING' : 'LOCAL_TEST_STORED',
       enqueuedAt: new Date().toISOString()
     });
   }
 
-  state.syncStatus = queue.some(i => i.payload.submissionId === payload.submissionId && i.status === 'SYNCED')
-    ? 'SYNCED'
-    : 'PENDING';
+  state.syncStatus = window.ENABLE_SERVER_SYNC ? 'PENDING' : 'LOCAL_TEST_STORED';
 
   localStorage.setItem('lifemap_offline_queue', JSON.stringify(queue));
+  updateStorageStatusUI();
   saveStateData();
 
-  syncSurveyQueue(targetEndpoint);
+  if (window.ENABLE_SERVER_SYNC) {
+    syncSurveyQueue(targetEndpoint);
+  }
 }
 
 export async function deleteUserSurveyData(deleteEndpoint = 'http://localhost:8088/api/test/survey/delete') {
