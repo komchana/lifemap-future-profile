@@ -1,3 +1,4 @@
+import { paths, renderExplorationResult, renderExperimentWorkbench } from './exploration.js?v=21';
 // Global resilience error boundary
 window.addEventListener('error', (e) => {
   console.warn("Caught runtime error (resilience mode):", e.error || e.message);
@@ -28,6 +29,9 @@ function initCanvas() {
     resizeCanvas();
     renderCanvas();
   });
+  if (typeof ResizeObserver !== 'undefined') {
+    new ResizeObserver(() => renderCanvas()).observe(metroCanvas.parentElement);
+  }
 }
 
 function resizeCanvas() {
@@ -36,13 +40,14 @@ function resizeCanvas() {
   if (!parent) return;
   let width = parent.getBoundingClientRect().width;
   if (width < 600) width = 600;
-  metroCanvas.width = width;
+  if (metroCanvas.width !== Math.round(width)) metroCanvas.width = Math.round(width);
   metroCanvas.style.width = `${width}px`;
   if (overlay) overlay.style.width = `${width}px`;
 }
 
 function renderCanvas() {
   if (!metroCanvas || !ctx) return;
+  resizeCanvas();
   if (overlay) overlay.innerHTML = '';
   ctx.clearRect(0, 0, metroCanvas.width, metroCanvas.height);
   const mStatus = getGrowthMissionStatus();
@@ -60,7 +65,7 @@ function renderCanvas() {
   ctx.beginPath();
   ctx.moveTo(padding, cy);
   ctx.lineTo(width - padding, cy);
-  ctx.strokeStyle = "var(--border-color)";
+  ctx.strokeStyle = "#CBD5E1";
   ctx.lineWidth = 4;
   ctx.setLineDash([5, 8]);
   ctx.stroke();
@@ -89,22 +94,22 @@ function renderCanvas() {
     const x = padding + i * xSpacing;
     const y = cy;
     const isCompleted = state.checkIns ? state.checkIns.some(c => c.missionId === mission.id) : false;
-    const isActive = mStatus.currentMission && mStatus.currentMission.id === mission.id;
     const unlocked = isDayUnlocked(dayNum);
+    const isActive = unlocked && mStatus.currentMission && mStatus.currentMission.id === mission.id;
     
     ctx.beginPath();
     ctx.arc(x, y, isActive ? 10 : 8, 0, Math.PI * 2);
     if (isCompleted) {
       ctx.fillStyle = lineColor;
-      ctx.strokeStyle = "var(--text-primary)";
+      ctx.strokeStyle = "#0F172A";
       ctx.lineWidth = 2;
     } else if (isActive) {
-      ctx.fillStyle = "var(--bg-primary)";
-      ctx.strokeStyle = "var(--color-accent)";
+      ctx.fillStyle = "#FFFFFF";
+      ctx.strokeStyle = "#0F172A";
       ctx.lineWidth = 3;
     } else if (unlocked) {
-      ctx.fillStyle = "var(--bg-secondary)";
-      ctx.strokeStyle = "var(--border-color)";
+      ctx.fillStyle = "#F8FAFC";
+      ctx.strokeStyle = "#CBD5E1";
       ctx.lineWidth = 2;
     } else {
       ctx.fillStyle = "rgba(30, 43, 20, 0.4)";
@@ -115,7 +120,7 @@ function renderCanvas() {
     ctx.stroke();
 
     ctx.font = "bold 9px 'Plus Jakarta Sans'";
-    ctx.fillStyle = isActive ? "var(--color-accent)" : isCompleted ? lineColor : "var(--text-muted)";
+    ctx.fillStyle = isActive ? "#0F172A" : isCompleted ? lineColor : "#475569";
     ctx.textAlign = "center";
     ctx.fillText(`D${dayNum}`, x, y - 18);
 
@@ -142,7 +147,7 @@ function initWheel() {
 }
 
 function renderWheel() {
-  if (!radarSvg) radarSvg = document.getElementById('riasec-radar-svg');
+  radarSvg = document.getElementById('riasec-radar-svg');
   if (!radarSvg) return;
   const profile = computeProfile(state.answers);
   if (!profile) return;
@@ -238,8 +243,8 @@ export const gradePersonalizationMap = {
     heroTitle: { th: "เริ่มค้นหาตัวเองแบบไม่ต้องรีบเลือกคณะ", en: "Start exploring yourself without picking a major yet" },
     heroSubtitle: { th: "LifeMap จะช่วยจับความสนใจ จุดแข็ง และกิจกรรมที่ควรลอง เพื่อให้การสำรวจอนาคตเริ่มจากความมั่นใจ ไม่ใช่ความกดดัน", en: "LifeMap helps match interests, strengths, and recommended activities to start future exploration with confidence, not pressure." },
     quizIntro: { th: "สำหรับ ม.4 Quiz นี้จะชวนสังเกตความสนใจ สไตล์การเรียน และจุดแข็งที่เริ่มเห็นจากกิจกรรมใกล้ตัว โดยยังไม่ต้องรีบตัดสินคณะหรืออาชีพสุดท้าย", en: "For Grade 10, this quiz reflects on your interests, learning styles, and emerging strengths without rushing to pick a final major or career." },
-    ctaLabel: { th: "ลอง 1 โปรเจกต์เล็กใน 7 วัน", en: "Try 1 micro-project in 7 days" },
-    nextActionText: { th: "เริ่มจากเลือกกิจกรรมหรือโปรเจกต์เล็ก 1 อย่างที่อยากลองใน 7 วัน แล้วเก็บ reflection ว่าอะไรทำให้รู้สึกมีพลัง", en: "Start by choosing 1 small activity or project to try for 7 days, then reflect on what energized you." },
+    ctaLabel: { th: "ลอง 1 กิจกรรมใน 10 นาที", en: "Try 1 activity in 10 minutes" },
+    nextActionText: { th: "เริ่มจากกิจกรรมเล็ก 10 นาที แล้วตอบว่าสนุกไหม ยากไหม และอยากทำอะไรต่อ", en: "Start with a 10-minute activity, then note whether it was enjoyable, difficult, and what you want to do next." },
     goalPrompt: { th: "ช่วงนี้อยากให้ LifeMap ช่วยสำรวจอะไรแบบไม่กดดัน", en: "What would you like LifeMap to help you explore without pressure?" },
     goalOptions: {
       th: ["ค้นหาความสนใจของตัวเอง", "รู้จุดแข็งจากกิจกรรมที่ชอบ", "ลองชมรมหรือโปรเจกต์เล็ก", "คุยเรื่องอนาคตกับครอบครัวแบบสบายขึ้น"],
@@ -338,8 +343,8 @@ export const quizQuestions = [
     key: "q1",
     domain: "Profile Archetype",
     prompt: {
-      th: "Q1. ถ้าได้เริ่มโปรเจกต์ใหม่ในโรงเรียน คุณอยากรับบทบาทไหนมากที่สุด?",
-      en: "Q1. If you were starting a new project in school, which role would you want to take the most?"
+      th: "Q1. ถ้าได้ร่วมทำโครงการหรือกิจกรรมใหม่กับคนอื่น คุณอยากรับบทบาทไหนมากที่สุด?",
+      en: "Q1. If you were to join a new project or activity with others, which role would you most like to take?"
     },
     options: [
       { label: { th: "A. ออกแบบภาพรวม เล่าเรื่อง และทำคอนเทนต์ให้น่าสนใจ", en: "A. Design overall vision, storytelling, and engaging content" }, value: 4, cluster: "creator", riasec: "A", bigFive: "openness", code: "A" },
@@ -386,8 +391,8 @@ export const quizQuestions = [
     key: "q4",
     domain: "Team & Competition Role",
     prompt: {
-      th: "Q4. ถ้าอยู่ในทีมประกวดหรือ startup school project คุณอยากดูแลส่วนไหน?",
-      en: "Q4. If in a competition or startup school project team, which part would you manage?"
+      th: "Q4. ถ้าอยู่ในทีมประกวด หรือทีมโครงการ/โปรเจกต์ใหม่ คุณอยากดูแลส่วนไหน?",
+      en: "Q4. If in a competition or project team, which part would you manage?"
     },
     options: [
       { label: { th: "A. branding storytelling และการสื่อสารให้คนเชื่อในไอเดีย", en: "A. Branding, storytelling, and persuasive communication" }, value: 3, cluster: "creator", riasec: "A", bigFive: "openness", code: "A" },
@@ -1166,6 +1171,7 @@ export const initialState = {
   studentName: "",
   schoolName: "",
   gradeLevel: null,
+  gradeConfirmed: false,
   currentGoal: "",
   guideTone: "supportive",
   language: localStorage.getItem('lifemap_language') || "th",
@@ -1183,9 +1189,14 @@ export const initialState = {
   thinkingStyleCompleted: undefined,
   thinkingStyle: null,
   tokens: 25,
+  careerQuizRewarded: false,
+  thinkingStyleRewarded: false,
   claimedBadges: [],
   bookmarks: [],
   growthMissions: [],
+  recommendedMissions: [],
+  surveyVersion: null,
+  lastCompletedAt: "",
   checkIns: [],
   streakCount: 0,
   lastCheckInDate: "",
@@ -1204,6 +1215,26 @@ export let state = { ...initialState };
 let currentQuizIdx = 0;
 let quizMode = 'career';
 let currentSelectedDay = 1;
+
+// Native dialog supplies focus trapping, Escape and an inert background.
+export function showBrandAlert(message, options = {}) {
+  let dialog = document.getElementById('lifemap-notice');
+  if (!dialog) {
+    dialog = document.createElement('dialog');
+    dialog.id = 'lifemap-notice';
+    dialog.className = 'lifemap-notice';
+    dialog.setAttribute('aria-labelledby', 'lifemap-notice-title');
+    dialog.setAttribute('aria-describedby', 'lifemap-notice-message');
+    dialog.innerHTML = `<form method="dialog"><div class="notice-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m5 12 4 4L19 6"/></svg></div><h2 id="lifemap-notice-title"></h2><p id="lifemap-notice-message"></p><div class="notice-reward" hidden>+20 Tokens</div><button class="btn btn-primary" autofocus></button></form>`;
+    document.body.appendChild(dialog);
+  }
+  const en = state.language === 'en';
+  dialog.querySelector('h2').textContent = options.title || (en ? 'LifeMap notification' : 'แจ้งเตือนจาก LifeMap');
+  dialog.querySelector('p').textContent = message;
+  dialog.querySelector('.notice-reward').hidden = !options.reward;
+  dialog.querySelector('button').textContent = en ? 'Continue' : 'ไปต่อกันเลย';
+  if (!dialog.open) dialog.showModal();
+}
 
 export function showBrandConfirm(message) {
   return new Promise((resolve) => {
@@ -1251,66 +1282,87 @@ export function showBrandConfirm(message) {
 
 // Auth status check and routing helper
 function checkAuthStatus() {
-  // Load state first to see if guest data exists
   loadState();
-  updateDashboardUI();
 
-  // Sync campaign inputs and welcome badge
+  const loggedInUser = localStorage.getItem('lifemap_logged_in_user');
+  console.log('[DEBUG CHECKAUTH]: loggedInUser =', loggedInUser, 'studentName =', state.studentName);
   const obCampaign = document.getElementById('ob-campaign');
   if (obCampaign) {
     obCampaign.value = state.campaignCode || "";
   }
-  const schoolCodeInput = document.getElementById('school-code-input');
-  if (schoolCodeInput) {
-    schoolCodeInput.value = state.campaignCode || "";
-  }
-
-  // Routing and view toggling logic
-  let loggedInUser = localStorage.getItem('lifemap_logged_in_user');
-  if (!loggedInUser) {
-    loggedInUser = 'guest_student';
-    localStorage.setItem('lifemap_logged_in_user', loggedInUser);
-    localStorage.setItem('lifemap_logged_in_role', 'student');
-  }
-
-  if (!state.studentName) state.studentName = "นักเรียน LifeMap";
-  if (!state.gradeLevel) state.gradeLevel = "m4";
 
   const appSidebar = document.getElementById('app-sidebar');
   const appHeader = document.getElementById('app-header');
   const appContainer = document.querySelector('.app-container');
 
+  if (!loggedInUser) {
+    // Unauthenticated / Fresh Visitor: Hide sidebar/header, show Welcome View cleanly
+    if (appSidebar) appSidebar.style.display = 'none';
+    if (appHeader) appHeader.style.display = 'none';
+    if (appContainer) appContainer.classList.remove('sidebar-visible');
+
+    document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
+    const viewAuth = document.getElementById('view-auth');
+    if (viewAuth) viewAuth.classList.add('active');
+
+    const welcomePanel = document.getElementById('welcome-panel');
+    if (welcomePanel) welcomePanel.style.display = 'block';
+    return;
+  }
+
+  // User is logged in or actively exploring
   if (appSidebar) appSidebar.style.display = 'flex';
   if (appHeader) appHeader.style.display = 'flex';
   if (appContainer) appContainer.classList.add('sidebar-visible');
 
-  const currentView = localStorage.getItem('lifemap_v2_view') || 'dashboard';
-  
-  let targetPanel = document.getElementById(`view-${currentView}`);
-  if (!targetPanel) targetPanel = document.getElementById('view-dashboard') || document.getElementById('view-onboarding');
+  updateDashboardUI();
 
-  document.querySelectorAll('.view-panel').forEach(panel => {
-    panel.classList.toggle('active', panel === targetPanel);
-  });
-  
-  document.querySelectorAll('.nav-menu .nav-item').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.view === currentView);
-  });
-  
-  const settingsBtn = document.getElementById('btn-settings');
-  if (settingsBtn) {
-    settingsBtn.classList.toggle('active', settingsBtn.dataset.view === currentView);
+  let currentView = localStorage.getItem('lifemap_v2_view') || 'dashboard';
+  if (currentView === 'auth') {
+    currentView = 'dashboard';
   }
-  
-  const headerSettingsBtn = document.getElementById('btn-header-settings');
-  if (headerSettingsBtn) {
-    headerSettingsBtn.classList.toggle('active', currentView === 'settings');
+  if (!state.gradeLevel && currentView !== 'auth' && currentView !== 'welcome') {
+    currentView = 'onboarding';
+  }
+  switchView(currentView);
+
+  if (loggedInUser && state.gradeLevel && !state.gradeConfirmed && currentView !== 'onboarding' && currentView !== 'auth') {
+    promptGradeConfirmation();
+  }
+}
+
+function promptGradeConfirmation() {
+  const modal = document.getElementById('grade-confirm-modal');
+  if (!modal) return;
+
+  const radios = modal.querySelectorAll('input[name="confirm-grade"]');
+  radios.forEach(r => { r.checked = false; });
+
+  modal.classList.add('active');
+
+  const btnConfirm = document.getElementById('btn-confirm-grade');
+  if (btnConfirm && !btnConfirm._hasConfirmListener) {
+    btnConfirm._hasConfirmListener = true;
+    btnConfirm.addEventListener('click', () => {
+      const selected = modal.querySelector('input[name="confirm-grade"]:checked');
+      if (!selected) {
+        showBrandAlert(state.language === 'en' ? "Please select your grade level before confirming!" : "กรุณาเลือกระดับชั้นการศึกษาของคุณก่อนยืนยัน!");
+        return;
+      }
+      state.gradeLevel = selected.value;
+      state.gradeConfirmed = true;
+      saveStateData();
+      modal.classList.remove('active');
+      updateDashboardUI();
+    });
   }
 }
 
 function renderLifeProfileUI() {
   const profile = computeProfile(state.answers);
   if (!profile) return;
+
+  updateStorageStatusUI();
 
   const lang = state.language || 'th';
   const isParent = localStorage.getItem('lifemap_logged_in_role') === 'parent';
@@ -1346,12 +1398,14 @@ function renderLifeProfileUI() {
   const nextMovesList = profile.nextMoves[lang] || [];
   nextMovesList.forEach(m => {
     const li = document.createElement('li');
-    li.textContent = m;
     if (!isParent) {
-      li.style.cursor = 'pointer';
-      li.addEventListener('click', () => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'next-move-btn';
+      btn.textContent = m;
+      btn.addEventListener('click', () => {
         const isEn = state.language === 'en';
-        const question = isEn 
+        const question = isEn
           ? `How can I start this next move: "${m}"?`
           : `ช่วยแนะนำวิธีเริ่มต้นทำก้าวต่อไปนี้หน่อยครับ/ค่ะ: "${m}"`;
         const payload = isEn
@@ -1360,7 +1414,9 @@ function renderLifeProfileUI() {
         sendUserMessage(question, payload);
         scrollToChat();
       });
+      li.appendChild(btn);
     } else {
+      li.textContent = m;
       li.style.cursor = 'default';
     }
     nextMovesUl.appendChild(li);
@@ -1393,13 +1449,14 @@ function renderLifeProfileUI() {
   const bigFiveList = document.getElementById('bigfive-scores-list');
   bigFiveList.innerHTML = '';
   profile.bigFiveScores.forEach(s => {
-    const pct = Math.round((s.score / 24) * 100);
+    const maxScore = s.maxScore || 24;
+    const pct = Math.min(100, Math.round((s.score / maxScore) * 100));
     const item = document.createElement('div');
     item.className = 'bigfive-item';
     item.innerHTML = `
       <div class="bf-name-val">
         <span>${s.name}</span>
-        <span>${s.score}/24</span>
+        <span>${s.score}/${maxScore}</span>
       </div>
       <div class="progress-bar">
         <div class="progress-fill" style="width: ${pct}%"></div>
@@ -1439,6 +1496,10 @@ function renderLifeProfileUI() {
   
   const curCluster = profile.careerClusters[0]?.id || "creator";
   const curVibe = vibes[curCluster] || vibes.creator;
+
+  const horoscopeCard = document.querySelector('.horoscope-card');
+  if (horoscopeCard) horoscopeCard.style.display = 'block';
+
   safeSetText('horoscope-constellation', curVibe.star[lang] || curVibe.star);
   safeSetText('horoscope-lucky-skill', curVibe.skill[lang] || curVibe.skill);
   safeSetText('horoscope-ritual', curVibe.ritual[lang] || curVibe.ritual);
@@ -1494,6 +1555,7 @@ function renderLifeProfileUI() {
   
   // Render Thinking Style Detailed Report
   renderDetailedThinkingStyleProfile();
+  renderExplorationResult(state, quizQuestions, saveStateData, switchView);
 }
 
 function initApp() {
@@ -1508,7 +1570,6 @@ function initApp() {
 
   initTheme();
   setupEventListeners();
-  setupAdminEventListeners();
   state.language = localStorage.getItem('lifemap_language') || 'th';
   updateLanguageUI();
 
@@ -1520,9 +1581,8 @@ function initApp() {
     saveStateData();
   }
 
-  checkAuthStatus();
-
   initCanvas();
+  checkAuthStatus();
   initWheel();
   updateDashboardUI();
   
@@ -1571,6 +1631,11 @@ function initLiff() {
   const settingsLiffInput = document.getElementById('settings-liff-id');
   if (settingsLiffInput) {
     settingsLiffInput.value = liffId;
+  }
+
+  if (window.ENABLE_SERVER_SYNC === false || typeof liff === 'undefined') {
+    console.log("Local Test Mode / Offline: Skipping LINE LIFF network initialization.");
+    return;
   }
 
   liff.init({ liffId: liffId })
@@ -1673,12 +1738,15 @@ function loadState() {
   let saved = null;
   if (username) {
     saved = localStorage.getItem(`lifemap_state_${username}`);
-  } else {
-    saved = localStorage.getItem('lifemap_state_v2');
   }
   if (saved) {
     try {
       state = { ...initialState, ...JSON.parse(saved) };
+      if (username) {
+        state.studentName = state.studentName || username;
+        state.gradeLevel = state.gradeLevel || null;
+      }
+      state.gradeConfirmed = state.gradeConfirmed || false;
       state.checkIns = state.checkIns || [];
       state.claimedBadges = state.claimedBadges || [];
       state.bookmarks = state.bookmarks || [];
@@ -1691,7 +1759,11 @@ function loadState() {
       // Fallback below
     }
   }
-  state = { ...initialState };
+  state = JSON.parse(JSON.stringify(initialState));
+  if (username) {
+    state.studentName = username;
+    state.gradeLevel = null;
+  }
 }
 
 // Save state to localStorage
@@ -1711,7 +1783,7 @@ export function saveState() {
 
 // Theme Handling
 function initTheme() {
-  const savedTheme = 'dark-theme';
+  const savedTheme = localStorage.getItem('lifemap_theme') || 'light-theme';
   document.documentElement.className = savedTheme;
   localStorage.setItem('lifemap_theme', savedTheme);
   updateThemeToggleIcon(savedTheme);
@@ -1732,19 +1804,35 @@ function updateThemeToggleIcon(theme) {
 }
 
 // Navigation / View Switching
+// Guest Prototype: explicit allow-list of views switchView is permitted to render.
+// Any name outside this list (e.g. a spoofed/removed "admin" view) is rejected as a safe no-op.
+const ALLOWED_VIEWS = [
+  'welcome', 'auth', 'onboarding', 'dashboard', 'quiz-tab',
+  'missions', 'review', 'parent', 'marketplace', 'references', 'settings'
+];
+
 export function switchView(viewName) {
-  if (!state.studentName || !state.gradeLevel) {
+  if (!ALLOWED_VIEWS.includes(viewName)) {
+    return;
+  }
+
+  if (viewName === 'welcome') {
+    document.querySelectorAll('.view-panel').forEach(panel => panel.classList.toggle('active', panel.id === 'view-auth'));
+    const welcomePanel = document.getElementById('welcome-panel');
+    if (welcomePanel) welcomePanel.style.display = 'block';
+    const sidebar = document.getElementById('app-sidebar');
+    const header = document.getElementById('app-header');
+    if (sidebar) sidebar.style.display = 'none';
+    if (header) header.style.display = 'none';
+    document.querySelector('.app-container')?.classList.remove('sidebar-visible');
+    localStorage.setItem('lifemap_v2_view', 'welcome');
+    return;
+  }
+  if (viewName !== 'auth' && viewName !== 'onboarding' && (!state.studentName || !state.gradeLevel)) {
     // Cannot leave onboarding until form submitted
     return;
   }
-  
-  const isParent = localStorage.getItem('lifemap_logged_in_role') === 'parent';
-  if (isParent) {
-    if (viewName === 'parent' || viewName === 'admin' || viewName === 'settings' || viewName === 'review') {
-      return;
-    }
-  }
-  
+
   localStorage.setItem('lifemap_v2_view', viewName);
 
   // Update navigation items active state
@@ -1771,13 +1859,12 @@ export function switchView(viewName) {
   const headers = {
     dashboard: { title: "Dashboard", subtitle: "ยินดีต้อนรับกลับสู่เส้นทางอนาคตของคุณ" },
     "quiz-tab": { title: "Life Profile", subtitle: "ภาพสะท้อนจุดแข็ง สไตล์การเรียนรู้ และแนวโน้มอาชีพของคุณ" },
-    missions: { title: "7-Day Growth Missions", subtitle: "ท้าทายภารกิจเล็ก ๆ รายวันเพื่อสะสมหลักฐานใน Future Profile" },
+    missions: { title: "ลองทำจริง", subtitle: "กิจกรรม 10 นาที ตอบ 3 ข้อ แล้วค่อย ๆ เห็นสิ่งที่เหมาะกับคุณ" },
     review: { title: "Growth Review", subtitle: "ประเมินการพัฒนาตนเองจากการเช็คอินและบันทึกสะท้อนคิด" },
     parent: { title: "Parent Link", subtitle: "แชร์ข้อมูลและสร้างความเข้าใจในการเติบโตในครอบครัว" },
     marketplace: { title: "Opportunities", subtitle: "คัดสรรโอกาสทางวิชาการ กิจกรรม และทุนการศึกษาที่เหมาะกับคุณ" },
     references: { title: "References", subtitle: "แหล่งข้อมูลอ้างอิงทางทฤษฎีและแบบทดสอบทางจิตวิทยา" },
-    settings: { title: "Settings", subtitle: "จัดการข้อมูลส่วนบุคคลและการยินยอมด้านความปลอดภัย" },
-    admin: { title: "Admin Console", subtitle: "ระบบควบคุมแคมเปญโรงเรียน ติดตามสถิตินักเรียน และตั้งค่ากลางบริษัท" }
+    settings: { title: "Settings", subtitle: "จัดการข้อมูลส่วนบุคคลและการยินยอมด้านความปลอดภัย" }
   };
 
   const curHeader = headers[viewName] || { title: "LifeMap", subtitle: "" };
@@ -1801,25 +1888,20 @@ export function switchView(viewName) {
     renderReferencesTab();
   } else if (viewName === 'settings') {
     renderSettingsTab();
-  } else if (viewName === 'admin') {
-    updateAdminUI();
   }
 }
 
 // Calculate Self-Exploration Progress dynamically based on user progress (0 to 110 points)
 export function calculateSelfExplorationProgress() {
   let pts = 0;
-  if (state.studentName && state.gradeLevel) pts += 10;
   
   const completedQuiz = Object.keys(state.answers).length === quizQuestions.length;
-  if (completedQuiz) pts += 20;
+  if (completedQuiz) pts += 30;
   
-  pts += (state.checkIns || []).length * 10; // Up to 70 pts (7 missions * 10)
-  if (state.claimedBadges.includes("guide")) pts += 5;
-  if (state.claimedBadges.includes("parent")) pts += 5;
+  pts += Math.min((state.checkIns || []).length * 10, 70); // Up to 70 pts from 7 day check-ins
   
-  pts = Math.min(pts, 110);
-  const progressPercent = Math.round((pts / 110) * 100);
+  pts = Math.min(pts, 100);
+  const progressPercent = Math.round((pts / 100) * 100);
   
   return {
     percent: progressPercent,
@@ -1840,29 +1922,43 @@ function safeSetStyle(id, prop, val) {
 
 function updateDashboardUI() {
   const isEn = state.language === 'en';
+  const isGuest = !localStorage.getItem('lifemap_logged_in_user') || localStorage.getItem('lifemap_logged_in_user') === 'guest_student';
 
-  // Stats in sidebar
-  safeSetText('sidebar-student-name', state.studentName || (isEn ? "LifeMap Explorer" : "นักเรียน LifeMap"));
+  const loggedInUser = localStorage.getItem('lifemap_logged_in_user');
+  const defaultName = isGuest ? (isEn ? "Guest Explorer" : "ผู้เยี่ยมชม") : (loggedInUser ? loggedInUser : (isEn ? "LifeMap Explorer" : "นักเรียน LifeMap"));
+  safeSetText('sidebar-student-name', state.studentName || defaultName);
   
-  const gradeLabel = state.gradeLevel ? gradePersonalizationMap[state.gradeLevel].label[state.language || 'th'] : (isEn ? "G10" : "ม.4");
+  const unassignedGradeText = isEn ? "Unspecified Grade" : "ยังไม่ระบุระดับการศึกษา";
+  const gradeLabel = (state.gradeLevel && gradePersonalizationMap[state.gradeLevel]) ? gradePersonalizationMap[state.gradeLevel].label[state.language || 'th'] : unassignedGradeText;
   safeSetText('sidebar-grade-badge', gradeLabel);
   safeSetText('sidebar-tokens', state.tokens);
   safeSetText('header-tokens', state.tokens);
 
-  // Progress calculations
-  const progressVal = passCompletion();
+  // Update logout button label dynamically
+  const sidebarLogoutBtn = document.getElementById('btn-sidebar-logout');
+  if (sidebarLogoutBtn) {
+    const logoutSpan = sidebarLogoutBtn.querySelector('span[data-i18n="nav-logout"]');
+    if (logoutSpan) {
+      logoutSpan.textContent = isGuest 
+        ? (isEn ? "Exit Guest Mode" : "ออกจากโหมดผู้เยี่ยมชม")
+        : (isEn ? "Logout" : "ออกจากระบบ");
+    }
+  }
+
+  // Unified Progress calculations (consistent across sidebar and center dashboard)
+  const progressVal = calculateSelfExplorationProgress().percent;
   safeSetText('pass-progress-text', `${progressVal}%`);
   safeSetText('passport-progress-text', `${progressVal}%`);
   safeSetStyle('pass-progress-fill', 'width', `${progressVal}%`);
   safeSetStyle('passport-progress-fill', 'width', `${progressVal}%`);
 
   // Dashboard views
-  const displayName = state.studentName || (isEn ? "Explorer" : "นักเรียน");
-  const displayGrade = state.gradeLevel 
+  const displayName = state.studentName || defaultName;
+  const displayGrade = (state.gradeLevel && gradePersonalizationMap[state.gradeLevel])
     ? (isEn 
         ? (['pvc', 'pvs', 'uni', 'work'].includes(state.gradeLevel) ? gradePersonalizationMap[state.gradeLevel].label.en : `Grade ${gradePersonalizationMap[state.gradeLevel].label.en}`) 
         : (['work'].includes(state.gradeLevel) ? `${gradePersonalizationMap[state.gradeLevel].label.th}` : `ชั้น ${gradePersonalizationMap[state.gradeLevel].label.th}`)) 
-    : "";
+    : unassignedGradeText;
   const displayCampaign = state.campaignCode || "GENERAL";
 
   safeSetText('dash-pass-name', displayName);
@@ -1885,7 +1981,7 @@ function updateDashboardUI() {
         <div class="badge-card">
           <i data-lucide="award"></i>
           <div class="badge-texts" style="display: flex; flex-direction: column; text-align: left; gap: 2px;">
-            <strong style="font-size: 0.85rem; color: var(--color-accent);">${archName}</strong>
+            <strong style="font-size: 0.85rem; color: #0F172A;">${archName}</strong>
             <span style="font-size: 0.65rem; color: var(--text-secondary);">${clusterName}</span>
           </div>
         </div>
@@ -1902,80 +1998,65 @@ function updateDashboardUI() {
     }
   }
 
-  // Action-Oriented AI Guide tip bubble
+  // Action-Oriented AI Guide tip bubble & CTA Button Label
   const guideTip = document.getElementById('dash-guide-next-action');
+  const dashNextBtn = document.getElementById('btn-dash-next-action');
+  const answersCount = Object.keys(state.answers || {}).length;
+
   if (guideTip) {
-    if (!profile) {
+    if (!state.gradeLevel) {
       guideTip.textContent = isEn
-        ? "You have unlocked your Future Profile! The next step is to start the 11-question survey to explore your future interests and career archetype."
-        : "คุณได้ปลดล็อก Future Profile แล้ว! ก้าวถัดไปคือการเริ่มทำแบบทดสอบ 11 คำถาม เพื่อเริ่มวิเคราะห์จุดแข็งเป้าหมายหลักในอนาคตของคุณ";
+        ? "Please complete your basic profile and select your grade level before starting your self-exploration survey."
+        : "กรุณากรอกข้อมูลส่วนตัวและเลือกระดับชั้นการศึกษาของคุณก่อนเริ่มแบบสำรวจค้นพบตัวเอง";
+      if (dashNextBtn) {
+        dashNextBtn.textContent = isEn ? "Complete Profile First" : "กรอกข้อมูลเพื่อเริ่มสำรวจ";
+      }
+    } else if (answersCount > 0 && answersCount < quizQuestions.length) {
+      guideTip.textContent = isEn
+        ? `Survey in progress (${answersCount}/11 completed). Click continue to pick up where you left off!`
+        : `ทำแบบสำรวจค้างไว้ ตอบไปแล้ว ${answersCount} จาก 11 ข้อ (คลิกเพื่อสำรวจต่อโดยใช้คำตอบเดิม)`;
+      if (dashNextBtn) {
+        dashNextBtn.textContent = isEn ? `Continue Survey (Q${answersCount + 1})` : `สำรวจต่อ (ข้อที่ ${answersCount + 1})`;
+      }
+    } else if (!profile) {
+      guideTip.textContent = isEn
+        ? "Start exploring yourself to view your results! Take the 11-question survey to discover your archetype and strengths."
+        : "เริ่มสำรวจตัวเองเพื่อดูผลลัพธ์! เริ่มทำแบบสำรวจ 11 ข้อเพื่อค้นพบ Archetype และจุดแข็งของคุณ";
+      if (dashNextBtn) {
+        dashNextBtn.textContent = isEn ? "Start Survey Now" : "เริ่มทำแบบสำรวจ";
+      }
     } else {
-      const personalization = gradePersonalizationMap[state.gradeLevel || 'm4'];
-      guideTip.textContent = personalization.nextActionText[state.language || 'th'] || personalization.nextActionText;
+      const personalization = gradePersonalizationMap[state.gradeLevel];
+      if (personalization && personalization.nextActionText) {
+        guideTip.textContent = personalization.nextActionText[state.language || 'th'] || personalization.nextActionText;
+      } else {
+        guideTip.textContent = isEn ? "Survey completed! Review your result, then try one 10-minute activity." : "ตอบแบบสำรวจครบแล้ว! ดูผลลัพธ์ แล้วลองกิจกรรม 10 นาทีหนึ่งอย่างได้เลย";
+      }
+      if (dashNextBtn) {
+        dashNextBtn.textContent = isEn ? "View Survey Results" : "ดูผลลัพธ์การสำรวจ";
+      }
     }
   }
 
-  // Dashboard Mission widget
+  // Dashboard activity widget
   const missionContainer = document.getElementById('dash-mission-container');
-  const currentMissions = getGrowthMissionStatus();
-  if (currentMissions.currentMission) {
-    const isCompleted = state.checkIns.some(c => c.missionId === currentMissions.currentMission.id);
-    
-    let btnText = "";
-    if (isEn) {
-      btnText = isCompleted ? 'View Progress' : 'Start Mission';
-    } else {
-      btnText = isCompleted ? 'ดูความคืบหน้า' : 'เริ่มภารกิจ';
-    }
-
-    if (missionContainer) {
-      missionContainer.innerHTML = `
-        <div class="active-mission-card">
-          <div class="mission-details">
-            <h4>${currentMissions.currentMission.title}</h4>
-            <p class="text-muted" style="font-size: 0.85rem;">${currentMissions.currentMission.description}</p>
-          </div>
-          <button class="btn btn-primary btn-sm" id="btn-dash-do-mission">${btnText}</button>
+  if (missionContainer && profile) {
+    const activityCount = state.exploration?.entries?.length || 0;
+    const selectedPath = state.exploration?.selected;
+    const selectedActivity = paths[selectedPath]?.task?.[isEn ? 1 : 0];
+    const summaryReady = activityCount >= 3;
+    missionContainer.innerHTML = `
+      <div class="active-mission-card">
+        <div class="mission-details">
+          <h4>${summaryReady ? (isEn ? 'Your discovery summary is ready' : 'สรุปสิ่งที่ค้นพบพร้อมแล้ว') : (selectedActivity || (isEn ? 'Start with a 10-minute activity' : 'เริ่มจากกิจกรรม 10 นาที'))}</h4>
+          <p class="text-muted" style="font-size: 0.85rem;">${summaryReady ? (isEn ? `You have tried ${activityCount} activities. Review what is becoming clearer.` : `คุณลองแล้ว ${activityCount} กิจกรรม ดูสิ่งที่เริ่มชัดขึ้นได้เลย`) : (isEn ? `Saved ${activityCount} of 3 activities before your first summary.` : `บันทึกแล้ว ${activityCount} จาก 3 กิจกรรม ก่อนรับสรุปแรก`)}</p>
         </div>
-      `;
-      const btnDoMission = document.getElementById('btn-dash-do-mission');
-      if (btnDoMission) {
-        btnDoMission.addEventListener('click', () => {
-          currentSelectedDay = currentMissions.currentMission.day;
-          switchView('missions');
-        });
-      }
-    }
-  } else if (profile && currentMissions.completedCount >= 7) {
-    if (missionContainer) {
-      missionContainer.innerHTML = `
-        <div class="active-mission-card" style="justify-content: center; text-align: center; padding: 20px;">
-          <div>
-            <i data-lucide="party-popper" style="color: var(--color-accent); width: 28px; height: 28px; margin-bottom: 8px;"></i>
-            <h4>${isEn ? "Congratulations! All 7 days complete!" : "ยินดีด้วย! คุณทำภารกิจครบทั้ง 7 วันแล้ว"}</h4>
-            <p class="text-muted" style="font-size: 0.85rem;">${isEn ? "You have fully explored your potential skills and strengths." : "คุณได้เรียนรู้จุดแข็งและทักษะของตนเองอย่างเต็มเปี่ยมแล้ว"}</p>
-          </div>
-        </div>
-      `;
-    }
-  } else {
-    if (missionContainer) {
-      missionContainer.innerHTML = `
-        <div class="active-mission-card">
-          <div class="mission-details">
-            <h4>${isEn ? "Please take the quiz" : "กรุณาทำแบบทดสอบ"}</h4>
-            <p class="text-muted" style="font-size: 0.85rem;">${isEn ? "Take the short interest quiz to assign 7-day growth missions matching your profile." : "ทำแบบทดสอบความสนใจสั้น ๆ เพื่อสุ่มจัดสรรภารกิจ 7 วันที่สอดคล้องกับโปรไฟล์ของคุณ"}</p>
-          </div>
-          <button class="btn btn-primary btn-sm" id="btn-dash-go-quiz">${isEn ? "Take Quiz" : "ทำ Quiz"}</button>
-        </div>
-      `;
-      const btnGoQuiz = document.getElementById('btn-dash-go-quiz');
-      if (btnGoQuiz) {
-        btnGoQuiz.addEventListener('click', () => {
-          switchView('quiz-tab');
-        });
-      }
-    }
+        <button class="btn btn-primary btn-sm" id="btn-dash-do-mission">${summaryReady ? (isEn ? 'View summary' : 'ดูสรุป') : (isEn ? 'Try it' : 'เริ่มลอง')}</button>
+      </div>`;
+    document.getElementById('btn-dash-do-mission')?.addEventListener('click', () => switchView('missions'));
+  } else if (missionContainer) {
+    missionContainer.innerHTML = `<div class="active-mission-card"><div class="mission-details"><h4>${isEn ? 'Please take the survey' : 'กรุณาทำแบบสำรวจ'}</h4><p class="text-muted" style="font-size: 0.85rem;">${isEn ? 'Take the short interest survey to receive one simple activity worth trying.' : 'ทำแบบสำรวจความสนใจสั้น ๆ เพื่อรับกิจกรรมง่าย ๆ ที่น่าลองหนึ่งอย่าง'}</p></div><button class="btn btn-primary btn-sm" id="btn-dash-go-quiz">${isEn ? 'Take survey' : 'ทำแบบสำรวจ'}</button></div>`;
+    document.getElementById('btn-dash-go-quiz')?.addEventListener('click', () => switchView('quiz-tab'));
   }
 
   // Update Personal Progress Widget
@@ -2133,7 +2214,7 @@ export function passCompletion() {
 export function nextBestAction() {
   const completedQuiz = Object.keys(state.answers).length === quizQuestions.length;
   if (!completedQuiz) {
-    return "ก้าวถัดไป: ทำแบบทดสอบความสนใจสั้น ๆ 6 ข้อเพื่อวิเคราะห์ Archetype ของคุณ";
+    return `ก้าวถัดไป: ทำแบบทดสอบความสนใจสั้น ๆ ${quizQuestions.length} ข้อเพื่อวิเคราะห์ Archetype ของคุณ`;
   }
   
   const currentMissions = getGrowthMissionStatus();
@@ -2157,7 +2238,24 @@ export function nextBestAction() {
 }
 
 // --- Onboarding Grade personalizations changes ---
+function updateSchoolField(grade) {
+  const group = document.getElementById('group-ob-school');
+  const input = document.getElementById('ob-school');
+  if (!group || !input) return;
+  group.style.display = grade && grade !== 'work' ? 'block' : 'none';
+  input.required = false;
+  const en = state.language === 'en';
+  const label = group.querySelector('label');
+  if (label) label.textContent = en ? 'Institution name (optional)' : 'ชื่อสถานศึกษา (ไม่บังคับ)';
+  input.placeholder = grade === 'uni'
+    ? (en ? 'Enter your university name' : 'ระบุชื่อมหาวิทยาลัยของคุณ')
+    : ['pvc', 'pvs'].includes(grade)
+      ? (en ? 'Enter your college name' : 'ระบุชื่อวิทยาลัยของคุณ')
+      : (en ? 'Enter your school name' : 'ระบุชื่อโรงเรียนของคุณ');
+}
+
 function updateGradePersonalizationUI(grade) {
+  updateSchoolField(grade);
   const personalization = gradePersonalizationMap[grade];
   if (!personalization) return;
   
@@ -2188,7 +2286,12 @@ function handleOnboardingSubmit(e) {
   
   const name = document.getElementById('ob-name').value;
   const school = document.getElementById('ob-school') ? document.getElementById('ob-school').value.trim() : "";
-  const grade = document.querySelector('input[name="ob-grade"]:checked').value;
+  const selectedGradeRadio = document.querySelector('input[name="ob-grade"]:checked');
+  if (!selectedGradeRadio) {
+    alert(state.language === 'en' ? "Please select your grade level before proceeding!" : "กรุณาเลือกระดับชั้นการศึกษาของคุณก่อนเริ่มขั้นตอนถัดไป!");
+    return;
+  }
+  const grade = selectedGradeRadio.value;
   const goal = document.getElementById('ob-goal').value;
   const tone = document.getElementById('ob-tone').value;
   const campaign = document.getElementById('ob-campaign').value.trim();
@@ -2199,45 +2302,56 @@ function handleOnboardingSubmit(e) {
   const parentConsent = document.getElementById('consent-parent').checked;
 
   state.studentName = name;
-  state.schoolName = school;
+  state.schoolName = grade === 'work' ? (state.schoolName || "") : school;
   state.gradeLevel = grade;
+  state.gradeConfirmed = true;
   state.currentGoal = goal;
   state.guideTone = tone;
   state.campaignCode = campaign || "";
   
   state.consent.profile = profileConsent;
-  state.consent.quiz = quizConsent;
+  state.consent.quiz = profileConsent;
   state.consent.aiGuide = quizConsent;
   state.consent.parentLink = parentConsent;
 
-  // Initial reward for opening Future Pass
-  state.tokens = 25;
-  if (state.campaignCode) state.tokens += 10;
+  // Initial reward for opening Future Pass (awarded ONCE per account)
+  if (!state.onboardingRewarded) {
+    // Legacy accounts may already have earned rewards before this flag existed.
+    state.tokens = Math.max(Number(state.tokens) || 0, 25);
+    if (state.campaignCode) state.tokens += 10;
+    state.onboardingRewarded = true;
+  }
   
-  // Create default missions
-  state.growthMissions = buildGrowthMissions(null);
+  // Preserve an existing mission plan when completing or editing onboarding.
+  if (!state.growthMissions || state.growthMissions.length === 0) {
+    state.growthMissions = buildGrowthMissions(null);
+  }
 
   saveState();
   
   // Transition UI
   document.getElementById('view-onboarding').classList.remove('active');
   
-  const loggedInUser = localStorage.getItem('lifemap_logged_in_user');
-  if (loggedInUser) {
-    document.getElementById('app-sidebar').style.display = 'flex';
-    document.getElementById('app-header').style.display = 'flex';
-    document.querySelector('.app-container').classList.add('sidebar-visible');
-    switchView('dashboard');
-    alert(state.language === 'en' ? "Your Future Profile has been unlocked!" : "Future Profile ของคุณได้รับการปลดล็อกแล้ว!");
-  } else {
-    // Guest flow: go straight to quiz and start it!
-    document.getElementById('app-sidebar').style.display = 'none';
-    document.getElementById('app-header').style.display = 'none';
-    document.querySelector('.app-container').classList.remove('sidebar-visible');
-    document.getElementById('view-quiz-tab').classList.add('active');
-    renderQuizTab();
-    startQuiz();
+  let loggedInUser = localStorage.getItem('lifemap_logged_in_user');
+  if (!loggedInUser) {
+    loggedInUser = 'guest_student';
+    localStorage.setItem('lifemap_logged_in_user', loggedInUser);
+    localStorage.setItem('lifemap_logged_in_role', 'student');
   }
+
+  saveState();
+
+  const appSidebar = document.getElementById('app-sidebar');
+  const appHeader = document.getElementById('app-header');
+  const appContainer = document.querySelector('.app-container');
+
+  if (appSidebar) appSidebar.style.display = 'flex';
+  if (appHeader) appHeader.style.display = 'flex';
+  if (appContainer) appContainer.classList.add('sidebar-visible');
+
+  // Direct user straight to quiz-tab to begin the 11-question survey
+  switchView('quiz-tab');
+  startQuiz();
 }
 
 // --- QUIZ & PROFILE MODULE RENDERING ---
@@ -2276,20 +2390,7 @@ function renderQuizTab() {
   if (!thinkingIntroBox) return; // guard
 
   if (completedCareer) {
-    if (state.thinkingStyleCompleted === undefined) {
-      introBox.style.display = 'none';
-      thinkingIntroBox.style.display = 'block';
-      engineBox.style.display = 'none';
-      resultBox.style.display = 'none';
-      
-      // Reset consent checkbox and start button state
-      const consentChk = document.getElementById('consent-thinking-style');
-      const startThinkingBtn = document.getElementById('btn-start-thinking-quiz');
-      if (consentChk) consentChk.checked = false;
-      if (startThinkingBtn) startThinkingBtn.disabled = true;
-
-      if (window.lucide) window.lucide.createIcons();
-    } else {
+    {
       introBox.style.display = 'none';
       thinkingIntroBox.style.display = 'none';
       engineBox.style.display = 'none';
@@ -2310,20 +2411,89 @@ function renderQuizTab() {
     
     // Personalize quiz intro based on grade
     const personalization = gradePersonalizationMap[state.gradeLevel || 'm4'];
-    document.getElementById('quiz-personalized-intro').textContent = personalization.quizIntro[state.language || 'th'] || personalization.quizIntro;
+    const pText = personalization ? (personalization.quizIntro[state.language || 'th'] || personalization.quizIntro) : '';
+    safeSetText('quiz-personalized-intro', pText);
+
+    const answersCount = Object.keys(state.answers || {}).length;
+    const startBtn = document.getElementById('btn-start-quiz-now');
+    if (startBtn) {
+      if (answersCount > 0 && answersCount < quizQuestions.length) {
+        startBtn.innerHTML = state.language === 'en'
+          ? `Continue Survey (Q${answersCount + 1}) <i data-lucide="arrow-right"></i>`
+          : `สำรวจต่อ (ข้อที่ ${answersCount + 1}) <i data-lucide="arrow-right"></i>`;
+      } else {
+        startBtn.innerHTML = state.language === 'en'
+          ? `Start Survey Now <i data-lucide="arrow-right"></i>`
+          : `เริ่มทำแบบสำรวจ (ใช้เวลา ~2 นาที) <i data-lucide="arrow-right"></i>`;
+      }
+      if (window.lucide) window.lucide.createIcons();
+    }
   }
 }
 
-function startQuiz() {
+export function snapshotPreviousResult() {
+  if (Object.keys(state.answers || {}).length === quizQuestions.length) {
+    const prevProfile = computeProfile(state.answers);
+    const existingCompletedAt = state.lastCompletedAt || state.completedAt || '';
+    const existingVersion = state.surveyVersion || 'unknown';
+
+    const snapshot = JSON.parse(JSON.stringify({
+      capturedAt: new Date().toISOString(),
+      completedAt: existingCompletedAt,
+      surveyVersion: existingVersion,
+      answers: { ...state.answers },
+      thinkingStyleAnswers: { ...(state.thinkingStyleAnswers || {}) },
+      thinkingStyleCompleted: state.thinkingStyleCompleted,
+      profile: prevProfile,
+      thinkingStyle: state.thinkingStyle ? { ...state.thinkingStyle } : null,
+      growthMissions: state.growthMissions ? [ ...state.growthMissions ] : [],
+      recommendedMissions: state.recommendedMissions ? [ ...state.recommendedMissions ] : []
+    }));
+    if (!state.surveyHistory) state.surveyHistory = [];
+    state.surveyHistory.push(snapshot);
+    state.previousResult = snapshot;
+  }
+}
+
+export function resumeQuiz() {
   quizMode = 'career';
-  currentQuizIdx = 0;
-  state.answers = {};
+  const answersCount = Object.keys(state.answers || {}).length;
+  currentQuizIdx = answersCount < quizQuestions.length ? answersCount : 0;
   
   document.getElementById('quiz-intro-container').style.display = 'none';
   document.getElementById('quiz-thinking-intro-container').style.display = 'none';
   document.getElementById('quiz-engine-container').style.display = 'block';
   
-  showQuizQuestion(0);
+  showQuizQuestion(currentQuizIdx);
+}
+
+export function beginSurveyRound() {
+  snapshotPreviousResult();
+  state.answers = {};
+  state.thinkingStyleAnswers = {};
+  state.thinkingStyleCompleted = undefined;
+  state.thinkingStyle = null;
+  state.surveyVersion = null;
+  state.lastCompletedAt = '';
+  state.completedAt = '';
+  saveStateData();
+}
+
+export function startQuiz() {
+  quizMode = 'career';
+  const answersCount = Object.keys(state.answers || {}).length;
+  if (answersCount > 0 && answersCount < quizQuestions.length) {
+    currentQuizIdx = answersCount;
+  } else {
+    beginSurveyRound();
+    currentQuizIdx = 0;
+  }
+  
+  document.getElementById('quiz-intro-container').style.display = 'none';
+  document.getElementById('quiz-thinking-intro-container').style.display = 'none';
+  document.getElementById('quiz-engine-container').style.display = 'block';
+  
+  showQuizQuestion(currentQuizIdx);
 }
 
 function startThinkingQuiz() {
@@ -2374,7 +2544,10 @@ function showQuizQuestion(index) {
       }
 
       btn.addEventListener('click', () => {
+        if (btn.disabled) return;
+        optionsList.querySelectorAll('button').forEach(option => { option.disabled = true; });
         state.answers[question.id] = oIdx;
+        saveStateData();
         btn.classList.add('selected');
         setTimeout(() => {
           if (currentQuizIdx < 10) {
@@ -2420,7 +2593,10 @@ function showQuizQuestion(index) {
       }
 
       btn.addEventListener('click', () => {
+        if (btn.disabled) return;
+        optionsList.querySelectorAll('button').forEach(option => { option.disabled = true; });
         state.thinkingStyleAnswers[question.id] = oIdx;
+        saveStateData();
         btn.classList.add('selected');
         setTimeout(() => {
           if (currentQuizIdx < 15) {
@@ -2444,8 +2620,7 @@ function showQuizQuestion(index) {
 }
 
 function completeCareerQuiz() {
-  saveState();
-  renderQuizTab();
+  completeQuiz();
 }
 
 function completeThinkingStyleQuiz() {
@@ -2454,20 +2629,245 @@ function completeThinkingStyleQuiz() {
   completeQuiz();
 }
 
-function completeQuiz() {
-  // Reward tokens for career quiz completion (50 tokens)
-  state.tokens += 50;
+// --- Survey Data Sync & Privacy Architecture Module ---
+export function getRespondentId() {
+  let id = localStorage.getItem('lifemap_anon_id');
+  if (!id) {
+    id = 'anon_student_' + Math.random().toString(36).substring(2, 10);
+    localStorage.setItem('lifemap_anon_id', id);
+  }
+  return id;
+}
+
+export function getDeletionToken() {
+  let token = localStorage.getItem('lifemap_deletion_token');
+  if (!token) {
+    token = 'del_sec_' + Math.random().toString(36).substring(2, 10) + Math.random().toString(36).substring(2, 10);
+    localStorage.setItem('lifemap_deletion_token', token);
+  }
+  return token;
+}
+
+export function buildSurveyPayload() {
+  const respondentId = getRespondentId();
+  const deletionToken = getDeletionToken();
+  let submissionId = localStorage.getItem('lifemap_submission_id');
+  if (!submissionId) {
+    submissionId = `sub_v3_${respondentId}_${Date.now()}`;
+    localStorage.setItem('lifemap_submission_id', submissionId);
+  }
+
+  const answersList = quizQuestions.map(q => {
+    const ansIdx = state.answers[q.id];
+    const option = q.options[ansIdx];
+    return {
+      questionId: q.id,
+      optionIndex: ansIdx !== undefined ? ansIdx : null,
+      code: option ? (option.code || String(option.value)) : null
+    };
+  });
+
+  return {
+    submissionId,
+    respondentId,
+    deletionToken,
+    quizVersion: "v3_11q",
+    scoringVersion: "v2.1_riasec_bigfive",
+    consentVersion: "v1.2_pdpa",
+    consent: {
+      profile: !!(state.consent && state.consent.profile),
+      ai: !!(state.consent && state.consent.aiGuide),
+      parent: !!(state.consent && state.consent.parentLink),
+      thinkingStyle: !!(state.consent && state.consent.thinkingStyle)
+    },
+    consentTimestamp: new Date().toISOString(),
+    answers: answersList
+  };
+}
+
+// Global flag for server sync vs local test mode (default false for UI testing)
+window.ENABLE_SERVER_SYNC = false;
+
+export function updateStorageStatusUI() {
+  const el = document.getElementById('storage-status-text');
+  if (el) {
+    if (!window.ENABLE_SERVER_SYNC || state.syncStatus === 'LOCAL_TEST_STORED') {
+      el.textContent = "บันทึกในเบราว์เซอร์นี้เท่านั้น (Guest Prototype)";
+    } else if (state.syncStatus === 'SYNCED') {
+      el.textContent = "บันทึกสำเร็จ (ส่งข้อมูลเรียบร้อย)";
+    } else {
+      el.textContent = "บันทึกในเบราว์เซอร์นี้เท่านั้น (Guest Prototype)";
+    }
+  }
+}
+
+export async function syncSurveyQueue(targetEndpoint = 'http://localhost:8088/api/test/survey/submit') {
+  if (!window.ENABLE_SERVER_SYNC) {
+    state.syncStatus = 'LOCAL_TEST_STORED';
+    updateStorageStatusUI();
+    saveStateData();
+    return;
+  }
+
+  const queueRaw = localStorage.getItem('lifemap_offline_queue');
+  let queue = queueRaw ? JSON.parse(queueRaw) : [];
+
+  const pending = queue.filter(item => item.status === 'PENDING' || item.status === 'FAILED_RETRY');
+  if (pending.length === 0) return;
+
+  for (const item of pending) {
+    try {
+      const res = await fetch(targetEndpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(item.payload)
+      });
+      const data = await res.json();
+      if (res.ok && data.status === 'success' && data.submissionId === item.payload.submissionId) {
+        item.status = 'SYNCED';
+        item.syncedAt = new Date().toISOString();
+        item.serverMessage = data.message;
+        state.syncStatus = 'SYNCED';
+      } else {
+        item.status = 'FAILED_RETRY';
+        item.lastError = data.message || 'Server error';
+        state.syncStatus = 'PENDING';
+      }
+    } catch (err) {
+      item.status = 'FAILED_RETRY';
+      item.lastError = err.message || 'Network error';
+      state.syncStatus = 'PENDING';
+    }
+  }
+
+  localStorage.setItem('lifemap_offline_queue', JSON.stringify(queue));
+  updateStorageStatusUI();
+  saveStateData();
+}
+
+export function enqueueAndSyncSurvey(targetEndpoint = 'http://localhost:8088/api/test/survey/submit') {
+  if (Object.keys(state.answers).length < quizQuestions.length) return;
+
+  const payload = buildSurveyPayload();
+  const queueRaw = localStorage.getItem('lifemap_offline_queue');
+  let queue = queueRaw ? JSON.parse(queueRaw) : [];
+
+  const existingIdx = queue.findIndex(item => item.payload.submissionId === payload.submissionId);
+  if (existingIdx >= 0) {
+    if (queue[existingIdx].status !== 'SYNCED') {
+      queue[existingIdx].payload = payload;
+      queue[existingIdx].status = window.ENABLE_SERVER_SYNC ? 'PENDING' : 'LOCAL_TEST_STORED';
+    }
+  } else {
+    queue.push({
+      id: 'q_item_' + Date.now(),
+      payload: payload,
+      status: window.ENABLE_SERVER_SYNC ? 'PENDING' : 'LOCAL_TEST_STORED',
+      enqueuedAt: new Date().toISOString()
+    });
+  }
+
+  state.syncStatus = window.ENABLE_SERVER_SYNC ? 'PENDING' : 'LOCAL_TEST_STORED';
+
+  localStorage.setItem('lifemap_offline_queue', JSON.stringify(queue));
+  updateStorageStatusUI();
+  saveStateData();
+
+  if (window.ENABLE_SERVER_SYNC) {
+    syncSurveyQueue(targetEndpoint);
+  }
+}
+
+export async function deleteUserSurveyData(deleteEndpoint = 'http://localhost:8088/api/test/survey/delete') {
+  const respondentId = getRespondentId();
+  const deletionToken = getDeletionToken();
+
+  // 1. Purge offline queue FIRST to prevent deleted data from being sent back
+  const queueRaw = localStorage.getItem('lifemap_offline_queue');
+  let queue = queueRaw ? JSON.parse(queueRaw) : [];
+  queue = queue.filter(item => item.payload.respondentId !== respondentId);
+  localStorage.setItem('lifemap_offline_queue', JSON.stringify(queue));
+
+  // 2. Clear local submission IDs and survey state
+  localStorage.removeItem('lifemap_submission_id');
+  state.answers = {};
+  state.syncStatus = undefined;
+  saveStateData();
+
+  if (!window.ENABLE_SERVER_SYNC) {
+    return {
+      status: 'success',
+      localOnly: true,
+      respondentId: respondentId,
+      message: 'ลบข้อมูลทดสอบในเครื่องเรียบร้อยแล้ว (โหมดทดสอบ)',
+      deletedAt: new Date().toISOString()
+    };
+  }
+
+  // 3. Call Right-to-Erasure Endpoint with authorization proof (only in server sync mode)
+  try {
+    const res = await fetch(deleteEndpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ respondentId, deletionToken })
+    });
+    const data = await res.json();
+    return data;
+  } catch (err) {
+    return { status: 'error', message: err.message };
+  }
+}
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('online', () => {
+    syncSurveyQueue();
+  });
+}
+
+export function completeQuiz() {
+  // Do not finalize an incomplete draft or overwrite a previous completion date.
+  if (!quizQuestions.every(q => Number.isInteger(state.answers[q.id]) && q.options[state.answers[q.id]])) return;
+  const completionTime = new Date().toISOString();
+  state.surveyVersion = '2.2_inclusive_wording';
+  state.lastCompletedAt = state.lastCompletedAt || completionTime;
+  state.completedAt = state.lastCompletedAt;
+
+  // Reward tokens for career quiz completion ONCE (50 tokens)
+  if (!state.careerQuizRewarded) {
+    state.tokens = (state.tokens || 0) + 50;
+    state.careerQuizRewarded = true;
+  }
   
-  // Extra 50 tokens if they did thinking style
-  if (state.thinkingStyleCompleted) {
-    state.tokens += 50;
+  // Extra 50 tokens if they did thinking style ONCE
+  if (state.thinkingStyleCompleted && !state.thinkingStyleRewarded) {
+    state.tokens = (state.tokens || 0) + 50;
+    state.thinkingStyleRewarded = true;
   }
   
   const profile = computeProfile(state.answers);
-  state.growthMissions = buildGrowthMissions(profile);
+  const newRecommendations = buildGrowthMissions(profile);
+  state.recommendedMissions = newRecommendations;
+
+  // Preserve existing active/in-progress missions and mission history in state.growthMissions
+  if (!state.growthMissions || state.growthMissions.length === 0) {
+    state.growthMissions = [ ...newRecommendations ];
+  }
 
   saveState();
   renderQuizTab();
+  enqueueAndSyncSurvey();
+}
+
+function openOptionalThinkingIntro() {
+  document.getElementById('quiz-intro-container').style.display = 'none';
+  document.getElementById('quiz-result-container').style.display = 'none';
+  document.getElementById('quiz-engine-container').style.display = 'none';
+  document.getElementById('quiz-thinking-intro-container').style.display = 'block';
+  document.getElementById('consent-thinking-style').checked = false;
+  document.getElementById('btn-start-thinking-quiz').disabled = true;
+  document.getElementById('quiz-thinking-intro-container').setAttribute('tabindex', '-1');
+  document.getElementById('quiz-thinking-intro-container').focus();
+  document.getElementById('quiz-thinking-intro-container').scrollIntoView({block:'start'});
 }
 
 function renderDetailedThinkingStyleProfile() {
@@ -2495,7 +2895,7 @@ function renderDetailedThinkingStyleProfile() {
   if (state.thinkingStyleCompleted === undefined) {
     container.innerHTML = `
       <div style="text-align: center; padding: 24px;">
-        <i data-lucide="brain-circuit" style="width: 40px; height: 40px; color: var(--color-accent); margin-bottom: 12px; display: block; margin-left: auto; margin-right: auto;"></i>
+        <i data-lucide="brain-circuit" style="width: 40px; height: 40px; color: #0F172A; margin-bottom: 12px; display: block; margin-left: auto; margin-right: auto;"></i>
         <h4 style="color: var(--text-primary); margin-bottom: 8px;">${isEn ? "Discover Your Thinking Style" : "ค้นพบสไตล์การคิดและวางแผนของคุณ"}</h4>
         <p class="text-muted" style="font-size: 0.82rem; max-width: 400px; margin: 0 auto 16px;">
           ${isEn ? "Take the 16-question reflection to analyze your learning and planning preferences." : "ทำแบบประเมินสะท้อนตัวตน 16 ข้อเพิ่มเติม เพื่อเรียนรู้วิธีการคิด การทำงานร่วมกัน และการจัดการภารกิจที่เหมาะกับตัวคุณ"}
@@ -2505,9 +2905,7 @@ function renderDetailedThinkingStyleProfile() {
         </button>
       </div>
     `;
-    document.getElementById('btn-profile-start-thinking').addEventListener('click', () => {
-      switchView('quiz-tab');
-    });
+    document.getElementById('btn-profile-start-thinking').addEventListener('click', openOptionalThinkingIntro);
     if (window.lucide) window.lucide.createIcons();
     return;
   }
@@ -2528,7 +2926,7 @@ function renderDetailedThinkingStyleProfile() {
     document.getElementById('btn-profile-resume-thinking').addEventListener('click', () => {
       state.thinkingStyleCompleted = undefined;
       saveState();
-      switchView('quiz-tab');
+      openOptionalThinkingIntro();
     });
     if (window.lucide) window.lucide.createIcons();
     return;
@@ -2549,7 +2947,7 @@ function renderDetailedThinkingStyleProfile() {
   let html = `
     <div class="thinking-detailed-report" style="display: flex; flex-direction: column; gap: 20px;">
       <div style="background: rgba(var(--color-accent-rgb), 0.04); border: 1px solid var(--border-color); border-radius: 12px; padding: 18px; display: flex; align-items: center; gap: 14px;">
-        <div style="background: rgba(var(--color-accent-rgb), 0.1); border-radius: 50%; width: 54px; height: 54px; display: flex; align-items: center; justify-content: center; color: var(--color-accent); flex-shrink: 0;">
+        <div style="background: rgba(var(--color-accent-rgb), 0.1); border-radius: 50%; width: 54px; height: 54px; display: flex; align-items: center; justify-content: center; color: #0F172A; flex-shrink: 0;">
           <i data-lucide="brain-circuit" style="width: 28px; height: 28px;"></i>
         </div>
         <div>
@@ -2567,20 +2965,20 @@ function renderDetailedThinkingStyleProfile() {
       
       <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; padding: 18px;">
         <h4 style="font-size: 0.9rem; font-weight: 700; margin-bottom: 16px; color: var(--text-primary); display: flex; align-items: center; gap: 8px;">
-          <i data-lucide="sliders" style="width: 16px; height: 16px; color: var(--color-accent);"></i>
+          <i data-lucide="sliders" style="width: 16px; height: 16px; color: #0F172A;"></i>
           <span>${isEn ? "Analysis of 4 Core Axes" : "วิเคราะห์เจาะลึก 4 แกนแห่งตัวตน"}</span>
         </h4>
         
         <div style="display: flex; flex-direction: column; gap: 16px;">
           <div class="axis-row">
             <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 6px;">
-              <strong style="color: ${style.axes.energy.dominant === 'I' ? 'var(--color-accent)' : 'var(--text-secondary)'};">
+              <strong style="color: ${style.axes.energy.dominant === 'I' ? '#0F172A' : 'var(--text-secondary)'};">
                 ${isEn ? "Reflective Energy (I)" : "สมาธิภายใน Reflective (I)"}
               </strong>
               <span class="text-muted" style="font-size: 0.72rem; font-weight: 600;">
                 ${isEn ? style.axes.energy.clarity : (style.axes.energy.clarity === 'Strong' ? 'ความชัดเจนสูงมาก' : (style.axes.energy.clarity === 'Moderate' ? 'ความชัดเจนปานกลาง' : 'สมดุลสองฝั่ง'))}
               </span>
-              <strong style="color: ${style.axes.energy.dominant === 'E' ? 'var(--color-accent)' : 'var(--text-secondary)'};">
+              <strong style="color: ${style.axes.energy.dominant === 'E' ? '#0F172A' : 'var(--text-secondary)'};">
                 ${isEn ? "Interactive Energy (E)" : "ชอบแลกเปลี่ยน Interactive (E)"}
               </strong>
             </div>
@@ -2597,13 +2995,13 @@ function renderDetailedThinkingStyleProfile() {
 
           <div class="axis-row">
             <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 6px;">
-              <strong style="color: ${style.axes.lens.dominant === 'S' ? 'var(--color-accent)' : 'var(--text-secondary)'};">
+              <strong style="color: ${style.axes.lens.dominant === 'S' ? '#0F172A' : 'var(--text-secondary)'};">
                 ${isEn ? "Practical Lens (S)" : "ขั้นตอนและข้อมูลจริง Practical (S)"}
               </strong>
               <span class="text-muted" style="font-size: 0.72rem; font-weight: 600;">
                 ${isEn ? style.axes.lens.clarity : (style.axes.lens.clarity === 'Strong' ? 'ความชัดเจนสูงมาก' : (style.axes.lens.clarity === 'Moderate' ? 'ความชัดเจนปานกลาง' : 'สมดุลสองฝั่ง'))}
               </span>
-              <strong style="color: ${style.axes.lens.dominant === 'N' ? 'var(--color-accent)' : 'var(--text-secondary)'};">
+              <strong style="color: ${style.axes.lens.dominant === 'N' ? '#0F172A' : 'var(--text-secondary)'};">
                 ${isEn ? "Future Lens (N)" : "มองภาพใหญ่ Future (N)"}
               </strong>
             </div>
@@ -2620,13 +3018,13 @@ function renderDetailedThinkingStyleProfile() {
 
           <div class="axis-row">
             <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 6px;">
-              <strong style="color: ${style.axes.decision.dominant === 'T' ? 'var(--color-accent)' : 'var(--text-secondary)'};">
+              <strong style="color: ${style.axes.decision.dominant === 'T' ? '#0F172A' : 'var(--text-secondary)'};">
                 ${isEn ? "Logic Decision (T)" : "ยึดหลักตรรกะ Logic (T)"}
               </strong>
               <span class="text-muted" style="font-size: 0.72rem; font-weight: 600;">
                 ${isEn ? style.axes.decision.clarity : (style.axes.decision.clarity === 'Strong' ? 'ความชัดเจนสูงมาก' : (style.axes.decision.clarity === 'Moderate' ? 'ความชัดเจนปานกลาง' : 'สมดุลสองฝั่ง'))}
               </span>
-              <strong style="color: ${style.axes.decision.dominant === 'F' ? 'var(--color-accent)' : 'var(--text-secondary)'};">
+              <strong style="color: ${style.axes.decision.dominant === 'F' ? '#0F172A' : 'var(--text-secondary)'};">
                 ${isEn ? "Value Decision (F)" : "รักษาน้ำใจจิตใจ Value (F)"}
               </strong>
             </div>
@@ -2643,13 +3041,13 @@ function renderDetailedThinkingStyleProfile() {
 
           <div class="axis-row">
             <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 6px;">
-              <strong style="color: ${style.axes.planning.dominant === 'J' ? 'var(--color-accent)' : 'var(--text-secondary)'};">
+              <strong style="color: ${style.axes.planning.dominant === 'J' ? '#0F172A' : 'var(--text-secondary)'};">
                 ${isEn ? "Structured Planner (J)" : "แผนงานเป้าหมายชัด Structured (J)"}
               </strong>
               <span class="text-muted" style="font-size: 0.72rem; font-weight: 600;">
                 ${isEn ? style.axes.planning.clarity : (style.axes.planning.clarity === 'Strong' ? 'ความชัดเจนสูงมาก' : (style.axes.planning.clarity === 'Moderate' ? 'ความชัดเจนปานกลาง' : 'สมดุลสองฝั่ง'))}
               </span>
-              <strong style="color: ${style.axes.planning.dominant === 'P' ? 'var(--color-accent)' : 'var(--text-secondary)'};">
+              <strong style="color: ${style.axes.planning.dominant === 'P' ? '#0F172A' : 'var(--text-secondary)'};">
                 ${isEn ? "Adaptive Explorer (P)" : "พร้อมปรับตามสถานการณ์ Adaptive (P)"}
               </strong>
             </div>
@@ -2690,14 +3088,14 @@ function renderDetailedThinkingStyleProfile() {
 
       <div style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; padding: 18px;">
         <h4 style="font-size: 0.9rem; font-weight: 700; margin-bottom: 8px; color: var(--text-primary); display: flex; align-items: center; gap: 8px;">
-          <i data-lucide="book-open" style="width: 16px; height: 16px; color: var(--color-accent);"></i>
+          <i data-lucide="book-open" style="width: 16px; height: 16px; color: #0F172A;"></i>
           <span>${isEn ? "Recommended Learning Mode" : "รูปแบบการเรียนรู้ที่เหมาะสมที่สุด"}</span>
         </h4>
         <p style="font-size: 0.85rem; line-height: 1.5; color: var(--text-secondary); margin: 0;">${learningMode}</p>
       </div>
 
       <div class="disclaimer-badge" style="background: rgba(var(--color-accent-rgb), 0.03); border: 1px solid var(--border-color); padding: 14px; border-radius: 8px; text-align: left;">
-        <i data-lucide="info" style="color: var(--color-accent); flex-shrink: 0; width: 16px; height: 16px;"></i>
+        <i data-lucide="info" style="color: #0F172A; flex-shrink: 0; width: 16px; height: 16px;"></i>
         <p style="font-size: 0.76rem; line-height: 1.5; color: var(--text-secondary); margin: 0;">
           <strong>${isEn ? "Privacy & Flexibility Guardrail: " : "คำชี้แจงความเป็นส่วนตัวและความยืดหยุ่น: "}</strong>
           ${isEn 
@@ -2735,7 +3133,7 @@ function updateDashboardThinkingStyleSnapshot() {
   if (state.thinkingStyleCompleted === undefined) {
     container.innerHTML = `
       <div style="padding: 12px; text-align: center;">
-        <i data-lucide="brain-circuit" style="width: 32px; height: 32px; color: var(--color-accent); margin-bottom: 8px; display: block; margin-left: auto; margin-right: auto;"></i>
+        <i data-lucide="brain-circuit" style="width: 32px; height: 32px; color: #0F172A; margin-bottom: 8px; display: block; margin-left: auto; margin-right: auto;"></i>
         <strong style="font-size: 0.85rem; display: block; margin-bottom: 4px; color: var(--text-primary);">
           ${isEn ? "Thinking Style Reflection" : "สะท้อนสไตล์การคิดและวางแผน"}
         </strong>
@@ -2785,7 +3183,7 @@ function updateDashboardThinkingStyleSnapshot() {
     container.innerHTML = `
       <div style="padding: 4px 0;">
         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
-          <div style="background: rgba(var(--color-accent-rgb), 0.1); border-radius: 50%; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; color: var(--color-accent);">
+          <div style="background: rgba(var(--color-accent-rgb), 0.1); border-radius: 50%; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; color: #0F172A;">
             <i data-lucide="brain-circuit" style="width: 22px; height: 22px;"></i>
           </div>
           <div>
@@ -2902,15 +3300,105 @@ function scrollToBottom() {
   }
 }
 
-// Scroll to AI chat window and highlight it
-export function scrollToChat() {
-  const chatCard = document.querySelector('.ai-chat-card');
-  if (chatCard) {
-    chatCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    chatCard.classList.remove('highlight-pulse');
-    void chatCard.offsetWidth; // Trigger reflow to restart animation
-    chatCard.classList.add('highlight-pulse');
+// AI Guide Panel Handlers
+let lastFocusedElement = null;
+
+export function loadUserAiChatHistory() {
+  const currentUser = localStorage.getItem('lifemap_logged_in_user') || 'guest_student';
+  const historyKey = `lifemap_ai_chat_${currentUser}`;
+  const historyContainer = document.getElementById('ai-chat-history');
+  if (!historyContainer) return;
+
+  const saved = localStorage.getItem(historyKey);
+  if (saved && saved.trim() !== '') {
+    historyContainer.innerHTML = saved;
+  } else {
+    historyContainer.innerHTML = `
+      <div class="chat-bubble-wrapper ai-bubble-wrapper">
+        <div class="chat-bubble-avatar">
+          <i data-lucide="sparkles"></i>
+        </div>
+        <div class="chat-bubble ai-bubble" id="ai-chat-response">
+          ${state.language === 'en' 
+            ? 'Hello! I am your LifeMap AI Guide. In test mode, AI functionality is paused to protect user privacy.' 
+            : 'สวัสดีครับ! ยินดีต้อนรับสู่ LifeMap AI Guide (ในโหมดทดสอบ การให้บริการ AI จะถูกปิดไว้เพื่อความปลอดภัยของข้อมูล)'}
+        </div>
+      </div>
+    `;
   }
+  if (window.lucide) window.lucide.createIcons();
+}
+
+export function saveUserAiChatHistory() {
+  const currentUser = localStorage.getItem('lifemap_logged_in_user') || 'guest_student';
+  const historyKey = `lifemap_ai_chat_${currentUser}`;
+  const historyContainer = document.getElementById('ai-chat-history');
+  if (historyContainer) {
+    localStorage.setItem(historyKey, historyContainer.innerHTML);
+  }
+}
+
+// AI Guide Panel Handlers
+export function openAiGuidePanel() {
+  const panel = document.getElementById('ai-guide-panel');
+  if (!panel) return;
+  lastFocusedElement = document.activeElement;
+  panel.classList.remove('hidden');
+  panel.setAttribute('aria-hidden', 'false');
+  loadUserAiChatHistory();
+  checkAiLocalNotice();
+  const inputEl = document.getElementById('ai-chat-input');
+  document.getElementById('btn-close-ai-guide')?.focus();
+  scrollToBottom();
+}
+
+export function closeAiGuidePanel() {
+  const panel = document.getElementById('ai-guide-panel');
+  if (!panel) return;
+  panel.classList.add('hidden');
+  panel.setAttribute('aria-hidden', 'true');
+  if (lastFocusedElement && typeof lastFocusedElement.focus === 'function') {
+    lastFocusedElement.focus();
+  } else {
+    const mascotBtn = document.getElementById('btn-ai-guide-mascot');
+    if (mascotBtn) mascotBtn.focus();
+  }
+}
+
+export function toggleAiGuidePanel() {
+  const panel = document.getElementById('ai-guide-panel');
+  if (!panel) return;
+  if (panel.classList.contains('hidden')) {
+    openAiGuidePanel();
+  } else {
+    closeAiGuidePanel();
+  }
+}
+
+export function checkAiLocalNotice() {
+  const noticeEl = document.getElementById('ai-local-mode-notice');
+  if (!noticeEl) return;
+  noticeEl.style.display = 'flex';
+  document.getElementById('ai-guide-panel')?.classList.add('ai-unavailable');
+  const field = document.getElementById('ai-chat-input');
+  if (field) {
+    field.readOnly = true;
+    field.placeholder = state.language === 'en' ? 'Messaging is unavailable' : 'ยังไม่เปิดรับข้อความ';
+    field.setAttribute('aria-label', field.placeholder);
+  }
+  const send = document.getElementById('ai-chat-send-btn');
+  if (send) send.disabled = true;
+  const textSpan = noticeEl.querySelector('span');
+  if (textSpan) {
+    textSpan.textContent = state.language === 'en'
+      ? 'AI Guide is not available in test mode'
+      : 'AI Guide เป็นเวอร์ชันเดโม (คำตอบจำลอง) ในโหมด Guest Prototype';
+  }
+}
+
+// Open AI guide panel when requested
+export function scrollToChat() {
+  openAiGuidePanel();
 }
 
 // User helper to send a message
@@ -2920,11 +3408,13 @@ export function sendUserMessage(userVisibleText, aiPayload) {
   // Append user bubble
   appendChatBubble('user', userVisibleText);
   
-  // Append AI loading bubble
-  const loadingBubbleId = appendChatBubble('ai', 'กำลังคิดคำแนะนำให้คุณ...', true);
-  
-  // Trigger API call
-  triggerAiChatResponse(aiPayload, loadingBubbleId);
+  // In Local Test Mode: block all AI requests on all paths immediately with zero fake loading and zero API calls
+  const noticeMsg = state.language === 'en' 
+    ? 'AI Guide is not available in test mode'
+    : 'AI Guide เป็นเวอร์ชันเดโม (คำตอบจำลอง) ในโหมด Guest Prototype';
+  appendChatBubble('ai', noticeMsg);
+  saveUserAiChatHistory();
+  scrollToBottom();
 }
 
 // Custom input submit handler
@@ -2938,160 +3428,22 @@ export function handleCustomChatSubmit() {
   sendUserMessage(message, message);
 }
 
-function triggerAiChatResponse(promptMessage, loadingBubbleId) {
+export function triggerAiChatResponse(promptMessage, loadingBubbleId) {
   const chatBubble = document.getElementById(loadingBubbleId);
   const lang = state.language || 'th';
   
-  const apiKey = localStorage.getItem('lifemap_gemini_api_key') || 'AQ.Ab8RN6L4Y3HKnrmDGyixD9tfPnH2d_7B76_7GE3XQ5Ahc16lGA';
-  console.log("DEBUG: triggerAiChatResponse - Retrieved apiKey:", apiKey ? (apiKey === 'AQ.Ab8RN6L4Y3HKnrmDGyixD9tfPnH2d_7B76_7GE3XQ5Ahc16lGA' ? "Default/Mock Key" : `User Key (length: ${apiKey.length}, starts with: ${apiKey.substring(0, 6)}...)`) : "None");
-  if (apiKey) {
-    const profile = computeProfile(state.answers);
-    
-    let thinkingStyleInfo = "";
-    if (state.thinkingStyleCompleted && state.thinkingStyle) {
-      const ts = state.thinkingStyle;
-      const profileData = thinkingStyleProfiles[ts.styleCode];
-      const profileName = profileData ? (profileData.name[lang] || profileData.name['th']) : ts.styleCode;
-      
-      thinkingStyleInfo = `
-- Thinking Style Profile: ${profileName} (${ts.styleCode})
-- Thinking Style Axes:
-  * Energy: ${ts.axes.energy.dominant === 'E' ? 'Interactive' : ts.axes.energy.dominant === 'I' ? 'Reflective' : 'Balanced'} (Clarity: ${ts.axes.energy.clarity})
-  * Lens: ${ts.axes.lens.dominant === 'N' ? 'Future' : ts.axes.lens.dominant === 'S' ? 'Practical' : 'Balanced'} (Clarity: ${ts.axes.lens.clarity})
-  * Decision: ${ts.axes.decision.dominant === 'T' ? 'Logic-Based' : ts.axes.decision.dominant === 'F' ? 'Value-Based' : 'Balanced'} (Clarity: ${ts.axes.decision.clarity})
-  * Planning: ${ts.axes.planning.dominant === 'J' ? 'Structured' : ts.axes.planning.dominant === 'P' ? 'Adaptive' : 'Balanced'} (Clarity: ${ts.axes.planning.clarity})
-`;
-    }
-
-    const systemPrompt = `You are a personal AI Guide for Thai high school students on the LifeMap Future Profile platform.
-The student you are advising has the following profile:
-- Name: ${state.studentName || 'Student'}
-- Grade Level: ${state.gradeLevel === 'm4' ? 'ม.4 / Grade 10' : state.gradeLevel === 'm5' ? 'ม.5 / Grade 11' : 'ม.6 / Grade 12'}
-- Archetype: ${profile?.archetype[lang] || profile?.archetype['th'] || 'Exploration in progress'}
-- strengths: ${profile?.strengths[lang]?.join(', ') || profile?.strengths['th']?.join(', ') || 'Exploration, Empathy'}${thinkingStyleInfo}
-- Preferred Conversational Tone: ${state.guideTone === 'supportive' ? 'Supportive, warm, and friendly' : state.guideTone === 'analytical' ? 'Logical, analytical, and data-driven' : 'Direct, action-oriented, and concise'}
-
-Instructions:
-1. Respond STRICTLY in the active language: "${lang === 'en' ? 'English' : 'Thai'}" (highly polite, friendly, and suitable for high school students).
-2. Keep the answer extremely concise, helpful, and direct (around 3-4 sentences maximum).
-3. Align your tone strictly with the preferred conversational tone style chosen by the student.
-4. Incorporate the student's thinking style (e.g. prompt structured steps if Structured J, offer open alternatives if Adaptive P, or suggest discussing with others if Interactive E, etc.) into your advice dynamically. Avoid using MBTI letter codes in conversation. Always speak in supportive, non-permanent terms.
-
-Student Inquiry: "${promptMessage}"`;
-
-    fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        contents: [{
-          parts: [{ text: systemPrompt }]
-        }],
-        generationConfig: {
-          temperature: 0.7,
-          maxOutputTokens: 2048
-        }
-      })
-    })
-    .then(res => {
-      if (!res.ok) {
-        return res.json().then(errData => {
-          throw new Error(errData?.error?.message || `API HTTP error: ${res.status}`);
-        }).catch(() => {
-          throw new Error(`API HTTP error: ${res.status}`);
-        });
-      }
-      return res.json();
-    })
-    .then(data => {
-      const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-      if (text) {
-        let prefix = "";
-        if (state.guideTone === 'analytical') {
-          prefix = "⭐ [AI Analytical Guide] ";
-        } else if (state.guideTone === 'direct') {
-          prefix = "⚡ [AI Action Guide] ";
-        } else {
-          prefix = "🌱 [AI Supportive Guide] ";
-        }
-        if (chatBubble) {
-          chatBubble.textContent = prefix + text.trim();
-          const wrapper = chatBubble.closest('.chat-bubble-wrapper');
-          if (wrapper) wrapper.classList.remove('loading-bubble');
-        }
-        claimGuideBadge();
-        scrollToBottom();
-      } else {
-        throw new Error("No response text");
-      }
-    })
-    .catch(err => {
-      console.error("Gemini API Error:", err);
-      const isDefaultKey = (apiKey === 'AQ.Ab8RN6L4Y3HKnrmDGyixD9tfPnH2d_7B76_7GE3XQ5Ahc16lGA' || !apiKey);
-      if (!isDefaultKey) {
-        if (chatBubble) {
-          chatBubble.textContent = `❌ [Gemini API Error]: ${err.message}`;
-          const wrapper = chatBubble.closest('.chat-bubble-wrapper');
-          if (wrapper) wrapper.classList.remove('loading-bubble');
-        }
-      } else {
-        fallbackMockResponse(promptMessage, chatBubble);
-      }
-    });
-  } else {
-    fallbackMockResponse(promptMessage, chatBubble);
-  }
-}
-
-function claimGuideBadge() {
-  if (!state.claimedBadges.includes("guide")) {
-    state.claimedBadges.push("guide");
-    state.tokens += 20; // reward
-    saveState();
-  }
-}
-
-function fallbackMockResponse(promptMessage, chatBubble) {
+  // Local Test Mode Guardrail: AI is 100% blocked on all paths
   setTimeout(() => {
-    const lang = state.language || 'th';
-    let answer = "";
-    
-    if (lang === 'en') {
-      if (promptMessage.includes("Archetype") || promptMessage.includes("archetype")) {
-        answer = `Based on your profile, your strengths align with ${state.guideTone === 'supportive' ? 'exploration guidance' : 'structured management'}. We recommend focusing on practical skill training or seminars to build your portfolio.`;
-      } else if (promptMessage.includes("project") || promptMessage.includes("Project") || promptMessage.includes("โครงงาน")) {
-        answer = "We recommend an integrated project, such as building a model (Prototype) or conducting a small group interview, which will highly demonstrate Exploration & Skill Growth.";
-      } else {
-        answer = "To discuss with your family: show them your Life Profile strengths, highlight your natural strengths and learning styles, and explain how the 7-Day Missions help you validate options.";
-      }
-    } else {
-      if (promptMessage.includes("Archetype") || promptMessage.includes("archetype") || promptMessage.includes("จุดแข็ง")) {
-        answer = `จากข้อมูลคำตอบของคุณ คุณเป็นคนที่มีแนวคิดตรงกับกลุ่ม ${state.guideTone === 'supportive' ? 'ผู้นำทางการสำรวจ' : 'ผู้เชี่ยวชาญการจัดสรร'} จุดแข็งด้านการสื่อสารและการทำจริงจะนำมาใช้ควบคู่กัน แนะนำให้เริ่มมองหาวิชาชมรมหรือค่ายสัมมนาด้านทักษะปฏิบัติเป็นสำคัญครับ/ค่ะ`;
-      } else if (promptMessage.includes("โครงงาน") || promptMessage.includes("project")) {
-        answer = "แนะนำโครงงานแบบบูรณาการ เช่น ทำแบบจำลอง (Prototype) หรือจัดกิจกรรมกลุ่มสัมมนาสัมภาษณ์ผู้ปกครอง ซึ่งจะช่วยสะท้อน Exploration & Skill Growth ได้สูง";
-      } else {
-        answer = "สไตล์การคุยกับครอบครัว: นำคะแนน Life Profile นี้ไปให้ท่านดู ชี้ชวนให้เห็นจุดแข็งและสไตล์การเรียนรู้ที่คุณถนัด และคุยกันถึงความสนใจที่จะทดลองภารกิจ 7 วัน เพื่อเป็นบททดสอบเบื้องต้น";
-      }
-    }
-
-    let prefix = "";
-    if (state.guideTone === 'analytical') {
-      prefix = lang === 'en' ? "[AI Analytical Guide] (Simulated) " : "⭐ [AI Analytical Guide] (จำลอง) ";
-    } else if (state.guideTone === 'direct') {
-      prefix = lang === 'en' ? "[AI Action Guide] (Simulated) " : "⚡ [AI Action Guide] (จำลอง) ";
-    } else {
-      prefix = lang === 'en' ? "[AI Supportive Guide] (Simulated) " : "🌱 [AI Supportive Guide] (จำลอง) ";
-    }
-
     if (chatBubble) {
-      chatBubble.textContent = prefix + answer;
+      chatBubble.textContent = lang === 'en'
+        ? "AI Guide is not available in test mode"
+        : "AI Guide เป็นเวอร์ชันเดโม (คำตอบจำลอง) ในโหมด Guest Prototype";
       const wrapper = chatBubble.closest('.chat-bubble-wrapper');
       if (wrapper) wrapper.classList.remove('loading-bubble');
     }
-    claimGuideBadge();
+    saveUserAiChatHistory();
     scrollToBottom();
-  }, 1000);
+  }, 200);
 }
 
 export function computeThinkingStyle(answers) {
@@ -3184,14 +3536,21 @@ export function computeThinkingStyle(answers) {
 
 // Compute profiles from answers (deterministic RIASEC / Big Five Inspired Scoring)
 export function computeProfile(answers) {
-  if (Object.keys(answers).length < quizQuestions.length) return null;
+  const ans = (answers && Object.keys(answers).length === quizQuestions.length)
+    ? answers
+    : (state && state.previousResult && state.previousResult.answers && Object.keys(state.previousResult.answers).length === quizQuestions.length
+        ? state.previousResult.answers
+        : null);
+
+  if (!ans) return null;
 
   const rawClusters = { creator: 0, builder: 0, analyst: 0, helper: 0, entrepreneur: 1 };
   const rawRiasec = { R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 };
   const rawBigFive = { openness: 0, conscientiousness: 0, extraversion: 0, agreeableness: 0, emotional_regulation: 0 };
 
+  const maxBigFive = { openness: 0, conscientiousness: 0, extraversion: 0, agreeableness: 0, emotional_regulation: 0 };
   quizQuestions.forEach(q => {
-    const ansIdx = answers[q.id];
+    const ansIdx = ans[q.id];
     const option = q.options[ansIdx];
     if (option) {
       rawClusters[option.cluster] += option.value;
@@ -3199,6 +3558,15 @@ export function computeProfile(answers) {
       rawBigFive[option.bigFive] += option.value;
       if (option.riasec === "E" || q.domain === "career") rawClusters.entrepreneur += 1;
     }
+    const maxPerTrait = {};
+    q.options.forEach(opt => {
+      if (opt.bigFive) {
+        maxPerTrait[opt.bigFive] = Math.max(maxPerTrait[opt.bigFive] || 0, opt.value || 0);
+      }
+    });
+    Object.entries(maxPerTrait).forEach(([tr, val]) => {
+      maxBigFive[tr] = (maxBigFive[tr] || 0) + val;
+    });
   });
 
   const createScoreRows = (scores, labels) =>
@@ -3206,9 +3574,14 @@ export function computeProfile(answers) {
       .map(([id, score]) => ({ id, name: labels[id][state.language || 'th'], score: Number(score) }))
       .sort((a, b) => b.score - a.score);
 
+  const createBigFiveRows = (scores, labels, maxScores) =>
+    Object.entries(scores)
+      .map(([id, score]) => ({ id, name: labels[id][state.language || 'th'], score: Number(score), maxScore: maxScores[id] || 24 }))
+      .sort((a, b) => b.score - a.score);
+
   const careerClusters = createScoreRows(rawClusters, clusterLabels);
   const riasecScores = createScoreRows(rawRiasec, riasecLabels);
-  const bigFiveScores = createScoreRows(rawBigFive, bigFiveLabels);
+  const bigFiveScores = createBigFiveRows(rawBigFive, bigFiveLabels, maxBigFive);
   
   const top = careerClusters[0];
   const topRiasec = riasecScores[0];
@@ -3593,10 +3966,28 @@ export function buildGrowthMissions(profile) {
   }
 }
 
+// Resolve legacy split plans using exact mission IDs, without changing saved data.
+function getActiveGrowthMissions() {
+  const saved = Array.isArray(state.growthMissions) ? state.growthMissions : [];
+  const recommended = Array.isArray(state.recommendedMissions) ? state.recommendedMissions : [];
+  const ids = new Set((state.checkIns || []).map(c => c.missionId));
+  const hasEvidence = plan => plan.some(m => ids.has(m.id));
+  // A started saved plan always stays active, even after a new quiz result.
+  if (saved.length && hasEvidence(saved)) return saved;
+  // Old releases displayed recommendations while retaining an unstarted saved plan.
+  // Recover only a complete, single-cluster plan with exact matching evidence.
+  const validRecommendation = recommended.length === 7 &&
+    new Set(recommended.map(m => m.id)).size === 7 &&
+    new Set(recommended.map(m => m.cluster)).size === 1 &&
+    [1,2,3,4,5,6,7].every(day => recommended.some(m => m.day === day));
+  if (validRecommendation && hasEvidence(recommended)) return recommended;
+  return saved.length ? saved : buildGrowthMissions(computeProfile(state.answers));
+}
+
 export function isDayUnlocked(dayNum) {
   if (dayNum === 1) return true;
   const profile = computeProfile(state.answers);
-  const mList = state.growthMissions.length > 0 ? state.growthMissions : buildGrowthMissions(profile);
+  const mList = getActiveGrowthMissions();
   const prevMission = mList.find(m => m.day === dayNum - 1);
   if (!prevMission) return false;
   return state.checkIns.some(c => c.missionId === prevMission.id);
@@ -3604,13 +3995,19 @@ export function isDayUnlocked(dayNum) {
 
 // --- 7-DAY MISSIONS VIEW RENDERING ---
 function renderMissionsTab() {
+  renderExperimentWorkbench(state, quizQuestions, saveStateData, switchView);
   const profile = computeProfile(state.answers);
   if (!profile) {
     // Alert and redirect to profile
-    alert("กรุณาทำแบบทดสอบให้ครบ 6 ข้อก่อนเข้าสู่ภารกิจสำรวจตัวตนครับ");
+    alert(`กรุณาทำแบบทดสอบให้ครบ ${quizQuestions.length} ข้อก่อนเข้าสู่ภารกิจสำรวจตัวตนครับ`);
     switchView('quiz-tab');
     return;
   }
+
+  // Keep the original seven-day records in state, while the learner-facing
+  // experience now uses short, repeatable experiments.
+  lucide.createIcons();
+  return;
 
   const mStatus = getGrowthMissionStatus();
   
@@ -3637,9 +4034,11 @@ function renderMissionsTab() {
       ${checkIcon}
     `;
     btn.addEventListener('click', () => {
+      if (!unlocked) return;
       currentSelectedDay = m.day;
       renderMissionsTab();
     });
+    btn.disabled = !unlocked;
     daysList.appendChild(btn);
   });
 
@@ -3754,7 +4153,7 @@ function handleCheckinSubmit(e) {
       mId = `growth-${userCluster}-day-${dayNum}`;
     }
 
-    const mission = buildGrowthMissions(profile).find(m => m.id === mId);
+    const mission = getGrowthMissionStatus().missions.find(m => m.id === mId);
     if (!mission) {
       alert(state.language === 'en'
         ? "Error: Mission data could not be verified. Please reload and try again."
@@ -3780,9 +4179,12 @@ function handleCheckinSubmit(e) {
     saveState();
     renderMissionsTab();
     
-    alert(state.language === 'en'
-      ? `Mission Day ${dayNum} check-in success! You received +20 Tokens.`
-      : `เช็คอินภารกิจ Day ${dayNum} สำเร็จ! คุณได้รับ +20 Tokens เรียบร้อยแล้ว`);
+    showBrandAlert(state.language === 'en'
+      ? `Your Day ${dayNum} reflection has been saved. Keep growing at your own pace.`
+      : `บันทึกภารกิจ Day ${dayNum} ของคุณแล้ว ค่อย ๆ เติบโตในจังหวะของตัวเองนะ`, {
+        title: state.language === 'en' ? 'Mission complete!' : 'ภารกิจสำเร็จแล้ว!',
+        reward: true
+      });
   } catch (err) {
     console.error("Checkin submit error:", err);
     window.alert("เกิดข้อผิดพลาดในการบันทึก: " + err.message);
@@ -3791,14 +4193,14 @@ function handleCheckinSubmit(e) {
 
 export function getGrowthMissionStatus() {
   const profile = computeProfile(state.answers);
-  const mList = buildGrowthMissions(profile);
+  const mList = getActiveGrowthMissions();
   const completedIds = new Set(state.checkIns.map(c => c.missionId));
-  const currentMission = mList.find(m => !completedIds.has(m.id)) ?? null;
+  const currentMission = mList.find(m => !completedIds.has(m.id) && isDayUnlocked(m.day)) ?? null;
   const review = computeGrowthReview(state.checkIns);
 
   return {
     missions: mList,
-    completedCount: completedIds.size,
+    completedCount: mList.filter(m => completedIds.has(m.id)).length,
     currentMission,
     review,
     reviewUnlocked: review.unlocked || state.growthReviewUnlocked,
@@ -4026,7 +4428,7 @@ export function computeGrowthReview(checkIns) {
     dimensionScores,
     nextStep: unlocked 
       ? (lang === 'en' ? `Next week's missions should focus on active practice to support ${lowestName} (Current score: ${lowest.score}%)` : `กิจกรรมรอบหน้าควรมุ่งฝึกฝนทักษะการทำจริงเพื่อเสริมมิติ ${lowestName} (คะแนนปัจจุบัน: ${lowest.score}%)`)
-      : (lang === 'en' ? "Log daily activities and reflect on your emotions in 7-Day Missions." : "บันทึกการลงมือทำกิจกรรมและทบทวนความรู้สึกในหน้า 7-Day Missions"),
+      : (lang === 'en' ? "Try short activities and save three quick answers in Try It." : "ลองกิจกรรมสั้น ๆ แล้วบันทึกคำตอบ 3 ข้อในหน้า ลองทำจริง"),
     frameworkNote: lang === 'en' ? "All evaluation data is stored locally. It is personalized and not used for competition." : "ข้อมูลประเมินทั้งหมดอ้างอิงจากเช็คอินภายในเครื่อง ไม่นำไปแข่งขัน และให้ผลเฉพาะบุคคล",
   };
 }
@@ -4118,7 +4520,7 @@ function showRedeemSuccessModal(itemId) {
   const codeLabel = document.getElementById('redeem-code-label');
   const codeVal = document.getElementById('redeem-promo-code');
   const inst = document.getElementById('redeem-instructions');
-  const closeBtn = document.getElementById('btn-redeem-close');
+  const closeBtn = document.getElementById('btn-close-redeem-modal');
   const copyBtn = document.getElementById('btn-copy-redeem-code');
   const copyBtnText = document.getElementById('copy-btn-text');
 
@@ -4144,17 +4546,13 @@ function showRedeemSuccessModal(itemId) {
   };
 
   // Replace copy event listener cleanly
-  const newCopyBtn = copyBtn.cloneNode(true);
-  copyBtn.parentNode.replaceChild(newCopyBtn, copyBtn);
-  newCopyBtn.addEventListener('click', handleCopy);
+  copyBtn.onclick = handleCopy;
 
   // Close handler
   const handleClose = () => {
     modal.classList.remove('active');
   };
-  const newCloseBtn = closeBtn.cloneNode(true);
-  closeBtn.parentNode.replaceChild(newCloseBtn, closeBtn);
-  newCloseBtn.addEventListener('click', handleClose);
+  closeBtn.onclick = handleClose;
 
   // Backdrop close
   modal.onclick = (e) => {
@@ -4282,7 +4680,7 @@ function renderMarketplaceTab() {
     
     const showRecommended = item.compatibilityScore >= 60;
     const recommendedBadge = showRecommended 
-      ? `<span class="op-match-badge" style="background: rgba(var(--color-accent-rgb), 0.15); color: var(--color-accent); font-size: 0.7rem; font-weight: 600; padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(var(--color-accent-rgb), 0.3); margin-left: 8px;">${lang === 'en' ? 'Recommended' : 'แนะนำสำหรับคุณ'}</span>`
+      ? `<span class="op-match-badge" style="background: rgba(var(--color-accent-rgb), 0.15); color: #0F172A; font-size: 0.7rem; font-weight: 600; padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(var(--color-accent-rgb), 0.3); margin-left: 8px;">${lang === 'en' ? 'Recommended' : 'แนะนำสำหรับคุณ'}</span>`
       : "";
 
     card.innerHTML = `
@@ -4399,7 +4797,7 @@ function updateApiKeyStatus(key) {
   const statusEl = document.getElementById('api-key-status');
   if (!statusEl) return;
   if (key) {
-    statusEl.innerHTML = 'สถานะ: <span style="color: var(--color-accent); font-weight: bold;">เชื่อมต่อ Google Gemini API แล้ว (ใช้งาน AI ตามจริง)</span>';
+    statusEl.innerHTML = 'สถานะ: <span style="color: #0F172A; font-weight: bold;">เชื่อมต่อ Google Gemini API แล้ว (ใช้งาน AI ตามจริง)</span>';
   } else {
     statusEl.innerHTML = 'สถานะ: <span style="color: var(--text-muted);">ยังไม่มี API Key (ใช้ระบบ AI จำลอง)</span>';
   }
@@ -4416,6 +4814,7 @@ function handleSaveApiKey() {
     alert(state.language === 'en' ? 'API Key removed! Switched back to simulated AI.' : 'ลบ API Key เรียบร้อยแล้ว ระบบจะสลับกลับไปใช้ AI จำลอง');
   }
   updateApiKeyStatus(key);
+  checkAiLocalNotice();
 }
 
 function handleSettingsConsentChange() {
@@ -4628,6 +5027,7 @@ function handleImportFile(e) {
 function setupEventListeners() {
   // Navigation
   document.querySelectorAll('.nav-menu .nav-item').forEach(btn => {
+    if (btn.id === 'btn-mobile-more') return;
     btn.addEventListener('click', () => switchView(btn.dataset.view));
   });
   
@@ -4640,6 +5040,63 @@ function setupEventListeners() {
     headerSettingsBtn.addEventListener('click', () => switchView('settings'));
   }
 
+  // Mobile More Menu Modal Listeners with Accessibility & Focus Management
+  const btnMobileMore = document.getElementById('btn-mobile-more');
+  const mobileMoreModal = document.getElementById('mobile-more-modal');
+  const btnCloseMobileMore = document.getElementById('btn-close-mobile-more');
+  const btnMobileMoreLogout = document.getElementById('btn-mobile-more-logout');
+
+  const closeMobileMoreModal = () => {
+    if (mobileMoreModal && mobileMoreModal.classList.contains('active')) {
+      mobileMoreModal.classList.remove('active');
+      if (btnMobileMore) {
+        btnMobileMore.focus();
+      }
+    }
+  };
+
+  if (btnMobileMore && mobileMoreModal) {
+    btnMobileMore.addEventListener('click', () => {
+      mobileMoreModal.classList.add('active');
+      if (btnCloseMobileMore) {
+        btnCloseMobileMore.focus();
+      }
+    });
+  }
+  if (btnCloseMobileMore && mobileMoreModal) {
+    btnCloseMobileMore.addEventListener('click', () => {
+      closeMobileMoreModal();
+    });
+  }
+  if (mobileMoreModal) {
+    mobileMoreModal.addEventListener('click', (e) => {
+      if (e.target === mobileMoreModal) {
+        closeMobileMoreModal();
+      }
+    });
+  }
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeMobileMoreModal();
+    }
+  });
+
+  document.querySelectorAll('.mobile-more-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const viewToSwitch = item.dataset.view;
+      closeMobileMoreModal();
+      if (viewToSwitch) {
+        switchView(viewToSwitch);
+      }
+    });
+  });
+  if (btnMobileMoreLogout) {
+    btnMobileMoreLogout.addEventListener('click', () => {
+      closeMobileMoreModal();
+      handleLogout();
+    });
+  }
+
   // Header/Global Actions
   document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
 
@@ -4650,6 +5107,28 @@ function setupEventListeners() {
     });
   });
 
+  // Onboarding Back to Welcome button
+  const btnOnboardingBack = document.getElementById('btn-onboarding-back');
+  if (btnOnboardingBack) {
+    btnOnboardingBack.addEventListener('click', async () => {
+      const nameInput = document.getElementById('ob-name');
+      const schoolInput = document.getElementById('ob-school');
+      const checkedGrade = document.querySelector('input[name="ob-grade"]:checked');
+      const isDirty = (nameInput && nameInput.value.trim() !== '') ||
+                      (schoolInput && schoolInput.value.trim() !== '') ||
+                      (checkedGrade !== null);
+      if (isDirty) {
+        const confirmed = await showBrandConfirm(
+          state.language === 'en'
+            ? "You have unsaved changes in your profile. Are you sure you want to discard them and return to the welcome page?"
+            : "คุณมีข้อมูลที่แก้ไขแล้วแต่ยังไม่ได้บันทึก ต้องการกลับหน้าเริ่มต้นโดยละทิ้งข้อมูลหรือไม่?"
+        );
+        if (!confirmed) return;
+      }
+      switchView('welcome');
+    });
+  }
+
   document.getElementById('onboarding-form').addEventListener('submit', handleOnboardingSubmit);
 
   // Dashboard actions
@@ -4659,9 +5138,26 @@ function setupEventListeners() {
     alert(state.language === 'en' ? "Invite Code copied!" : "คัดลอกรหัส Invite Code แล้ว!");
   });
   document.getElementById('btn-dash-go-parent').addEventListener('click', () => switchView('parent'));
+  const handleStartOrResumeQuiz = () => {
+    switchView('quiz-tab');
+    const answersCount = Object.keys(state.answers || {}).length;
+    if (answersCount > 0 && answersCount < quizQuestions.length) {
+      resumeQuiz();
+    } else {
+      startQuiz();
+    }
+  };
+
+  const dashNextActionBtn = document.getElementById('btn-dash-next-action');
+  if (dashNextActionBtn) {
+    dashNextActionBtn.addEventListener('click', handleStartOrResumeQuiz);
+  }
 
   // Quiz actions
-  document.getElementById('btn-start-quiz-now').addEventListener('click', startQuiz);
+  const btnStartQuizNow = document.getElementById('btn-start-quiz-now');
+  if (btnStartQuizNow) {
+    btnStartQuizNow.addEventListener('click', handleStartOrResumeQuiz);
+  }
   
   const consentChk = document.getElementById('consent-thinking-style');
   const startThinkingBtn = document.getElementById('btn-start-thinking-quiz');
@@ -4680,13 +5176,16 @@ function setupEventListeners() {
       completeQuiz();
     });
   }
+  const resultMissionsBtn = document.getElementById('btn-result-go-missions');
+  if (resultMissionsBtn) {
+    resultMissionsBtn.addEventListener('click', () => switchView('missions'));
+  }
+
   document.getElementById('btn-reset-quiz').addEventListener('click', async () => {
     const confirmed = await showBrandConfirm(state.language === 'en' ? "Do you want to reset the quiz to retake it?" : "ต้องการรีเซ็ตแบบทดสอบเพื่อทำใหม่หรือไม่?");
     if (confirmed) {
-      state.answers = {};
-      state.thinkingStyleAnswers = {};
-      state.thinkingStyleCompleted = undefined;
-      state.thinkingStyle = null;
+      beginSurveyRound();
+      // Note: Preserve careerQuizRewarded & thinkingStyleRewarded so retaking quiz yields 0 extra tokens
       saveState();
       renderQuizTab();
     }
@@ -4728,7 +5227,7 @@ function setupEventListeners() {
     resetThinkingBtn.addEventListener('click', resetThinkingStyleData);
   }
   document.getElementById('btn-settings-reset').addEventListener('click', resetAllData);
-  document.getElementById('btn-save-api-key').addEventListener('click', handleSaveApiKey);
+  document.getElementById('btn-save-api-key')?.addEventListener('click', handleSaveApiKey);
   
   // Custom Chat Actions
   const sendBtn = document.getElementById('ai-chat-send-btn');
@@ -4741,322 +5240,102 @@ function setupEventListeners() {
       }
     });
   }
+
+  // AI Guide Mascot & Panel Listeners
+  const mascotBtn = document.getElementById('btn-ai-guide-mascot');
+  const closeGuideBtn = document.getElementById('btn-close-ai-guide');
+  const openFromProfileBtn = document.getElementById('btn-open-ai-guide-from-profile');
+
+  if (mascotBtn) mascotBtn.addEventListener('click', toggleAiGuidePanel);
+  if (closeGuideBtn) closeGuideBtn.addEventListener('click', closeAiGuidePanel);
+  if (openFromProfileBtn) openFromProfileBtn.addEventListener('click', openAiGuidePanel);
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      const panel = document.getElementById('ai-guide-panel');
+      if (panel && !panel.classList.contains('hidden')) {
+        closeAiGuidePanel();
+      }
+    }
+  });
   
   // Sidebar actions
   document.getElementById('btn-sidebar-export').addEventListener('click', exportData);
 
-  // Auth Tab Toggles
-  const tabLoginBtn = document.getElementById('tab-login-btn');
-  const tabRegisterBtn = document.getElementById('tab-register-btn');
-  const loginForm = document.getElementById('login-form');
-  const registerForm = document.getElementById('register-form');
-
-  if (tabLoginBtn && tabRegisterBtn && loginForm && registerForm) {
-    tabLoginBtn.addEventListener('click', () => {
-      tabLoginBtn.classList.add('active');
-      tabRegisterBtn.classList.remove('active');
-      loginForm.style.display = 'flex';
-      registerForm.style.display = 'none';
-    });
-
-    tabRegisterBtn.addEventListener('click', () => {
-      tabRegisterBtn.classList.add('active');
-      tabLoginBtn.classList.remove('active');
-      registerForm.style.display = 'flex';
-      loginForm.style.display = 'none';
-    });
-  }
-
-  // Login Form Submission
-  const loginFormEl = document.getElementById('login-form');
-  if (loginFormEl) {
-    loginFormEl.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const usernameInput = document.getElementById('login-username');
-      const passwordInput = document.getElementById('login-password');
-      if (!usernameInput || !passwordInput) return;
-
-      const username = usernameInput.value.trim();
-      const password = passwordInput.value;
-
-      // Parent Invite Login lookup
-      if (username.toUpperCase().startsWith('LM-')) {
-        const inviteCode = username.toUpperCase();
-        let foundStudent = null;
-        let foundState = null;
-
-        const usersDb = JSON.parse(localStorage.getItem('lifemap_users_db') || '{}');
-        for (const u of Object.keys(usersDb)) {
-          const studentStateStr = localStorage.getItem(`lifemap_state_${u}`);
-          if (studentStateStr) {
-            try {
-              const studentState = JSON.parse(studentStateStr);
-              if (studentState.parentInviteCode === inviteCode) {
-                foundStudent = u;
-                foundState = studentState;
-                break;
-              }
-            } catch (e) {}
-          }
-        }
-
-        // Also check guest
-        if (!foundStudent) {
-          const guestStateStr = localStorage.getItem('lifemap_state_v2');
-          if (guestStateStr) {
-            try {
-              const guestState = JSON.parse(guestStateStr);
-              if (guestState.parentInviteCode === inviteCode) {
-                foundStudent = 'guest';
-                foundState = guestState;
-              }
-            } catch (e) {}
-          }
-        }
-
-        if (foundStudent) {
-          localStorage.setItem('lifemap_logged_in_user', foundStudent);
-          localStorage.setItem('lifemap_logged_in_role', 'parent');
-          usernameInput.value = '';
-          passwordInput.value = '';
-          checkAuthStatus();
-          alert(state.language === 'en' 
-            ? `Logged in successfully as Parent of ${foundState.studentName || 'Student'}!` 
-            : `เข้าสู่ระบบสำเร็จในฐานะผู้ปกครองของ คุณ ${foundState.studentName || 'นักเรียน'}!`);
-        } else {
-          alert(state.language === 'en' ? "Invite code not found!" : "ไม่พบรหัสคำเชิญนี้ในระบบ!");
-        }
-        return;
-      }
-
-      const usersDb = JSON.parse(localStorage.getItem('lifemap_users_db') || '{}');
-      const user = usersDb[username.toLowerCase()];
-
-      if (user && user.password === password) {
-        // If the logged in user has no saved state, copy guest state to them!
-        const userSaved = localStorage.getItem(`lifemap_state_${user.username}`);
-        if (!userSaved) {
-          const hasGuestData = state.studentName || Object.keys(state.answers).length > 0;
-          if (hasGuestData) {
-            localStorage.setItem(`lifemap_state_${user.username}`, JSON.stringify(state));
-            localStorage.removeItem('lifemap_state_v2');
-          }
-        }
-
-        localStorage.setItem('lifemap_logged_in_user', user.username);
-        localStorage.setItem('lifemap_logged_in_role', 'student'); // set student role explicitly
-        usernameInput.value = '';
-        passwordInput.value = '';
-        checkAuthStatus();
-        alert(state.language === 'en' ? `Welcome back, ${user.username}!` : `ยินดีต้อนรับกลับมา, คุณ ${user.username}!`);
-      } else {
-        alert(state.language === 'en' ? "Incorrect username or password!" : "ชื่อผู้ใช้งานหรือรหัสผ่านไม่ถูกต้อง!");
-      }
-    });
-  }
-
-  // Register Form Submission
-  const registerFormEl = document.getElementById('register-form');
-  if (registerFormEl) {
-    registerFormEl.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const usernameInput = document.getElementById('register-username');
-      const passwordInput = document.getElementById('register-password');
-      const confirmInput = document.getElementById('register-confirm-password');
-      if (!usernameInput || !passwordInput || !confirmInput) return;
-
-      const username = usernameInput.value.trim();
-      const password = passwordInput.value;
-      const confirmPassword = confirmInput.value;
-
-      if (password !== confirmPassword) {
-        alert(state.language === 'en' ? "Passwords do not match!" : "รหัสผ่านและการยืนยันรหัสผ่านไม่ตรงกัน!");
-        return;
-      }
-
-      const usersDb = JSON.parse(localStorage.getItem('lifemap_users_db') || '{}');
-      if (usersDb[username.toLowerCase()]) {
-        alert(state.language === 'en' ? "This username is already taken!" : "ชื่อผู้ใช้งานนี้ถูกใช้งานไปแล้ว!");
-        return;
-      }
-
-      // Save credentials
-      usersDb[username.toLowerCase()] = { username, password };
-      localStorage.setItem('lifemap_users_db', JSON.stringify(usersDb));
-
-      // Login
-      localStorage.setItem('lifemap_logged_in_user', username);
-
-      // Copy guest state to new user if they have completed onboarding/quiz
-      const hasGuestData = state.studentName || Object.keys(state.answers).length > 0;
-      if (hasGuestData) {
-        // Keep current state but save to user's database
-        localStorage.setItem(`lifemap_state_${username}`, JSON.stringify(state));
-        // Clear guest state
-        localStorage.removeItem('lifemap_state_v2');
-      } else {
-        state = { ...initialState };
-        saveState();
-      }
-
-      usernameInput.value = '';
-      passwordInput.value = '';
-      confirmInput.value = '';
-
-      checkAuthStatus();
-      alert(state.language === 'en' ? "Registration successful! Saved your Life Profile and unlocked full access." : "ลงทะเบียนบัญชีสำเร็จ! บันทึก Life Profile และเชื่อมต่อระบบการเรียนรู้เรียบร้อย");
-    });
-  }
-
-  // Forgot Password Flow
-  const forgotForm = document.getElementById('forgot-form');
-  const btnShowForgot = document.getElementById('btn-show-forgot');
-  const btnForgotBack = document.getElementById('btn-forgot-back');
-  const btnForgotSendOtp = document.getElementById('btn-forgot-send-otp');
-  const btnForgotVerifyOtp = document.getElementById('btn-forgot-verify-otp');
-  const forgotStep1 = document.getElementById('forgot-step-1');
-  const forgotStep2 = document.getElementById('forgot-step-2');
-  const forgotStep3 = document.getElementById('forgot-step-3');
-  const authTabs = document.querySelector('.auth-tabs');
-
-  if (btnShowForgot && forgotForm && loginForm && registerForm && authTabs) {
-    btnShowForgot.addEventListener('click', () => {
-      loginForm.style.display = 'none';
-      registerForm.style.display = 'none';
-      forgotForm.style.display = 'flex';
-      authTabs.style.display = 'none';
-      
-      // Reset steps
-      forgotStep1.style.display = 'block';
-      forgotStep2.style.display = 'none';
-      forgotStep3.style.display = 'none';
-      
-      const usernameInput = document.getElementById('forgot-username');
-      if (usernameInput) usernameInput.value = '';
-    });
-  }
-
-  if (btnForgotBack && forgotForm && loginForm && authTabs && tabLoginBtn && tabRegisterBtn) {
-    btnForgotBack.addEventListener('click', () => {
-      forgotForm.style.display = 'none';
-      loginForm.style.display = 'flex';
-      authTabs.style.display = 'flex';
-      tabLoginBtn.classList.add('active');
-      tabRegisterBtn.classList.remove('active');
-    });
-  }
-
-  if (btnForgotSendOtp && forgotStep1 && forgotStep2) {
-    btnForgotSendOtp.addEventListener('click', () => {
-      const usernameInput = document.getElementById('forgot-username');
-      if (!usernameInput) return;
-      const username = usernameInput.value.trim();
-
-      if (!username) {
-        alert(state.language === 'en' ? "Please enter your username or email!" : "กรุณากรอกชื่อผู้ใช้งานหรืออีเมล!");
-        return;
-      }
-
-      const usersDb = JSON.parse(localStorage.getItem('lifemap_users_db') || '{}');
-      if (!usersDb[username.toLowerCase()]) {
-        alert(state.language === 'en' ? "Username or email not found in the system!" : "ไม่พบชื่อผู้ใช้งานหรืออีเมลนี้ในระบบ!");
-        return;
-      }
-
-      forgotForm.dataset.recoveryUser = username;
-      forgotStep1.style.display = 'none';
-      forgotStep2.style.display = 'block';
-      alert(state.language === 'en' ? "A simulated OTP has been sent to your email.\n(Enter code: 8888 to unlock)" : "ระบบจำลองได้ส่งรหัส OTP ไปยังอีเมลของท่านแล้ว\n(กรอกรหัสผ่านทางผ่าน: 8888 เพื่อปลดล็อก)");
-    });
-  }
-
-  if (btnForgotVerifyOtp && forgotStep2 && forgotStep3) {
-    btnForgotVerifyOtp.addEventListener('click', () => {
-      const otpInput = document.getElementById('forgot-otp');
-      if (!otpInput) return;
-      const otp = otpInput.value.trim();
-
-      if (otp === "8888") {
-        forgotStep2.style.display = 'none';
-        forgotStep3.style.display = 'block';
-        otpInput.value = '';
-      } else {
-        alert(state.language === 'en' ? "Invalid OTP. Please enter 8888 for simulation recovery." : "รหัส OTP ไม่ถูกต้อง กรุณากรอกรหัส 8888 สำหรับการจำลองกู้คืน");
-      }
-    });
-  }
-
-  if (forgotForm) {
-    forgotForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const newPasswordInput = document.getElementById('forgot-new-password');
-      const confirmNewPasswordInput = document.getElementById('forgot-confirm-new-password');
-      if (!newPasswordInput || !confirmNewPasswordInput) return;
-
-      const newPassword = newPasswordInput.value;
-      const confirmNewPassword = confirmNewPasswordInput.value;
-
-      if (newPassword !== confirmNewPassword) {
-        alert(state.language === 'en' ? "New passwords do not match!" : "รหัสผ่านใหม่และการยืนยันรหัสผ่านไม่ตรงกัน!");
-        return;
-      }
-
-      const username = forgotForm.dataset.recoveryUser;
-      if (!username) {
-        alert(state.language === 'en' ? "Password recovery session expired. Please start over." : "เซสชันกู้คืนรหัสผ่านหมดอายุ กรุณาเริ่มต้นใหม่");
-        return;
-      }
-
-      const usersDb = JSON.parse(localStorage.getItem('lifemap_users_db') || '{}');
-      if (usersDb[username.toLowerCase()]) {
-        usersDb[username.toLowerCase()].password = newPassword;
-        localStorage.setItem('lifemap_users_db', JSON.stringify(usersDb));
-        
-        newPasswordInput.value = '';
-        confirmNewPasswordInput.value = '';
-        
-        // Go back to login
-        forgotForm.style.display = 'none';
-        loginForm.style.display = 'flex';
-        authTabs.style.display = 'flex';
-        tabLoginBtn.classList.add('active');
-        tabRegisterBtn.classList.remove('active');
-        
-        alert(state.language === 'en' ? "Password changed successfully! Please log in with your new password." : "เปลี่ยนรหัสผ่านสำเร็จแล้ว! กรุณาเข้าสู่ระบบด้วยรหัสผ่านใหม่");
-      } else {
-        alert(state.language === 'en' ? "Error: User account not found for update." : "เกิดข้อผิดพลาด: ไม่พบบัญชีผู้ใช้ในการอัปเดต");
-      }
-    });
-  }
 
   // Logout Actions
   const handleLogout = async () => {
-    const confirmed = await showBrandConfirm(state.language === 'en' ? "Are you sure you want to log out?" : "คุณต้องการออกจากระบบหรือไม่?");
+    const isGuest = !localStorage.getItem('lifemap_logged_in_user') || localStorage.getItem('lifemap_logged_in_user') === 'guest_student';
+    const confirmMsg = isGuest
+      ? (state.language === 'en'
+          ? "You are leaving Guest Mode. Unsaved survey results and tokens on this device will be reset. Confirm?"
+          : "คุณกำลังออกจากโหมดผู้เยี่ยมชม ข้อมูลผลลัพธ์และ Tokens บนเครื่องนี้จะถูกรีเซ็ต ต้องการยืนยันหรือไม่?")
+      : (state.language === 'en'
+          ? "Are you sure you want to log out?"
+          : "คุณต้องการออกจากระบบหรือไม่?");
+
+    console.log('[DEBUG LOGOUT]: Prompting confirm modal...');
+    const confirmed = await showBrandConfirm(confirmMsg);
+    console.log('[DEBUG LOGOUT]: Confirmed result =', confirmed);
     if (confirmed) {
-      if (typeof liff !== 'undefined' && liff.isLoggedIn()) {
-        try {
-          liff.logout();
-          console.log("LINE LIFF logged out.");
-        } catch (e) {
-          console.error("Error logging out of LIFF:", e);
+      try {
+        if (typeof liff !== 'undefined') {
+          try {
+            if (liff.isLoggedIn()) {
+              liff.logout();
+              console.log("LINE LIFF logged out.");
+            }
+          } catch (e) {
+            console.warn("Skipped LIFF logout (not initialized):", e.message || e);
+          }
         }
-      }
-      localStorage.removeItem('lifemap_logged_in_user');
-      localStorage.removeItem('lifemap_logged_in_role');
-      localStorage.removeItem('lifemap_state_v2');
-      localStorage.removeItem('lifemap_v2_view');
-      state = { ...initialState };
-      
-      // Reset sidebar avatar image to default icon
-      const avatarDiv = document.querySelector('.student-profile-widget .avatar');
-      if (avatarDiv) {
-        avatarDiv.innerHTML = `<i data-lucide="user"></i>`;
-        if (window.lucide) {
-          window.lucide.createIcons();
+        localStorage.removeItem('lifemap_logged_in_user');
+        localStorage.removeItem('lifemap_logged_in_role');
+        localStorage.removeItem('lifemap_state_v2');
+        localStorage.removeItem('lifemap_v2_view');
+        localStorage.removeItem('lifemap_submission_id');
+
+        state = JSON.parse(JSON.stringify(initialState));
+        
+        // Reset all DOM text & profile elements
+        safeSetText('sidebar-student-name', 'นักเรียน LifeMap');
+        safeSetText('sidebar-grade-badge', 'ม.4');
+        safeSetText('sidebar-tokens', '0');
+        safeSetText('header-tokens', '0');
+        safeSetText('pass-progress-text', '0%');
+        const progFill = document.getElementById('pass-progress-fill');
+        if (progFill) progFill.style.width = '0%';
+
+        safeSetText('profile-archetype-title', '');
+        safeSetText('profile-headline', '');
+        const strList = document.getElementById('profile-strengths-list');
+        if (strList) strList.innerHTML = '';
+        const nextList = document.getElementById('profile-next-moves-list');
+        if (nextList) nextList.innerHTML = '';
+
+        const resContainer = document.getElementById('quiz-result-container');
+        if (resContainer) resContainer.style.display = 'none';
+        const introContainer = document.getElementById('quiz-intro-container');
+        if (introContainer) introContainer.style.display = 'block';
+        const qContainer = document.getElementById('quiz-questions-container');
+        if (qContainer) qContainer.style.display = 'none';
+        const thinkIntro = document.getElementById('quiz-thinking-intro-container');
+        if (thinkIntro) thinkIntro.style.display = 'none';
+
+        // Reset sidebar avatar image to default icon
+        const avatarDiv = document.querySelector('.student-profile-widget .avatar');
+        if (avatarDiv) {
+          avatarDiv.innerHTML = `<i data-lucide="user"></i>`;
+          if (window.lucide) {
+            window.lucide.createIcons();
+          }
         }
+        
+        console.log('[DEBUG LOGOUT]: Calling checkAuthStatus...');
+        checkAuthStatus();
+      } catch (err) {
+        console.error('[FATAL LOGOUT ERROR]:', err);
       }
-      
-      checkAuthStatus();
     }
   };
 
@@ -5272,68 +5551,10 @@ function setupEventListeners() {
     btnWelcomeExplore.addEventListener('click', () => {
       document.getElementById('view-auth').classList.remove('active');
       document.getElementById('view-onboarding').classList.add('active');
-      updateGradePersonalizationUI("m4");
+      if (state.gradeLevel) updateGradePersonalizationUI(state.gradeLevel);
     });
   }
 
-  const btnWelcomeLogin = document.getElementById('btn-welcome-login');
-  if (btnWelcomeLogin) {
-    btnWelcomeLogin.addEventListener('click', () => {
-      document.getElementById('welcome-panel').style.display = 'none';
-      document.getElementById('auth-form-container').style.display = 'block';
-      // select login tab by default
-      const loginTab = document.getElementById('tab-login-btn');
-      if (loginTab) loginTab.click();
-    });
-  }
-
-  const btnWelcomeSchool = document.getElementById('btn-welcome-school');
-  const schoolCodePanel = document.getElementById('school-code-panel');
-  if (btnWelcomeSchool && schoolCodePanel) {
-    btnWelcomeSchool.addEventListener('click', () => {
-      schoolCodePanel.style.display = schoolCodePanel.style.display === 'none' ? 'block' : 'none';
-    });
-  }
-
-  const btnSubmitSchoolCode = document.getElementById('btn-submit-school-code');
-  if (btnSubmitSchoolCode) {
-    btnSubmitSchoolCode.addEventListener('click', () => {
-      const codeInput = document.getElementById('school-code-input');
-      const codeVal = codeInput ? codeInput.value.trim() : "";
-      if (codeVal) {
-        state.campaignCode = codeVal;
-        const obCampaign = document.getElementById('ob-campaign');
-        if (obCampaign) obCampaign.value = codeVal;
-        saveState();
-      }
-      // Go to onboarding
-      document.getElementById('view-auth').classList.remove('active');
-      document.getElementById('view-onboarding').classList.add('active');
-      updateGradePersonalizationUI("m4");
-    });
-  }
-
-  const btnAuthBack = document.getElementById('btn-auth-back');
-  if (btnAuthBack) {
-    btnAuthBack.addEventListener('click', () => {
-      document.getElementById('auth-form-container').style.display = 'none';
-      document.getElementById('welcome-panel').style.display = 'block';
-    });
-  }
-
-  const btnGuestSaveProfile = document.getElementById('btn-guest-save-profile');
-  if (btnGuestSaveProfile) {
-    btnGuestSaveProfile.addEventListener('click', () => {
-      // Hides results and goes to auth view registration
-      document.getElementById('view-quiz-tab').classList.remove('active');
-      document.getElementById('view-auth').classList.add('active');
-      document.getElementById('welcome-panel').style.display = 'none';
-      document.getElementById('auth-form-container').style.display = 'block';
-      // Select registration tab
-      const registerTab = document.getElementById('tab-register-btn');
-      if (registerTab) registerTab.click();
-    });
-  }
 }
 
 // --- TRANSLATION SYSTEM (i18n) ---
@@ -5344,7 +5565,7 @@ export const translations = {
     "welcome-desc": "แพลตฟอร์มช่วยนักเรียนค้นหาจุดแข็ง วางแผนอนาคต และเลือกก้าวถัดไปที่เหมาะกับตัวเอง",
     "welcome-val-1": "รู้จักจุดแข็งของตัวเอง",
     "welcome-val-2": "เห็นแนวทางอนาคตที่น่าลอง",
-    "welcome-val-3": "ได้ก้าวเล็ก ๆ ที่ทำได้จริงใน 7 วัน",
+    "welcome-val-3": "ได้กิจกรรมสั้น ๆ ที่เริ่มลองได้ทันที",
     "welcome-btn-explore": "เริ่มสำรวจตัวเอง",
     "welcome-btn-liff": "เข้าสู่ระบบด้วย LINE",
     "welcome-btn-login": "เข้าสู่ระบบ / ลงทะเบียน",
@@ -5354,7 +5575,7 @@ export const translations = {
     "welcome-privacy-note-1": "ผลลัพธ์เป็นเพียงภาพสะท้อนจากคำตอบของคุณ ไม่ใช่คำตัดสินอนาคต",
     "welcome-privacy-note-2": "เราจะใช้ข้อมูลของคุณเพื่อสร้าง Life Profile และคำแนะนำเบื้องต้นเท่านั้น คุณสามารถเลือกบันทึกหรือลบข้อมูลได้ภายหลัง",
     "guest-save-title": "บันทึก Life Profile ของฉัน",
-    "guest-save-desc": "คุณได้สำรวจจุดแข็งและ Archetype ของคุณเรียบร้อยแล้ว! บันทึกผลลัพธ์นี้เพื่อเปิดใช้งานบอร์ดภารกิจ 7 วัน และบันทึกประวัติการพัฒนาตัวเองต่อไป",
+    "guest-save-desc": "คุณสำรวจความสนใจเบื้องต้นเรียบร้อยแล้ว บันทึกผลลัพธ์เพื่อเริ่มกิจกรรม 10 นาทีและเก็บสิ่งที่ค้นพบไว้ใน Life Profile",
     "guest-save-btn": "บันทึก Life Profile ของฉัน",
     "welcome-campaign-badge": "เข้าร่วมกิจกรรมโรงเรียน: ",
     "dash-share-line-label": "LINE Share",
@@ -5365,7 +5586,7 @@ export const translations = {
     // Navigation / Sidebar
     "nav-dashboard": "แดชบอร์ด",
     "nav-quiz": "Life Profile",
-    "nav-missions": "ภารกิจ 7 วัน",
+    "nav-missions": "ลองทำจริง",
     "nav-review": "Growth Review",
     "nav-parent": "Parent Link",
     "nav-marketplace": "Opportunities",
@@ -5379,8 +5600,8 @@ export const translations = {
     "header-dashboard-subtitle": "ยินดีต้อนรับกลับสู่เส้นทางอนาคตของคุณ",
     "header-quiz-title": "Life Profile",
     "header-quiz-subtitle": "ภาพสะท้อนจุดแข็ง สไตล์การเรียนรู้ และแนวโน้มสไตล์ที่ใช่ของคุณ",
-    "header-missions-title": "7-Day Growth Missions",
-    "header-missions-subtitle": "ท้าทายภารกิจเล็ก ๆ รายวันเพื่อสะสมประวัติผลงานใน Future Profile ของคุณ",
+    "header-missions-title": "ลองทำจริง",
+    "header-missions-subtitle": "กิจกรรม 10 นาที ตอบ 3 ข้อ แล้วค่อย ๆ เห็นสิ่งที่เหมาะกับคุณ",
     "missions-title": "ภารกิจทดลอง 7 วัน",
     "missions-desc": "แปลงผลลัพธ์ของจุดแข็งให้กลายเป็นภารกิจลงมือทำจริง วันละ 1 กิจกรรม เพื่อสะสมหลักฐานใน Future Profile",
     "header-review-title": "Growth Review",
@@ -5411,7 +5632,6 @@ export const translations = {
     "forgot-step1-desc": "กรอกชื่อผู้ใช้งานหรืออีเมลเพื่อรับรหัสผ่าน OTP ยืนยันสิทธิ์",
     "forgot-send-otp": "ส่งรหัส OTP",
     "forgot-step2-desc": "กรอกรหัส OTP 4 หลักที่ส่งไปยังกล่องข้อความจำลองของคุณ",
-    "forgot-placeholder-otp": "กรอกรหัส OTP (จำลอง: 8888)",
     "forgot-verify-otp": "ตรวจสอบรหัส OTP",
     "forgot-step3-desc": "ตั้งรหัสผ่านใหม่สำหรับเข้าใช้งานระบบ",
     "forgot-placeholder-new": "รหัสผ่านใหม่",
@@ -5422,11 +5642,13 @@ export const translations = {
     // Onboarding Form
     "ob-welcome": "ยินดีต้อนรับสู่ LifeMap!",
     "ob-welcome-desc": "ยินดีต้อนรับสู่ก้าวแรกของการค้นหาตัวเองอย่างปลอดภัยและสนุกสนาน เรามาตั้งค่าโปรไฟล์เบื้องต้นของคุณกันครับ/ค่ะ",
+    "survey-details-heading": "รายละเอียดผลสำรวจ",
+    "legacy-missions-heading": "ภารกิจ 7 วันและบันทึกเดิม",
     "ob-label-name": "ชื่อเล่นหรือชื่อที่คุณอยากให้ AI Guide เรียกคุณ",
     "ob-placeholder-name": "ตัวอย่าง: พิมพ์ชนก",
     "ob-label-school": "โรงเรียนที่คุณศึกษาอยู่ในปัจจุบัน",
     "ob-placeholder-school": "ตัวอย่าง: โรงเรียนเตรียมอุดมศึกษา",
-    "ob-label-grade": "ระดับชั้นเรียนปัจจุบันของคุณ",
+    "ob-label-grade": "ระดับการศึกษา / สถานะปัจจุบัน",
     "ob-grade-m4": "ม.4",
     "ob-grade-m4-desc": "เริ่มค้นหาตัวเองสบายๆ",
     "ob-grade-m5": "ม.5",
@@ -5473,7 +5695,7 @@ export const translations = {
     // Quiz & Profile Tab
     "quiz-tab-title": "แบบสำรวจความสนใจและจุดแข็ง",
     "quiz-tab-reset-btn": "รีเซ็ตแบบสำรวจ",
-    "quiz-intro-head": "แบบสำรวจความสนใจและจุดแข็งเบื้องต้น (6 ข้อ)",
+    "quiz-intro-head": "แบบสำรวจความสนใจและจุดแข็งเบื้องต้น (11 ข้อ)",
     "quiz-start-btn": "เริ่มทำแบบสำรวจเลย",
     "quiz-back-btn": "ย้อนกลับข้อก่อนหน้า",
     "profile-title": "Holland RIASEC & Big Five Traits",
@@ -5485,7 +5707,7 @@ export const translations = {
     "profile-next-moves-label": "ก้าวถัดไปที่แนะนำในการสำรวจ",
     "profile-radar-title": "Holland RIASEC Code",
     "profile-bigfive-title": "Big Five Trait Scores",
-    "profile-ai-assistant-title": "AI Future Advisor (คุยกับระบบแนะแนว)",
+    "profile-ai-assistant-title": "LifeMap AI Guide",
     "profile-ai-assistant-desc": "สอบถามข้อแนะนำ ทิศทางการเรียนต่อ หรือเคล็ดลับการคุยกับครอบครัวด้านการเลือกคณะ",
     "profile-ai-placeholder": "ถามอะไร AI Guide ของคุณดี...",
     "profile-ai-send-btn": "ส่งข้อความ",
@@ -5551,7 +5773,7 @@ export const translations = {
     "welcome-desc": "A platform that helps students discover strengths, plan the future, and choose the next steps tailored for themselves.",
     "welcome-val-1": "Discover your core strengths",
     "welcome-val-2": "Explore future career paths comfortably",
-    "welcome-val-3": "Get action-oriented 7-day micro-missions",
+    "welcome-val-3": "Get a small activity you can try right away",
     "welcome-btn-explore": "Start Self-Exploration",
     "welcome-btn-liff": "Login with LINE",
     "welcome-btn-login": "Login / Sign Up",
@@ -5561,7 +5783,7 @@ export const translations = {
     "welcome-privacy-note-1": "Results are reflections of your answers, not an absolute decision for your future.",
     "welcome-privacy-note-2": "We use your data solely to generate your Life Profile and recommendations. You can save or erase your data at any time.",
     "guest-save-title": "Save my Life Profile",
-    "guest-save-desc": "You have completed your archetype and strengths exploration! Save your results now to unlock your 7-Day Growth Missions board and track your self-development logs.",
+    "guest-save-desc": "You have completed your first interest reflection. Save it to unlock a 10-minute activity and keep discoveries in your Life Profile.",
     "guest-save-btn": "Save my Life Profile",
     "welcome-campaign-badge": "Joined school event: ",
     "dash-share-line-label": "LINE Share",
@@ -5572,7 +5794,7 @@ export const translations = {
     // Navigation / Sidebar
     "nav-dashboard": "Dashboard",
     "nav-quiz": "Life Profile",
-    "nav-missions": "7-Day Missions",
+    "nav-missions": "Try It",
     "nav-review": "Growth Review",
     "nav-parent": "Parent Link",
     "nav-marketplace": "Opportunities",
@@ -5586,8 +5808,8 @@ export const translations = {
     "header-dashboard-subtitle": "Welcome back to your future exploration path",
     "header-quiz-title": "Life Profile",
     "header-quiz-subtitle": "Reflecting your strengths, learning styles, and future career directions",
-    "header-missions-title": "7-Day Growth Missions",
-    "header-missions-subtitle": "Complete daily challenges to accumulate evidence in your Future Profile",
+    "header-missions-title": "Try It",
+    "header-missions-subtitle": "A 10-minute activity, 3 quick answers, and a clearer next step",
     "missions-title": "7-Day Growth Missions",
     "missions-desc": "Turn your strength discoveries into daily actionable missions, one challenge per day, to gather evidence in your Future Profile.",
     "header-review-title": "Growth Review",
@@ -5618,7 +5840,6 @@ export const translations = {
     "forgot-step1-desc": "Enter your username or email to retrieve a simulation OTP code",
     "forgot-send-otp": "Send OTP Code",
     "forgot-step2-desc": "Enter the 4-digit OTP sent to your inbox simulation",
-    "forgot-placeholder-otp": "Enter OTP code (Demo: 8888)",
     "forgot-verify-otp": "Verify OTP",
     "forgot-step3-desc": "Set your new password below",
     "forgot-placeholder-new": "New Password",
@@ -5629,11 +5850,13 @@ export const translations = {
     // Onboarding Form
     "ob-welcome": "Welcome to LifeMap!",
     "ob-welcome-desc": "Welcome to the first step of your safe and exciting self-discovery journey. Let's set up your profile.",
+    "survey-details-heading": "Survey details",
+    "legacy-missions-heading": "Seven-day missions and previous records",
     "ob-label-name": "Nickname or name you want AI Guide to call you",
     "ob-placeholder-name": "Example: Pimchanok",
     "ob-label-school": "Your current school name",
     "ob-placeholder-school": "Example: Triam Udom Suksa School",
-    "ob-label-grade": "Your current academic grade level",
+    "ob-label-grade": "Education level / current status",
     "ob-grade-m4": "Grade 10",
     "ob-grade-m4-desc": "Explore interests comfortably",
     "ob-grade-m5": "Grade 11",
@@ -5680,7 +5903,7 @@ export const translations = {
     // Quiz & Profile Tab
     "quiz-tab-title": "Strengths Analysis Survey",
     "quiz-tab-reset-btn": "Reset Survey",
-    "quiz-intro-head": "Interests & Strengths Discovery Survey (6 Qs)",
+    "quiz-intro-head": "Interests & Strengths Discovery Survey (11 Qs)",
     "quiz-start-btn": "Start Survey Now",
     "quiz-back-btn": "Back to Previous Question",
     "profile-title": "Holland RIASEC & Big Five Traits",
@@ -5692,7 +5915,7 @@ export const translations = {
     "profile-next-moves-label": "Recommended Next Exploration Moves",
     "profile-radar-title": "Holland RIASEC Code",
     "profile-bigfive-title": "Big Five Trait Scores",
-    "profile-ai-assistant-title": "AI Future Advisor (Chat & Guidance)",
+    "profile-ai-assistant-title": "LifeMap AI Guide",
     "profile-ai-assistant-desc": "Ask about university options, study plans, or advice on discussing goals with family.",
     "profile-ai-placeholder": "Ask your AI Guide anything...",
     "profile-ai-send-btn": "Send Message",
@@ -5784,6 +6007,8 @@ export function updateLanguageUI() {
       }
     }
   });
+
+  updateSchoolField(document.querySelector('input[name="ob-grade"]:checked')?.value || null);
 
   // Specifically translate onboarding tone choices
   const toneSelect = document.getElementById('ob-tone');
@@ -6077,369 +6302,11 @@ export function renderReferencesTab(searchQuery = '') {
   }
 }
 
-// --- Admin Dashboard logic ---
 
-function updateAdminUI() {
-  const usersDb = JSON.parse(localStorage.getItem('lifemap_users_db') || '{}');
-  const userList = Object.keys(usersDb);
-  const totalUsers = userList.length;
-  
-  let quizCompletedCount = 0;
-  const campaignsMap = {}; // { campaignCode: { count: 0, completed: 0, totalTokens: 0, archetypes: {} } }
-  const campaignThinkingStyles = {}; // { campaignCode: { count: 0, energy: { I: 0, E: 0 }, lens: { S: 0, N: 0 }, decision: { T: 0, F: 0 }, planning: { J: 0, P: 0 } } }
-
-  // Load each user's state to compile statistics
-  userList.forEach(username => {
-    const userStateStr = localStorage.getItem(`lifemap_state_${username}`);
-    let userState = null;
-    if (userStateStr) {
-      try {
-        userState = JSON.parse(userStateStr);
-      } catch (e) {
-        console.error("Error parsing user state for", username, e);
-      }
-    }
-    
-    // Check quiz completion
-    const hasCompletedQuiz = userState && userState.answers && Object.keys(userState.answers).length >= quizQuestions.length;
-    if (hasCompletedQuiz) {
-      quizCompletedCount++;
-    }
-
-    // Campaign tracking
-    const campaign = (userState && userState.campaignCode) || "GENERAL";
-    const tokens = (userState && userState.tokens) || 0;
-    
-    if (!campaignsMap[campaign]) {
-      campaignsMap[campaign] = {
-        count: 0,
-        completed: 0,
-        totalTokens: 0,
-        archetypes: {}
-      };
-    }
-    
-    campaignsMap[campaign].count++;
-    if (hasCompletedQuiz) {
-      campaignsMap[campaign].completed++;
-      
-      // Determine archetype
-      const profile = computeProfile(userState.answers);
-      if (profile && profile.archetype) {
-        const archName = profile.archetype.th || profile.archetype;
-        campaignsMap[campaign].archetypes[archName] = (campaignsMap[campaign].archetypes[archName] || 0) + 1;
-      }
-    }
-    campaignsMap[campaign].totalTokens += tokens;
-
-    // Thinking Style tracking
-    const hasCompletedThinkingQuiz = userState && userState.thinkingStyleCompleted === true && userState.thinkingStyle && userState.thinkingStyle.styleCode;
-    if (hasCompletedThinkingQuiz) {
-      if (!campaignThinkingStyles[campaign]) {
-        campaignThinkingStyles[campaign] = {
-          count: 0,
-          energy: { I: 0, E: 0 },
-          lens: { S: 0, N: 0 },
-          decision: { T: 0, F: 0 },
-          planning: { J: 0, P: 0 }
-        };
-      }
-      
-      const tsObj = userState.thinkingStyle;
-      const code = tsObj.styleCode;
-      if (code && code.length === 4) {
-        campaignThinkingStyles[campaign].count++;
-        const energyChar = code[0];
-        const lensChar = code[1];
-        const decisionChar = code[2];
-        const planningChar = code[3];
-        
-        if (energyChar === 'I' || energyChar === 'E') campaignThinkingStyles[campaign].energy[energyChar]++;
-        if (lensChar === 'S' || lensChar === 'N') campaignThinkingStyles[campaign].lens[lensChar]++;
-        if (decisionChar === 'T' || decisionChar === 'F') campaignThinkingStyles[campaign].decision[decisionChar]++;
-        if (planningChar === 'J' || planningChar === 'P') campaignThinkingStyles[campaign].planning[planningChar]++;
-      }
-    }
-  });
-
-  // Calculate total campaigns
-  const totalCampaigns = Object.keys(campaignsMap).filter(c => c !== 'GENERAL').length;
-
-  // Render Stats widgets
-  document.getElementById('admin-stat-users').textContent = totalUsers;
-  document.getElementById('admin-stat-quiz').textContent = `${quizCompletedCount} (${totalUsers > 0 ? Math.round((quizCompletedCount / totalUsers) * 100) : 0}%)`;
-  document.getElementById('admin-stat-campaigns').textContent = totalCampaigns;
-
-  // Render Global Configs in Inputs
-  const adminLiffIdInput = document.getElementById('admin-liff-id');
-  if (adminLiffIdInput) {
-    adminLiffIdInput.value = localStorage.getItem('lifemap_liff_id') || '2006249563-71vBML8b';
-  }
-
-  const geminiKeyInput = document.getElementById('admin-gemini-key');
-  if (geminiKeyInput) {
-    geminiKeyInput.value = localStorage.getItem('lifemap_gemini_api_key') || '';
-  }
-
-  // Render Campaign Table
-  const campaignTableBody = document.getElementById('admin-campaign-table-body');
-  if (campaignTableBody) {
-    campaignTableBody.innerHTML = '';
-    
-    Object.keys(campaignsMap).forEach(camp => {
-      const data = campaignsMap[camp];
-      const completionRate = data.count > 0 ? Math.round((data.completed / data.count) * 100) : 0;
-      const avgTokens = data.count > 0 ? Math.round((data.totalTokens / data.count) * 10) / 10 : 0;
-      
-      // Find top archetype
-      let topArchetype = "N/A";
-      let maxCount = 0;
-      Object.keys(data.archetypes).forEach(arch => {
-        if (data.archetypes[arch] > maxCount) {
-          maxCount = data.archetypes[arch];
-          topArchetype = arch;
-        }
-      });
-
-      const tr = document.createElement('tr');
-      tr.style.borderBottom = '1px solid var(--border-color)';
-      tr.innerHTML = `
-        <td style="padding: 10px; font-weight: bold; color: var(--color-primary);">${camp}</td>
-        <td style="padding: 10px;">${data.count}</td>
-        <td style="padding: 10px;">${completionRate}%</td>
-        <td style="padding: 10px; color: var(--text-secondary);">${topArchetype}</td>
-        <td style="padding: 10px; font-weight: bold; color: var(--color-success);">${avgTokens} 💰</td>
-      `;
-      campaignTableBody.appendChild(tr);
-    });
-  }
-
-  // Render Thinking Styles Table
-  const adminThinkingStylesTableBody = document.getElementById('admin-thinking-styles-table-body');
-  if (adminThinkingStylesTableBody) {
-    adminThinkingStylesTableBody.innerHTML = '';
-    
-    Object.keys(campaignThinkingStyles).forEach(camp => {
-      const data = campaignThinkingStyles[camp];
-      if (data.count === 0) return;
-      
-      const eIPct = Math.round((data.energy.I / data.count) * 100);
-      const eEPct = 100 - eIPct;
-      
-      const lSPct = Math.round((data.lens.S / data.count) * 100);
-      const lNPct = 100 - lSPct;
-      
-      const dTPct = Math.round((data.decision.T / data.count) * 100);
-      const dFPct = 100 - dTPct;
-      
-      const pJPct = Math.round((data.planning.J / data.count) * 100);
-      const pPPct = 100 - pJPct;
-      
-      const tr = document.createElement('tr');
-      tr.style.borderBottom = '1px solid var(--border-color)';
-      tr.innerHTML = `
-        <td style="padding: 10px; font-weight: bold; color: var(--color-primary);">${camp}</td>
-        <td style="padding: 10px; font-weight: bold;">${data.count} คน</td>
-        <td style="padding: 10px;">
-          <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 2px;">Reflective ${eIPct}% / Interactive ${eEPct}%</div>
-          <div style="height: 6px; background: var(--border-color); border-radius: 3px; display: flex; overflow: hidden; width: 120px;">
-            <div style="width: ${eIPct}%; background: var(--color-accent); height: 100%;"></div>
-            <div style="width: ${eEPct}%; background: var(--text-muted); height: 100%; opacity: 0.3;"></div>
-          </div>
-        </td>
-        <td style="padding: 10px;">
-          <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 2px;">Practical ${lSPct}% / Future ${lNPct}%</div>
-          <div style="height: 6px; background: var(--border-color); border-radius: 3px; display: flex; overflow: hidden; width: 120px;">
-            <div style="width: ${lSPct}%; background: var(--color-accent); height: 100%;"></div>
-            <div style="width: ${lNPct}%; background: var(--text-muted); height: 100%; opacity: 0.3;"></div>
-          </div>
-        </td>
-        <td style="padding: 10px;">
-          <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 2px;">Logic ${dTPct}% / Value ${dFPct}%</div>
-          <div style="height: 6px; background: var(--border-color); border-radius: 3px; display: flex; overflow: hidden; width: 120px;">
-            <div style="width: ${dTPct}%; background: var(--color-accent); height: 100%;"></div>
-            <div style="width: ${dFPct}%; background: var(--text-muted); height: 100%; opacity: 0.3;"></div>
-          </div>
-        </td>
-        <td style="padding: 10px;">
-          <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 2px;">Structured ${pJPct}% / Adaptive ${pPPct}%</div>
-          <div style="height: 6px; background: var(--border-color); border-radius: 3px; display: flex; overflow: hidden; width: 120px;">
-            <div style="width: ${pJPct}%; background: var(--color-accent); height: 100%;"></div>
-            <div style="width: ${pPPct}%; background: var(--text-muted); height: 100%; opacity: 0.3;"></div>
-          </div>
-        </td>
-      `;
-      adminThinkingStylesTableBody.appendChild(tr);
-    });
-  }
-
-  // Render Users Table
-  const usersTableBody = document.getElementById('admin-users-table-body');
-  if (usersTableBody) {
-    usersTableBody.innerHTML = '';
-    
-    userList.forEach(username => {
-      const userStateStr = localStorage.getItem(`lifemap_state_${username}`);
-      let userState = { studentName: "N/A", gradeLevel: "m4", schoolName: "N/A", campaignCode: "GENERAL", tokens: 0 };
-      if (userStateStr) {
-        try {
-          userState = { ...userState, ...JSON.parse(userStateStr) };
-        } catch (e) {}
-      }
-
-      const gradeText = userState.gradeLevel ? (gradePersonalizationMap[userState.gradeLevel]?.label.th || userState.gradeLevel) : "ม.4";
-
-      const tr = document.createElement('tr');
-      tr.style.borderBottom = '1px solid var(--border-color)';
-      tr.innerHTML = `
-        <td style="padding: 10px;">
-          <strong style="display:block; color:var(--text-primary);">${userState.studentName || "Guest"}</strong>
-          <span style="font-size:0.75rem; color:var(--text-muted);">${username}</span>
-        </td>
-        <td style="padding: 10px;">${gradeText}</td>
-        <td style="padding: 10px;">${userState.schoolName || "N/A"}</td>
-        <td style="padding: 10px; font-weight: 500;">${userState.campaignCode || "GENERAL"}</td>
-        <td style="padding: 10px; color: var(--color-success); font-weight: bold;">${userState.tokens || 0}</td>
-        <td style="padding: 10px;">
-          <button class="btn btn-secondary btn-sm" onclick="adminDeleteUser('${username}')" style="background:rgba(239, 68, 68, 0.08); border-color:rgba(239, 68, 68, 0.15); color:#ef4444; padding:4px 8px; font-size:0.7rem; cursor:pointer;">ลบบัญชี</button>
-        </td>
-      `;
-      usersTableBody.appendChild(tr);
-    });
-  }
-}
-
-// Global scope helper for deleting user from admin
-window.adminDeleteUser = function(username) {
-  if (confirm(`คุณแน่ใจหรือไม่ที่จะลบบัญชี ${username}?`)) {
-    const usersDb = JSON.parse(localStorage.getItem('lifemap_users_db') || '{}');
-    delete usersDb[username];
-    localStorage.setItem('lifemap_users_db', JSON.stringify(usersDb));
-    localStorage.removeItem(`lifemap_state_${username}`);
-    updateAdminUI();
-  }
-};
-
-// Seed Mock Data Function
-function seedMockData() {
-  const usersDb = JSON.parse(localStorage.getItem('lifemap_users_db') || '{}');
-  
-  const mockNames = [
-    { name: "ปวีณา สุขใจ", school: "เตรียมอุดมศึกษา", campaign: "TriamUdom", grade: "m6" },
-    { name: "กฤษดา รุ่งเรือง", school: "เตรียมอุดมศึกษา", campaign: "TriamUdom", grade: "m6" },
-    { name: "ณัฐพล พลากร", school: "หอวัง", campaign: "Horwang", grade: "m5" },
-    { name: "สุพิชชา แสงแก้ว", school: "หอวัง", campaign: "Horwang", grade: "m4" },
-    { name: "ธนกร ยิ่งยศ", school: "สวนกุหลาบวิทยาลัย", campaign: "Suankularb", grade: "m5" },
-    { name: "พรรณราย จิตใส", school: "สวนกุหลาบวิทยาลัย", campaign: "Suankularb", grade: "m6" },
-    { name: "ชลลดา ว่องไว", school: "ศึกษานารี", campaign: "Suksanari", grade: "m4" },
-    { name: "อภิสิทธิ์ มั่นคง", school: "ศึกษานารี", campaign: "Suksanari", grade: "m5" },
-    { name: "สุกัญญา ยิ้มละมัย", school: "สามเสนวิทยาลัย", campaign: "Samsen", grade: "m6" },
-    { name: "พีรพงศ์ อุดมดี", school: "สามเสนวิทยาลัย", campaign: "Samsen", grade: "m4" },
-    { name: "กุลธิดา ตั้งใจ", school: "ไม่ระบุ", campaign: "GENERAL", grade: "m5" },
-    { name: "ทศพล นำชัย", school: "ไม่ระบุ", campaign: "GENERAL", grade: "m6" },
-    { name: "จินตนา รักเรียน", school: "หอวัง", campaign: "Horwang", grade: "m4" },
-    { name: "เมธา สิทธิ์สุข", school: "เตรียมอุดมศึกษา", campaign: "TriamUdom", grade: "m5" },
-    { name: "วิภาดา เลิศล้ำ", school: "สวนกุหลาบวิทยาลัย", campaign: "Suankularb", grade: "m6" }
-  ];
-
-  mockNames.forEach((m, idx) => {
-    const username = `mock.student${idx + 1}@gmail.com`;
-    usersDb[username.toLowerCase()] = {
-      username: username,
-      password: "password123"
-    };
-
-    // Generate random answers
-    const answers = {};
-    quizQuestions.forEach(q => {
-      answers[q.id] = Math.floor(Math.random() * q.options.length);
-    });
-
-    const mockState = {
-      studentName: m.name,
-      gradeLevel: m.grade,
-      schoolName: m.school,
-      campaignCode: m.campaign,
-      answers: answers,
-      tokens: Math.floor(Math.random() * 45) + 15,
-      checkIns: [1, 2, 3].slice(0, Math.floor(Math.random() * 4)),
-      claimedBadges: ["quiz"],
-      consent: { profile: true, ai: true, parent: Math.random() > 0.5, thinkingStyle: false },
-      parentInviteCode: `PARENT-${Math.floor(Math.random() * 9000) + 1000}`
-    };
-
-    // Randomly seed Thinking Style Quiz (80% completion rate)
-    const completeThinkingQuiz = Math.random() < 0.8;
-    if (completeThinkingQuiz) {
-      mockState.consent.thinkingStyle = true;
-      mockState.thinkingStyleCompleted = true;
-      mockState.thinkingStyleAnswers = {};
-      thinkingStyleQuestions.forEach(q => {
-        mockState.thinkingStyleAnswers[q.id] = Math.floor(Math.random() * 2);
-      });
-      // Temporarily swap state context to calculate thinking style
-      const tempState = state;
-      state = mockState;
-      mockState.thinkingStyle = computeThinkingStyle(mockState.thinkingStyleAnswers);
-      state = tempState;
-    } else {
-      mockState.consent.thinkingStyle = Math.random() > 0.5;
-      mockState.thinkingStyleCompleted = mockState.consent.thinkingStyle ? false : undefined;
-      mockState.thinkingStyleAnswers = {};
-      mockState.thinkingStyle = null;
-    }
-
-    localStorage.setItem(`lifemap_state_${username}`, JSON.stringify(mockState));
-  });
-
-  localStorage.setItem('lifemap_users_db', JSON.stringify(usersDb));
-  updateAdminUI();
-  alert("สุ่มสร้างข้อมูลนักเรียนจำลอง 15 คนเสร็จสิ้น! ข้อมูลแคมเปญโรงเรียนอัปเดตแล้ว 🚀");
-}
-
-// Set up Admin event handlers (configurations, seeder, db reset)
-function setupAdminEventListeners() {
-  const btnSaveConfig = document.getElementById('btn-admin-save-config');
-  if (btnSaveConfig) {
-    btnSaveConfig.addEventListener('click', () => {
-      const liffId = document.getElementById('admin-liff-id').value.trim();
-      const geminiKey = document.getElementById('admin-gemini-key').value.trim();
-      
-      if (liffId) {
-        localStorage.setItem('lifemap_liff_id', liffId);
-      }
-      if (geminiKey) {
-        localStorage.setItem('lifemap_gemini_api_key', geminiKey);
-      }
-      
-      alert(state.language === 'en' ? "Global configurations saved successfully!" : "บันทึกค่าคอนฟิกกล่าสุดเรียบร้อยแล้ว!");
-      window.location.reload();
-    });
-  }
-
-  const btnSeedData = document.getElementById('btn-admin-seed-data');
-  if (btnSeedData) {
-    btnSeedData.addEventListener('click', () => {
-      seedMockData();
-    });
-  }
-
-  const btnResetDb = document.getElementById('btn-admin-reset-db');
-  if (btnResetDb) {
-    btnResetDb.addEventListener('click', async () => {
-      const confirmed = await showBrandConfirm(
-        state.language === 'en' 
-          ? "Are you sure you want to clear ALL users and configurations?" 
-          : "คุณแน่ใจหรือไม่ที่จะล้างระบบผู้ใช้ คอนฟิก และบัญชีทั้งหมดในระบบ?"
-      );
-      if (confirmed) {
-        localStorage.clear();
-        alert(state.language === 'en' ? "Database cleared! Reloading application..." : "ล้างระบบฐานข้อมูลทั้งหมดสำเร็จแล้ว! กำลังรีโหลดแอปพลิเคชัน...");
-        window.location.reload();
-      }
-    });
-  }
-}
+window.switchView = switchView;
+window.startQuiz = startQuiz;
+window.completeQuiz = completeQuiz;
+window.snapshotPreviousResult = snapshotPreviousResult;
 
 // Launch application on load
 if (document.readyState === 'loading') {
