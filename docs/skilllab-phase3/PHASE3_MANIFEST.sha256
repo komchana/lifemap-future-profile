@@ -1,0 +1,4 @@
+# Skill Lab Phase 3 — files changed relative to the deployed v02 baseline (sha256, bytes, path)
+717830afcfe18933839dea696cc57b62be95f2b594e606dd68f6dd340b2d86ec     96177  exploration.js
+26325c06a300492e2b6efe43326be086c76766fc53fb45bee64f5b95b0ff5d9a     18723  exploration.css
+# unchanged vs baseline: app.js index.html style.css landing.js landing.css favicon.ico assets/*  (cache-bust strings NOT bumped yet: done at packaging)
