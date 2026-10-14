@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="/style.css">
+<link rel="stylesheet" href="/exploration.css">
+</head>
+<body>
+<main style="padding:16px">
+<div id="exploration-result"></div>
+<section id="experiment-workbench"></section>
+</main>
+<script type="module">
+import * as ex from '/exploration.js';
+const appSrc = await (await fetch('/app.js')).text();
+const questions = new Function('return ' + appSrc.match(/export const quizQuestions = (\[[^]*?^\]);/m)[1])();
+const state = {
+  answers: Object.fromEntries(questions.map(q => [q.id, 0])),
+  gradeLevel: 'uni', language: 'th', tokens: 150, checkIns: [], growthMissions: [],
+  exploration: { version: 1, selected: null, drafts: {}, entries: [], activeAttempts: {} }
+};
+const events = { saves: 0, evidence: [], nav: [] };
+const save = () => { events.saves++; };
+const nav = (v) => { events.nav.push(v); };
+window.qa = {
+  ex, state, events, questions,
+  keys: Object.keys(ex.paths),
+  render(key, lang = 'th') {
+    state.language = lang;
+    state.exploration.selected = key;
+    if (key) state.exploration.activeAttempts[key] ||= { id: null, mode: 'new' };
+    ex.renderExperimentWorkbench(state, questions, save, nav, (entry) => events.evidence.push(entry));
+  }
+};
+window.qaReady = true;
+</script>
+</body>
+</html>

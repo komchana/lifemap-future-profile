@@ -1,0 +1,36 @@
+{
+ "th": {
+  "creator": "ร่างโพสต์สั้น ๆ ให้ร้านสมมุติ แล้วอธิบายว่าทำไมเลือกคำและภาพแบบนี้",
+  "analyst": "ดูยอดขาย 5 วัน จด 3 ข้อสังเกต แล้วเสนอวิธีทดลอง 1 อย่างเพื่อหาคำตอบเพิ่ม",
+  "builder": "วาดแบบที่วางโทรศัพท์ด้วยกระดาษ แล้วระบุจุดรองรับและแก้จุดอ่อน 1 จุด",
+  "helper": "เขียนวิธีทำเรื่องที่คุณถนัด 3 ขั้นให้มือใหม่ แล้วแก้ขั้นที่อาจสับสน",
+  "entrepreneur": "เขียนปัญหาของลูกค้า 1 กลุ่ม แล้วร่างข้อเสนอพร้อมคำถามทดสอบว่าเขาสนใจไหม",
+  "creator-2": "สรุปบทสนทนาสั้น ๆ เป็น 3 ประเด็นด้วยคำของคุณ โดยไม่ใส่ความเห็นตัวเอง",
+  "creator-3": "เขียนประกาศเรื่องเดียวกัน 2 แบบ สำหรับเพื่อนและครู แล้วบอกว่าเปลี่ยนอะไร",
+  "analyst-2": "แยกข้อเท็จจริงออกจากข้อสรุปในข้อความสมมุติ แล้วบอกว่าต้องมีข้อมูลอะไรเพิ่ม",
+  "analyst-3": "ให้คะแนน 3 ทางเลือกตามเกณฑ์ 3 ข้อ แล้วดูว่าคะแนนช่วยตัดสินได้แค่ไหน",
+  "builder-2": "ถาม “ทำไม” ต่อกัน 3 ครั้งกับปัญหาใกล้ตัว แล้วเลือกสาเหตุที่คุณควบคุมได้เพื่อวางแผนทดลองแก้",
+  "builder-3": "ลองวิธีแก้ที่ร่างไว้ 1 รอบอย่างปลอดภัย แล้วจดผลจริงและสิ่งที่จะปรับต่อ",
+  "helper-2": "ฟังอีกฝ่ายให้จบ แล้วสรุปกลับด้วยคำของคุณเองเพื่อเช็กว่าเข้าใจตรงกัน",
+  "helper-3": "แบ่งงานกลุ่มเล็กเป็น 3 งาน ระบุคนทำ เวลาส่ง และจุดที่ต้องส่งต่อ",
+  "entrepreneur-2": "เขียนคำถามไม่ชี้นำ 5 ข้อเกี่ยวกับปัญหาที่เลือก แล้วลองถามหรือจำลองคำตอบเพื่อดูว่ายังไม่รู้อะไร",
+  "entrepreneur-3": "เขียนว่าใครน่าจะมีปัญหาอะไร แล้ววางแผนทดสอบว่าข้อสันนิษฐานนั้นจริงไหมโดยไม่ต้องขายจริง"
+ },
+ "en": {
+  "creator": "Draft a short post for an imaginary shop, then explain why you chose those words and that image.",
+  "analyst": "Look at five days of sales, note three observations, and suggest one experiment to learn more.",
+  "builder": "Sketch a paper phone stand, mark its supports, and fix one weak spot.",
+  "helper": "Write three steps for something you know well so a beginner can follow, then fix the step that might confuse.",
+  "entrepreneur": "Describe one customer group’s problem, then draft an offer and a question to test their interest.",
+  "creator-2": "Summarize a short conversation in three points, in your own words, without adding your opinion.",
+  "creator-3": "Write the same announcement two ways, for a friend and for a teacher, and say what you changed.",
+  "analyst-2": "Separate the facts from the conclusion in a sample statement, then say what extra evidence you would need.",
+  "analyst-3": "Score three options on three criteria, then see how far the scores settle the decision.",
+  "builder-2": "Ask “why” three times about an everyday problem, then pick a cause you can control and plan a small experiment to fix it.",
+  "builder-3": "Try your earlier fix once, safely, then note what actually happened and what to change next.",
+  "helper-2": "Listen to the other person until they finish, then reflect back in your own words to check you understood.",
+  "helper-3": "Split a small group task into three parts, name who does each and when, and mark the handoffs.",
+  "entrepreneur-2": "Write five non-leading questions about your chosen problem, then ask someone or simulate the answers to see what you still don’t know.",
+  "entrepreneur-3": "Write who probably has what problem, then plan a test of whether that assumption is true without making a real sale."
+ }
+}

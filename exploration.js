@@ -93,11 +93,23 @@ function renderVoiceGuideCard(key, en) {
  const transcriptHtml = guide.transcript.map(([th, enText]) => `<p>${escape(tr(en, th, enText))}</p>`).join('');
  return `<section class="skilllab-guide-card" aria-label="LifeMap Guide"><div class="skilllab-guide-head"><span class="skilllab-guide-icon" aria-hidden="true">🎧</span><div><p class="skilllab-guide-title">LifeMap Guide</p><p class="skilllab-guide-sub">${tr(en, 'ฟังคำแนะนำ', 'Listen to the guide')}</p></div></div><audio id="skilllab-guide-audio" preload="metadata" src="${guide.audioSrc}"></audio><div class="skilllab-guide-controls" role="group" aria-label="${tr(en, 'ตัวควบคุมเสียง', 'Audio controls')}"><button type="button" id="skilllab-guide-play" class="skilllab-guide-btn skilllab-guide-btn--primary" aria-label="${tr(en, 'เล่นคำแนะนำ', 'Play guide')}">▶ ${tr(en, 'เล่น', 'Play')}</button><button type="button" id="skilllab-guide-pause" class="skilllab-guide-btn" aria-label="${tr(en, 'หยุดชั่วคราว', 'Pause')}" hidden>⏸ ${tr(en, 'หยุด', 'Pause')}</button><button type="button" id="skilllab-guide-replay" class="skilllab-guide-btn" aria-label="${tr(en, 'เล่นคำแนะนำซ้ำ', 'Replay guide')}">↻ ${tr(en, 'เล่นซ้ำ', 'Replay')}</button><span class="skilllab-guide-time" id="skilllab-guide-time" aria-hidden="true">0:00 / --:--</span></div><div class="skilllab-guide-progress" aria-hidden="true"><span id="skilllab-guide-progress-bar"></span></div><button type="button" id="skilllab-guide-transcript-toggle" class="skilllab-guide-transcript-toggle" aria-expanded="false" aria-controls="skilllab-guide-transcript">${tr(en, 'อ่านข้อความแทน', 'Read transcript instead')}</button><div class="skilllab-guide-transcript" id="skilllab-guide-transcript" hidden>${transcriptHtml}</div><p class="skilllab-guide-unavailable" id="skilllab-guide-unavailable" role="status" hidden>${tr(en, 'ยังไม่มีไฟล์เสียงในขณะนี้ กรุณาอ่านข้อความแทน', 'Audio is not available yet — please read the transcript instead.')}</p></section>`;
 }
-// LifeMap Guide — shared conversational entry for all 15 Skill Lab missions.
+// LifeMap Guide availability (Phase 4 / P3: controlled enablement).
+// Only the missions listed here show the conversational Guide. Every other
+// mission renders exactly as before, minus the Guide section: no button, no
+// panel, no wording about an unavailable feature, and no code path that can
+// reach the microphone or the backend for it. All 15 missions keep their
+// normal activity (steps, answer guidance, Evidence form). To enable another
+// mission, add its key here — after its backend mission context and a Thai
+// voice check have been approved. The list is frozen so nothing can widen it
+// at runtime.
+export const GUIDE_ENABLED_MISSIONS = Object.freeze(['creator', 'helper-2']);
+export const isGuideEnabled = (key) => typeof key === 'string' && GUIDE_ENABLED_MISSIONS.includes(key);
+// LifeMap Guide — conversational entry, rendered only for GUIDE_ENABLED_MISSIONS.
 // Collapsed by default (one compact CTA). It is a sibling of the creator-only
 // static-audio card, never nested inside it, and contains no <form> so it
 // cannot interfere with the Evidence form.
 function renderLifeMapGuide(key, en) {
+ if (!isGuideEnabled(key)) return '';
  return `<section class="lmguide" id="lmguide" aria-label="LifeMap Guide" data-guide-state="idle">
   <button type="button" id="lmguide-cta" class="lmguide-cta skilllab-guide-btn skilllab-guide-btn--live" aria-expanded="false" aria-controls="lmguide-panel">✨ ${tr(en, 'คุยกับ LifeMap Guide', 'Talk to LifeMap Guide · Thai voice')}</button>
   <div class="lmguide-panel" id="lmguide-panel" hidden>
@@ -196,7 +208,7 @@ function bindVoiceGuide(root, en, key, onPlayed) {
  if (!audio.getAttribute('src')) setUnavailable();
 }
 
-// LifeMap Guide — shared conversational client (all 15 Skill Lab missions).
+// LifeMap Guide — shared conversational client (missions in GUIDE_ENABLED_MISSIONS).
 // Backend: lifemap-voice-lab (separate Netlify project), endpoint
 // skill-guide-session.mjs, mission context 2026-10-skill-guide-context-2
 // (branch phase1/skill-guide-mission-context).
@@ -261,6 +273,7 @@ function mountSkillGuide(root, en, key) {
  // Whatever was mounted by a previous render (other mission, language toggle,
  // returning to the mission list) is torn down before new DOM is bound.
  disposeSkillGuide();
+ if (!isGuideEnabled(key)) return;
  const el = root.querySelector('#lmguide'); if (!el) return;
  const cta = el.querySelector('#lmguide-cta');
  const panel = el.querySelector('#lmguide-panel');

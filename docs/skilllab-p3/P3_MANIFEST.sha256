@@ -1,0 +1,4 @@
+# Skill Lab Phase 4 / P3 — the one runtime file changed relative to Phase 3 (73c58e4) (sha256, bytes, path)
+e41ce940b9746f9544745c444bd4af11e1fd95fd9060272fd2fdba35d68c221a     97068  exploration.js
+# Phase 3 value for comparison: 717830afcfe18933839dea696cc57b62be95f2b594e606dd68f6dd340b2d86ec  96177  exploration.js
+# unchanged vs 73c58e4: app.js index.html style.css exploration.css landing.js landing.css favicon.ico assets/*  (cache-bust strings NOT bumped yet: done at packaging)
