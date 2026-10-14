@@ -2,21 +2,21 @@
 const tr = (en, th, english) => en ? english : th;
 const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export const paths = {
- creator: {category:'creator',level:1,th:'เล่าเรื่องให้คนอยากฟัง',en:'Tell a story people want to hear',skill:['การสื่อสาร','Communication'],task:['ออกแบบโพสต์ให้ร้านสมมุติ','Design a post for an imaginary shop'],steps:[['เลือกร้านสมมุติและลูกค้า 1 กลุ่ม','Choose an imaginary shop and one audience'],['ร่างหัวข้อ ภาพ และข้อความชวนทำบางอย่าง','Sketch a headline, image and call to action'],['อธิบายว่าทำไมเลือกสื่อสารแบบนี้','Explain your communication choices']],prompt:['เขียนข้อความโพสต์และอธิบายภาพที่ร่างไว้','Write the post copy and describe your sketch']},
- analyst: {category:'analyst',level:1,th:'อ่านข้อมูลแล้วตั้งคำถาม',en:'Read data and ask a better question',skill:['การคิดวิเคราะห์','Critical thinking'],task:['อ่านยอดขายแล้วเสนอสิ่งที่ควรลอง','Read sales and suggest an experiment'],steps:[['ใช้ข้อมูลสมมุติ: จันทร์ 12 ชิ้น อังคาร 18 พุธ 9 พฤหัส 21 ศุกร์ 15','Use sample sales: Mon 12, Tue 18, Wed 9, Thu 21, Fri 15'],['หาข้อสังเกต 3 ข้อ และแยกสิ่งที่ข้อมูลยังตอบไม่ได้','Find three observations and what the data cannot explain'],['เสนอการทดลอง 1 อย่างเพื่อหาคำตอบเพิ่ม','Suggest one experiment to learn more']],prompt:['บันทึกข้อสังเกต 3 ข้อ และคำถามที่อยากหาคำตอบต่อ','Write three observations and one follow-up question']},
- builder: {category:'builder',level:1,th:'แยกปัญหาเป็นขั้นตอน',en:'Break a problem into steps',skill:['การแก้ปัญหา','Problem solving'],task:['ออกแบบที่วางโทรศัพท์ด้วยกระดาษ','Design a paper phone stand'],steps:[['วาดแบบที่วางโทรศัพท์บนกระดาษ โดยยังไม่ต้องใช้อุปกรณ์จริง','Sketch a paper phone stand; no tools needed'],['ระบุจุดรองรับและวิธีป้องกันการล้ม','Mark supports and explain how it stays stable'],['หาจุดที่อาจใช้ไม่ได้และแก้แบบ 1 จุด','Identify one weakness and revise the design']],prompt:['อธิบายแบบของคุณ จุดรองรับ และสิ่งที่แก้ไข','Describe your design, supports and revision']},
- helper: {category:'helper',level:1,th:'อธิบายให้คนอื่นเข้าใจ',en:'Explain so another person understands',skill:['การทำงานร่วมกัน','Collaboration'],task:['ทำคู่มือเรื่องใกล้ตัวให้มือใหม่','Write a beginner guide'],steps:[['เลือกเรื่องที่คุณรู้ เช่น จัดกระเป๋าหรือค้นข้อมูล','Choose something familiar, such as packing or finding information'],['เขียนวิธีทำ 3 ขั้นสำหรับคนที่ไม่เคยทำ','Write three steps for a complete beginner'],['ทบทวนว่าขั้นตอนไหนอาจทำให้สับสน แล้วปรับคำอธิบาย','Find a confusing step and improve its explanation']],prompt:['เขียนคู่มือ 3 ขั้นและสิ่งที่คุณปรับให้ง่ายขึ้น','Write three steps and what you clarified']},
- entrepreneur: {category:'entrepreneur',level:1,th:'เข้าใจปัญหาของคนใช้',en:'Understand a user problem',skill:['ความคิดริเริ่ม','Initiative'],task:['คิดข้อเสนอขายให้ลูกค้า 1 กลุ่ม','Create an offer for one audience'],steps:[['เลือกสินค้าสมมุติและลูกค้า 1 กลุ่ม','Choose an imaginary product and audience'],['เขียนปัญหาของลูกค้า และสิ่งที่สินค้าช่วยได้','Describe a customer problem and how the product helps'],['ร่างข้อเสนอขายและคำถามสำหรับทดสอบไอเดีย โดยยังไม่ต้องซื้อหรือขายจริง','Draft an offer and a question to test it; no buying or selling needed']],prompt:['เขียนกลุ่มลูกค้า ปัญหา ข้อเสนอ และคำถามทดสอบ','Write your audience, problem, offer and test question']},
- 'creator-2': {category:'creator',level:2,th:'ฟังแล้วสรุปใจความ',en:'Listen and summarize the point',skill:['การสื่อสาร','Communication'],task:['สรุปบทสนทนาให้เหลือ 3 ประเด็น','Turn a conversation into three key points'],steps:[['เลือกคลิปสัมภาษณ์หรือบทสนทนาสั้น 1 เรื่อง','Choose one short interview or conversation'],['จดสิ่งที่ผู้พูดต้องการสื่อ 3 ประเด็น','Write down three points the speaker wants to convey'],['เขียนสรุปใหม่โดยไม่เติมความเห็นของตัวเอง','Rewrite the summary without adding your own opinion']],prompt:['พิมพ์ 3 ประเด็นและสรุปสั้นของคุณ','Enter your three points and short summary']},
- 'creator-3': {category:'creator',level:3,th:'ปรับสารให้เหมาะกับผู้ฟัง',en:'Adapt a message for its audience',skill:['การสื่อสาร','Communication'],task:['เขียนข้อความเดียวกันให้ผู้ฟัง 2 กลุ่ม','Write the same message for two audiences'],steps:[['เลือกข่าวหรือประกาศใกล้ตัว 1 เรื่อง','Choose one familiar news item or announcement'],['เขียนเวอร์ชันสำหรับเพื่อน','Write a version for a friend'],['เขียนเวอร์ชันสำหรับครูหรือผู้ใหญ่ แล้วบอกสิ่งที่เปลี่ยน','Write a version for a teacher or adult and explain what changed']],prompt:['ใส่ข้อความทั้ง 2 เวอร์ชันและสิ่งที่คุณปรับ','Enter both versions and what you changed']},
- 'analyst-2': {category:'analyst',level:2,th:'แยกข้อเท็จจริงจากข้อสรุป',en:'Separate facts from conclusions',skill:['การคิดวิเคราะห์','Critical thinking'],task:['ตรวจโพสต์สมมุติว่าอะไรคือข้อมูลและอะไรคือความเห็น','Audit a sample claim for facts and opinions'],steps:[['ใช้ข้อความสมมุติ: “นักเรียนส่วนใหญ่เรียนออนไลน์ได้ดีกว่า เพราะเพื่อน 4 คนของฉันชอบ”','Use this sample: “Most students learn better online because four of my friends like it.”'],['ขีดเส้นใต้ข้อเท็จจริงและข้อสรุป','Separate the observable fact from the conclusion'],['เขียนว่าต้องมีข้อมูลอะไรเพิ่มจึงจะเชื่อข้อสรุปได้','Name the evidence needed before accepting the conclusion']],prompt:['แยกข้อเท็จจริง ข้อสรุป และข้อมูลที่ยังขาด','Write the fact, conclusion, and missing evidence']},
- 'analyst-3': {category:'analyst',level:3,th:'ตัดสินใจด้วยเกณฑ์',en:'Decide with explicit criteria',skill:['การคิดวิเคราะห์','Critical thinking'],task:['เปรียบเทียบ 3 ทางเลือกด้วยตารางคะแนน','Compare three choices with a scorecard'],steps:[['เลือกเรื่องที่ต้องตัดสินใจและทางเลือก 3 แบบ','Choose one decision and three options'],['กำหนดเกณฑ์สำคัญ 3 ข้อและให้คะแนน 1–5','Choose three criteria and score each option 1–5'],['สรุปว่าคะแนนช่วยอะไรและอะไรยังตัดสินไม่ได้','Explain what the scores clarify and what remains uncertain']],prompt:['บันทึกทางเลือก เกณฑ์ คะแนน และข้อสรุป','Record the options, criteria, scores, and conclusion']},
- 'builder-2': {category:'builder',level:2,th:'หาสาเหตุของปัญหา',en:'Find a problem’s likely cause',skill:['การแก้ปัญหา','Problem solving'],task:['วิเคราะห์ปัญหาใกล้ตัวด้วยคำถาม “ทำไม”','Analyze an everyday problem with repeated “why” questions'],steps:[['เลือกปัญหาที่ไม่อันตราย เช่น มาสายหรือลืมของ','Choose a safe everyday problem, such as lateness or forgetting something'],['ถาม “ทำไม” ต่อเนื่องอย่างน้อย 3 ครั้ง','Ask “why” at least three times'],['เลือกสาเหตุหนึ่งที่คุณควบคุมได้และออกแบบวิธีทดลองแก้','Choose one controllable cause and design a small fix']],prompt:['เขียนสายคำถาม “ทำไม” และวิธีทดลองแก้','Write your chain of “why” questions and proposed fix']},
- 'builder-3': {category:'builder',level:3,th:'ทดสอบและปรับต้นแบบ',en:'Test and improve a prototype',skill:['การแก้ปัญหา','Problem solving'],task:['ทดสอบวิธีแก้ 1 รอบแล้วปรับใหม่','Run one test and revise your solution'],steps:[['เลือกแบบร่างหรือวิธีแก้จากกิจกรรมก่อนหน้า','Choose a sketch or solution from an earlier activity'],['กำหนดว่าความสำเร็จหน้าตาเป็นอย่างไร แล้วทดลองแบบปลอดภัย','Define success and run a safe test'],['บันทึกผลที่เกิดจริงและสิ่งที่จะเปลี่ยนในรอบถัดไป','Record the result and what you would change next']],prompt:['บันทึกเกณฑ์ทดสอบ ผลจริง และการปรับรอบถัดไป','Record the test criterion, result, and next revision']},
- 'helper-2': {category:'helper',level:2,th:'ฟังและสะท้อนความต้องการ',en:'Listen and reflect a need',skill:['การทำงานร่วมกัน','Collaboration'],task:['ฝึกฟังโดยไม่รีบเสนอคำตอบ','Practise listening without rushing to solve'],steps:[['ชวนคนที่ไว้ใจคุยเรื่องเล็ก ๆ ที่เขากำลังทำ','Ask someone you trust about a small task they are working on'],['สรุปกลับว่า “ที่ได้ยินคือ…” และถามว่าคุณเข้าใจถูกไหม','Reflect back “What I heard is…” and check your understanding'],['จดสิ่งที่คุณเข้าใจต่างไปจากตอนแรก','Note what changed in your understanding']],prompt:['บันทึกสิ่งที่ได้ยิน คำสะท้อนกลับ และสิ่งที่เข้าใจเพิ่ม','Record what you heard, your reflection, and what you learned']},
- 'helper-3': {category:'helper',level:3,th:'แบ่งงานและประสานทีม',en:'Coordinate a small team',skill:['การทำงานร่วมกัน','Collaboration'],task:['วางแผนงานกลุ่มเล็กให้เห็นเจ้าของงาน','Plan a small group task with clear ownership'],steps:[['เลือกงานสมมุติหรือจริงที่ปลอดภัย เช่น จัดมุมหนังสือ','Choose a safe real or imaginary group task'],['แบ่งเป็น 3 งาน พร้อมเจ้าของและเวลาส่ง','Split it into three tasks with owners and deadlines'],['ระบุจุดที่ต้องส่งต่องานและวิธีเช็กความเข้าใจ','Mark handoffs and how the team will confirm understanding']],prompt:['เขียนรายการงาน เจ้าของ เวลา และจุดส่งต่องาน','Write the tasks, owners, deadlines, and handoffs']},
- 'entrepreneur-2': {category:'entrepreneur',level:2,th:'ถามเพื่อค้นหาความต้องการ',en:'Interview to discover a need',skill:['ความคิดริเริ่ม','Initiative'],task:['ออกแบบคำถามสัมภาษณ์ผู้ใช้ 5 ข้อ','Design five user interview questions'],steps:[['เลือกปัญหาใกล้ตัวหนึ่งเรื่องและคนที่พบปัญหานั้น','Choose one everyday problem and a person who experiences it'],['เขียนคำถามปลายเปิด 5 ข้อ หลีกเลี่ยงการชี้นำ','Write five open questions without leading the answer'],['ทดลองถาม 1 คนหรือจำลองคำตอบ แล้วจดสิ่งที่ยังไม่รู้','Ask one person or simulate answers, then note what remains unknown']],prompt:['บันทึกคำถาม สิ่งที่ได้ยิน และข้อสงสัยใหม่','Record the questions, what you heard, and new uncertainties']},
- 'entrepreneur-3': {category:'entrepreneur',level:3,th:'ออกแบบการทดลองเล็ก',en:'Design a small validation test',skill:['ความคิดริเริ่ม','Initiative'],task:['ทดสอบสมมติฐานโดยไม่ต้องขายจริง','Test an assumption without making a real sale'],steps:[['เขียนสมมติฐานว่าใครมีปัญหาอะไร','Write a hypothesis about who has which problem'],['เลือกสัญญาณหนึ่งอย่างที่จะบอกว่าปัญหานี้สำคัญ','Choose one signal that would show the problem matters'],['ออกแบบการทดสอบที่ใช้ข้อมูลสมมุติหรือแบบสอบถามสั้นและไม่เก็บข้อมูลส่วนตัว','Design a test using imaginary data or a short non-personal survey']],prompt:['เขียนสมมติฐาน สัญญาณ และแผนทดลอง','Write the hypothesis, signal, and test plan']}
+ creator: {category:'creator',level:1,th:'เล่าเรื่องให้คนอยากฟัง',en:'Tell a story people want to hear',skill:['การสื่อสาร','Communication'],task:['ร่างโพสต์สั้น ๆ ให้ร้านสมมุติ แล้วอธิบายว่าทำไมเลือกคำและภาพแบบนี้','Draft a short post for an imaginary shop, then explain why you chose those words and that image.'],steps:[['เลือกร้านสมมุติและลูกค้า 1 กลุ่ม','Choose an imaginary shop and one audience'],['ร่างหัวข้อ ภาพ และข้อความชวนทำบางอย่าง','Sketch a headline, image and call to action'],['อธิบายว่าทำไมเลือกสื่อสารแบบนี้','Explain your communication choices']],prompt:['เขียนข้อความโพสต์และอธิบายภาพที่ร่างไว้','Write the post copy and describe your sketch']},
+ analyst: {category:'analyst',level:1,th:'อ่านข้อมูลแล้วตั้งคำถาม',en:'Read data and ask a better question',skill:['การคิดวิเคราะห์','Critical thinking'],task:['ดูยอดขาย 5 วัน จด 3 ข้อสังเกต แล้วเสนอวิธีทดลอง 1 อย่างเพื่อหาคำตอบเพิ่ม','Look at five days of sales, note three observations, and suggest one experiment to learn more.'],steps:[['ใช้ข้อมูลสมมุติ: จันทร์ 12 ชิ้น อังคาร 18 พุธ 9 พฤหัส 21 ศุกร์ 15','Use sample sales: Mon 12, Tue 18, Wed 9, Thu 21, Fri 15'],['หาข้อสังเกต 3 ข้อ และแยกสิ่งที่ข้อมูลยังตอบไม่ได้','Find three observations and what the data cannot explain'],['เสนอการทดลอง 1 อย่างเพื่อหาคำตอบเพิ่ม','Suggest one experiment to learn more']],prompt:['บันทึกข้อสังเกต 3 ข้อ และคำถามที่อยากหาคำตอบต่อ','Write three observations and one follow-up question']},
+ builder: {category:'builder',level:1,th:'แยกปัญหาเป็นขั้นตอน',en:'Break a problem into steps',skill:['การแก้ปัญหา','Problem solving'],task:['วาดแบบที่วางโทรศัพท์ด้วยกระดาษ แล้วระบุจุดรองรับและแก้จุดอ่อน 1 จุด','Sketch a paper phone stand, mark its supports, and fix one weak spot.'],steps:[['วาดแบบที่วางโทรศัพท์บนกระดาษ โดยยังไม่ต้องใช้อุปกรณ์จริง','Sketch a paper phone stand; no tools needed'],['ระบุจุดรองรับและวิธีป้องกันการล้ม','Mark supports and explain how it stays stable'],['หาจุดที่อาจใช้ไม่ได้และแก้แบบ 1 จุด','Identify one weakness and revise the design']],prompt:['อธิบายแบบของคุณ จุดรองรับ และสิ่งที่แก้ไข','Describe your design, supports and revision']},
+ helper: {category:'helper',level:1,th:'อธิบายให้คนอื่นเข้าใจ',en:'Explain so another person understands',skill:['การทำงานร่วมกัน','Collaboration'],task:['เขียนวิธีทำเรื่องที่คุณถนัด 3 ขั้นให้มือใหม่ แล้วแก้ขั้นที่อาจสับสน','Write three steps for something you know well so a beginner can follow, then fix the step that might confuse.'],steps:[['เลือกเรื่องที่คุณรู้ เช่น จัดกระเป๋าหรือค้นข้อมูล','Choose something familiar, such as packing or finding information'],['เขียนวิธีทำ 3 ขั้นสำหรับคนที่ไม่เคยทำ','Write three steps for a complete beginner'],['ทบทวนว่าขั้นตอนไหนอาจทำให้สับสน แล้วปรับคำอธิบาย','Find a confusing step and improve its explanation']],prompt:['เขียนคู่มือ 3 ขั้นและสิ่งที่คุณปรับให้ง่ายขึ้น','Write three steps and what you clarified']},
+ entrepreneur: {category:'entrepreneur',level:1,th:'เข้าใจปัญหาของคนใช้',en:'Understand a user problem',skill:['ความคิดริเริ่ม','Initiative'],task:['เขียนปัญหาของลูกค้า 1 กลุ่ม แล้วร่างข้อเสนอพร้อมคำถามทดสอบว่าเขาสนใจไหม','Describe one customer group’s problem, then draft an offer and a question to test their interest.'],steps:[['เลือกสินค้าสมมุติและลูกค้า 1 กลุ่ม','Choose an imaginary product and audience'],['เขียนปัญหาของลูกค้า และสิ่งที่สินค้าช่วยได้','Describe a customer problem and how the product helps'],['ร่างข้อเสนอขายและคำถามสำหรับทดสอบไอเดีย โดยยังไม่ต้องซื้อหรือขายจริง','Draft an offer and a question to test it; no buying or selling needed']],prompt:['เขียนกลุ่มลูกค้า ปัญหา ข้อเสนอ และคำถามทดสอบ','Write your audience, problem, offer and test question']},
+ 'creator-2': {category:'creator',level:2,th:'ฟังแล้วสรุปใจความ',en:'Listen and summarize the point',skill:['การสื่อสาร','Communication'],task:['สรุปบทสนทนาสั้น ๆ เป็น 3 ประเด็นด้วยคำของคุณ โดยไม่ใส่ความเห็นตัวเอง','Summarize a short conversation in three points, in your own words, without adding your opinion.'],steps:[['เลือกคลิปสัมภาษณ์หรือบทสนทนาสั้น 1 เรื่อง','Choose one short interview or conversation'],['จดสิ่งที่ผู้พูดต้องการสื่อ 3 ประเด็น','Write down three points the speaker wants to convey'],['เขียนสรุปใหม่โดยไม่เติมความเห็นของตัวเอง','Rewrite the summary without adding your own opinion']],prompt:['พิมพ์ 3 ประเด็นและสรุปสั้นของคุณ','Enter your three points and short summary']},
+ 'creator-3': {category:'creator',level:3,th:'ปรับสารให้เหมาะกับผู้ฟัง',en:'Adapt a message for its audience',skill:['การสื่อสาร','Communication'],task:['เขียนประกาศเรื่องเดียวกัน 2 แบบ สำหรับเพื่อนและครู แล้วบอกว่าเปลี่ยนอะไร','Write the same announcement two ways, for a friend and for a teacher, and say what you changed.'],steps:[['เลือกข่าวหรือประกาศใกล้ตัว 1 เรื่อง','Choose one familiar news item or announcement'],['เขียนเวอร์ชันสำหรับเพื่อน','Write a version for a friend'],['เขียนเวอร์ชันสำหรับครูหรือผู้ใหญ่ แล้วบอกสิ่งที่เปลี่ยน','Write a version for a teacher or adult and explain what changed']],prompt:['ใส่ข้อความทั้ง 2 เวอร์ชันและสิ่งที่คุณปรับ','Enter both versions and what you changed']},
+ 'analyst-2': {category:'analyst',level:2,th:'แยกข้อเท็จจริงจากข้อสรุป',en:'Separate facts from conclusions',skill:['การคิดวิเคราะห์','Critical thinking'],task:['แยกข้อเท็จจริงออกจากข้อสรุปในข้อความสมมุติ แล้วบอกว่าต้องมีข้อมูลอะไรเพิ่ม','Separate the facts from the conclusion in a sample statement, then say what extra evidence you would need.'],steps:[['ใช้ข้อความสมมุติ: “นักเรียนส่วนใหญ่เรียนออนไลน์ได้ดีกว่า เพราะเพื่อน 4 คนของฉันชอบ”','Use this sample: “Most students learn better online because four of my friends like it.”'],['ขีดเส้นใต้ข้อเท็จจริงและข้อสรุป','Separate the observable fact from the conclusion'],['เขียนว่าต้องมีข้อมูลอะไรเพิ่มจึงจะเชื่อข้อสรุปได้','Name the evidence needed before accepting the conclusion']],prompt:['แยกข้อเท็จจริง ข้อสรุป และข้อมูลที่ยังขาด','Write the fact, conclusion, and missing evidence']},
+ 'analyst-3': {category:'analyst',level:3,th:'ตัดสินใจด้วยเกณฑ์',en:'Decide with explicit criteria',skill:['การคิดวิเคราะห์','Critical thinking'],task:['ให้คะแนน 3 ทางเลือกตามเกณฑ์ 3 ข้อ แล้วดูว่าคะแนนช่วยตัดสินได้แค่ไหน','Score three options on three criteria, then see how far the scores settle the decision.'],steps:[['เลือกเรื่องที่ต้องตัดสินใจและทางเลือก 3 แบบ','Choose one decision and three options'],['กำหนดเกณฑ์สำคัญ 3 ข้อและให้คะแนน 1–5','Choose three criteria and score each option 1–5'],['สรุปว่าคะแนนช่วยอะไรและอะไรยังตัดสินไม่ได้','Explain what the scores clarify and what remains uncertain']],prompt:['บันทึกทางเลือก เกณฑ์ คะแนน และข้อสรุป','Record the options, criteria, scores, and conclusion']},
+ 'builder-2': {category:'builder',level:2,th:'หาสาเหตุของปัญหา',en:'Find a problem’s likely cause',skill:['การแก้ปัญหา','Problem solving'],task:['ถาม “ทำไม” ต่อกัน 3 ครั้งกับปัญหาใกล้ตัว แล้วเลือกสาเหตุที่คุณควบคุมได้เพื่อวางแผนทดลองแก้','Ask “why” three times about an everyday problem, then pick a cause you can control and plan a small experiment to fix it.'],steps:[['เลือกปัญหาที่ไม่อันตราย เช่น มาสายหรือลืมของ','Choose a safe everyday problem, such as lateness or forgetting something'],['ถาม “ทำไม” ต่อเนื่องอย่างน้อย 3 ครั้ง','Ask “why” at least three times'],['เลือกสาเหตุหนึ่งที่คุณควบคุมได้และออกแบบวิธีทดลองแก้','Choose one controllable cause and design a small fix']],prompt:['เขียนสายคำถาม “ทำไม” และวิธีทดลองแก้','Write your chain of “why” questions and proposed fix']},
+ 'builder-3': {category:'builder',level:3,th:'ทดสอบและปรับต้นแบบ',en:'Test and improve a prototype',skill:['การแก้ปัญหา','Problem solving'],task:['ลองวิธีแก้ที่ร่างไว้ 1 รอบอย่างปลอดภัย แล้วจดผลจริงและสิ่งที่จะปรับต่อ','Try your earlier fix once, safely, then note what actually happened and what to change next.'],steps:[['เลือกแบบร่างหรือวิธีแก้จากกิจกรรมก่อนหน้า','Choose a sketch or solution from an earlier activity'],['กำหนดว่าความสำเร็จหน้าตาเป็นอย่างไร แล้วทดลองแบบปลอดภัย','Define success and run a safe test'],['บันทึกผลที่เกิดจริงและสิ่งที่จะเปลี่ยนในรอบถัดไป','Record the result and what you would change next']],prompt:['บันทึกเกณฑ์ทดสอบ ผลจริง และการปรับรอบถัดไป','Record the test criterion, result, and next revision']},
+ 'helper-2': {category:'helper',level:2,th:'ฟังและสะท้อนความเข้าใจ',en:'Listen and Reflect Understanding',skill:['การทำงานร่วมกัน','Collaboration'],task:['ฟังอีกฝ่ายให้จบ แล้วสรุปกลับด้วยคำของคุณเองเพื่อเช็กว่าเข้าใจตรงกัน','Listen to the other person until they finish, then reflect back in your own words to check you understood.'],steps:[['ชวนคนที่ไว้ใจคุยเรื่องเล็ก ๆ ที่เขากำลังทำ','Ask someone you trust about a small task they are working on'],['สรุปกลับว่า “ที่ได้ยินคือ…” และถามว่าคุณเข้าใจถูกไหม','Reflect back “What I heard is…” and check your understanding'],['จดสิ่งที่คุณเข้าใจต่างไปจากตอนแรก','Note what changed in your understanding']],prompt:['บันทึก 4 อย่างจากการคุย: เขาพูดว่าอะไร คุณสรุปกลับว่าอะไร เขาบอกว่าคุณเข้าใจถูกไหม และหลังถามกลับคุณเข้าใจอะไรเพิ่ม','Record four things from the conversation: what they said, what you reflected back, whether they said you understood correctly, and what you understood better after checking']},
+ 'helper-3': {category:'helper',level:3,th:'แบ่งงานและประสานทีม',en:'Coordinate a small team',skill:['การทำงานร่วมกัน','Collaboration'],task:['แบ่งงานกลุ่มเล็กเป็น 3 งาน ระบุคนทำ เวลาส่ง และจุดที่ต้องส่งต่อ','Split a small group task into three parts, name who does each and when, and mark the handoffs.'],steps:[['เลือกงานสมมุติหรือจริงที่ปลอดภัย เช่น จัดมุมหนังสือ','Choose a safe real or imaginary group task'],['แบ่งเป็น 3 งาน พร้อมเจ้าของและเวลาส่ง','Split it into three tasks with owners and deadlines'],['ระบุจุดที่ต้องส่งต่องานและวิธีเช็กความเข้าใจ','Mark handoffs and how the team will confirm understanding']],prompt:['เขียนรายการงาน เจ้าของ เวลา และจุดส่งต่องาน','Write the tasks, owners, deadlines, and handoffs']},
+ 'entrepreneur-2': {category:'entrepreneur',level:2,th:'ถามเพื่อค้นหาความต้องการ',en:'Interview to discover a need',skill:['ความคิดริเริ่ม','Initiative'],task:['เขียนคำถามไม่ชี้นำ 5 ข้อเกี่ยวกับปัญหาที่เลือก แล้วลองถามหรือจำลองคำตอบเพื่อดูว่ายังไม่รู้อะไร','Write five non-leading questions about your chosen problem, then ask someone or simulate the answers to see what you still don’t know.'],steps:[['เลือกปัญหาใกล้ตัวหนึ่งเรื่องและคนที่พบปัญหานั้น','Choose one everyday problem and a person who experiences it'],['เขียนคำถามปลายเปิด 5 ข้อ หลีกเลี่ยงการชี้นำ','Write five open questions without leading the answer'],['ทดลองถาม 1 คนหรือจำลองคำตอบ แล้วจดสิ่งที่ยังไม่รู้','Ask one person or simulate answers, then note what remains unknown']],prompt:['บันทึกคำถาม สิ่งที่ได้ยิน และข้อสงสัยใหม่','Record the questions, what you heard, and new uncertainties']},
+ 'entrepreneur-3': {category:'entrepreneur',level:3,th:'ออกแบบการทดลองเล็ก',en:'Design a small validation test',skill:['ความคิดริเริ่ม','Initiative'],task:['เขียนว่าใครน่าจะมีปัญหาอะไร แล้ววางแผนทดสอบว่าข้อสันนิษฐานนั้นจริงไหมโดยไม่ต้องขายจริง','Write who probably has what problem, then plan a test of whether that assumption is true without making a real sale.'],steps:[['เขียนสมมติฐานว่าใครมีปัญหาอะไร','Write a hypothesis about who has which problem'],['เลือกสัญญาณหนึ่งอย่างที่จะบอกว่าปัญหานี้สำคัญ','Choose one signal that would show the problem matters'],['ออกแบบการทดสอบที่ใช้ข้อมูลสมมุติหรือแบบสอบถามสั้นและไม่เก็บข้อมูลส่วนตัว','Design a test using imaginary data or a short non-personal survey']],prompt:['เขียนสมมติฐาน สัญญาณ และแผนทดลอง','Write the hypothesis, signal, and test plan']}
 };
 const corePathIds = ['creator','analyst','builder','helper','entrepreneur'];
 const skillCatalog = {
@@ -60,6 +60,20 @@ const experimentGuidance = {
   next: ['อยากลองถามเพื่อนว่าข้อเสนอนี้ช่วยเขาไหม','I want to ask a friend whether the offer would help.']
  }
 };
+// Mission-specific overrides of the shared per-family guidance. helper-2 trains
+// one skill only — listen to one person, reflect back in your own words, then
+// check "did I understand?" — so it must not show the helper-family
+// "write a how-to" example. Only the fields listed here are replaced.
+const missionGuidanceOverrides = {
+ 'helper-2': {
+  starter: ['เขาพูดว่า…\nฉันสรุปกลับว่า…\nเขาบอกว่า ที่ฉันสรุป… (ถูก หรือยังไม่ถูกตรงไหน)\nหลังถามกลับ ฉันเข้าใจเพิ่มว่า…','They said…\nI reflected back…\nThey told me my summary was… (right, or what was off)\nAfter checking, I understood better that…'],
+  output: ['1. เขาพูดว่า: “ช่วงนี้งานล้นมือ เพราะต้องทำงานเดิมให้เสร็จ แล้วยังต้องสอนคนใหม่ด้วย”\n2. ฉันสรุปกลับว่า: “ถ้าฉันเข้าใจถูก ช่วงนี้คุณหนักเพราะต้องทำงานเดิมให้เสร็จ พร้อมกับแบ่งเวลาไปสอนคนใหม่ด้วย ใช่ไหม”\n3. เขาบอกว่า: “ใช่ แต่ที่หนักสุดคือไม่มีเวลาเงียบ ๆ ทำงานของตัวเอง”\n4. หลังถามกลับ ฉันเข้าใจเพิ่มว่า: ไม่ใช่แค่งานเยอะ แต่เวลาทำงานของเขาถูกขัดจังหวะบ่อย','1. They said: “I’m swamped lately. I have to finish my normal work and teach someone new at the same time.”\n2. I reflected back: “If I understand correctly, you’re under pressure because you have to finish your usual work while also making time to teach the new person. Is that right?”\n3. They said: “Yes, but the hardest part is having no quiet time for my own work.”\n4. After checking, I understood more: it is not only the amount of work, but that their work time keeps getting interrupted.'],
+  liked: ['ชอบที่ได้ฟังจนจบ แล้วค่อยสรุปกลับด้วยคำของตัวเอง','I liked listening to the end before reflecting back in my own words.'],
+  // Replaces the shared "use imaginary information…" note: this mission uses a real conversation.
+  note: ['เลือกเรื่องเล็ก ๆ ที่อีกฝ่ายยินดีเล่า และหลีกเลี่ยงข้อมูลส่วนตัวหรือเรื่องอ่อนไหว คุณหยุดได้ทุกเมื่อ ภารกิจนี้เป็นหลักฐานการฝึก ไม่ใช่การรับรองระดับทักษะ','Choose a small topic the other person is happy to share, and avoid personal or sensitive information. You can stop at any time. This mission creates practice evidence; it is not a certification of skill level.']
+ }
+};
+const guidanceFor = (key, category) => ({ ...experimentGuidance[category || key], ...missionGuidanceOverrides[key] });
 // Skill Lab Voice Guide — pilot v0.1. Scoped to one mission only (creator).
 // Static, pre-generated audio; no runtime TTS, no mic, no backend. Keyed by
 // mission id so extending to more missions later is additive, not a rewrite.
@@ -77,31 +91,61 @@ const voiceGuidePilot = {
 function renderVoiceGuideCard(key, en) {
  const guide = voiceGuidePilot[key]; if (!guide) return '';
  const transcriptHtml = guide.transcript.map(([th, enText]) => `<p>${escape(tr(en, th, enText))}</p>`).join('');
- return `<section class="skilllab-guide-card" aria-label="LifeMap Guide"><div class="skilllab-guide-head"><span class="skilllab-guide-icon" aria-hidden="true">🎧</span><div><p class="skilllab-guide-title">LifeMap Guide</p><p class="skilllab-guide-sub">${tr(en, 'ฟังคำแนะนำ', 'Listen to the guide')}</p></div></div><audio id="skilllab-guide-audio" preload="metadata" src="${guide.audioSrc}"></audio><div class="skilllab-guide-controls" role="group" aria-label="${tr(en, 'ตัวควบคุมเสียง', 'Audio controls')}"><button type="button" id="skilllab-guide-play" class="skilllab-guide-btn skilllab-guide-btn--primary" aria-label="${tr(en, 'เล่นคำแนะนำ', 'Play guide')}">▶ ${tr(en, 'เล่น', 'Play')}</button><button type="button" id="skilllab-guide-pause" class="skilllab-guide-btn" aria-label="${tr(en, 'หยุดชั่วคราว', 'Pause')}" hidden>⏸ ${tr(en, 'หยุด', 'Pause')}</button><button type="button" id="skilllab-guide-replay" class="skilllab-guide-btn" aria-label="${tr(en, 'เล่นคำแนะนำซ้ำ', 'Replay guide')}">↻ ${tr(en, 'เล่นซ้ำ', 'Replay')}</button><span class="skilllab-guide-time" id="skilllab-guide-time" aria-hidden="true">0:00 / --:--</span></div><div class="skilllab-guide-progress" aria-hidden="true"><span id="skilllab-guide-progress-bar"></span></div><button type="button" id="skilllab-guide-transcript-toggle" class="skilllab-guide-transcript-toggle" aria-expanded="false" aria-controls="skilllab-guide-transcript">${tr(en, 'อ่านข้อความแทน', 'Read transcript instead')}</button><div class="skilllab-guide-transcript" id="skilllab-guide-transcript" hidden>${transcriptHtml}</div><p class="skilllab-guide-unavailable" id="skilllab-guide-unavailable" role="status" hidden>${tr(en, 'ยังไม่มีไฟล์เสียงในขณะนี้ กรุณาอ่านข้อความแทน', 'Audio is not available yet — please read the transcript instead.')}</p>${renderSkillGuideConversationMarkup(en)}</section>`;
+ return `<section class="skilllab-guide-card" aria-label="LifeMap Guide"><div class="skilllab-guide-head"><span class="skilllab-guide-icon" aria-hidden="true">🎧</span><div><p class="skilllab-guide-title">LifeMap Guide</p><p class="skilllab-guide-sub">${tr(en, 'ฟังคำแนะนำ', 'Listen to the guide')}</p></div></div><audio id="skilllab-guide-audio" preload="metadata" src="${guide.audioSrc}"></audio><div class="skilllab-guide-controls" role="group" aria-label="${tr(en, 'ตัวควบคุมเสียง', 'Audio controls')}"><button type="button" id="skilllab-guide-play" class="skilllab-guide-btn skilllab-guide-btn--primary" aria-label="${tr(en, 'เล่นคำแนะนำ', 'Play guide')}">▶ ${tr(en, 'เล่น', 'Play')}</button><button type="button" id="skilllab-guide-pause" class="skilllab-guide-btn" aria-label="${tr(en, 'หยุดชั่วคราว', 'Pause')}" hidden>⏸ ${tr(en, 'หยุด', 'Pause')}</button><button type="button" id="skilllab-guide-replay" class="skilllab-guide-btn" aria-label="${tr(en, 'เล่นคำแนะนำซ้ำ', 'Replay guide')}">↻ ${tr(en, 'เล่นซ้ำ', 'Replay')}</button><span class="skilllab-guide-time" id="skilllab-guide-time" aria-hidden="true">0:00 / --:--</span></div><div class="skilllab-guide-progress" aria-hidden="true"><span id="skilllab-guide-progress-bar"></span></div><button type="button" id="skilllab-guide-transcript-toggle" class="skilllab-guide-transcript-toggle" aria-expanded="false" aria-controls="skilllab-guide-transcript">${tr(en, 'อ่านข้อความแทน', 'Read transcript instead')}</button><div class="skilllab-guide-transcript" id="skilllab-guide-transcript" hidden>${transcriptHtml}</div><p class="skilllab-guide-unavailable" id="skilllab-guide-unavailable" role="status" hidden>${tr(en, 'ยังไม่มีไฟล์เสียงในขณะนี้ กรุณาอ่านข้อความแทน', 'Audio is not available yet — please read the transcript instead.')}</p></section>`;
 }
-function renderSkillGuideConversationMarkup(en) {
- return `<div class="skilllab-conversation" id="skillguide-conversation">
-  <div class="skilllab-conversation-divider"></div>
-  <button type="button" id="skillguide-live-trigger" class="skilllab-guide-btn skilllab-guide-btn--live">✨ ${tr(en, 'คุยกับ LifeMap Guide', 'Talk to LifeMap Guide')}</button>
-  <p class="skilllab-conversation-outcome" id="skillguide-outcome" role="status" aria-live="polite" hidden></p>
-  <div class="skilllab-conversation-codebox" id="skillguide-codebox" hidden>
-   <label for="skillguide-code-input">${tr(en, 'รหัสทดลอง (สำหรับผู้ก่อตั้งเท่านั้น)', 'Pilot code (founder only)')}</label>
-   <input type="password" id="skillguide-code-input" autocomplete="off" inputmode="text">
-   <div class="skilllab-conversation-codebox-actions">
-    <button type="button" id="skillguide-code-cancel" class="skilllab-guide-btn">${tr(en, 'ยกเลิก', 'Cancel')}</button>
-    <button type="button" id="skillguide-code-connect" class="skilllab-guide-btn skilllab-guide-btn--primary">${tr(en, 'เชื่อมต่อ', 'Connect')}</button>
+// LifeMap Guide — shared conversational entry for all 15 Skill Lab missions.
+// Collapsed by default (one compact CTA). It is a sibling of the creator-only
+// static-audio card, never nested inside it, and contains no <form> so it
+// cannot interfere with the Evidence form.
+function renderLifeMapGuide(key, en) {
+ return `<section class="lmguide" id="lmguide" aria-label="LifeMap Guide" data-guide-state="idle">
+  <button type="button" id="lmguide-cta" class="lmguide-cta skilllab-guide-btn skilllab-guide-btn--live" aria-expanded="false" aria-controls="lmguide-panel">✨ ${tr(en, 'คุยกับ LifeMap Guide', 'Talk to LifeMap Guide · Thai voice')}</button>
+  <div class="lmguide-panel" id="lmguide-panel" hidden>
+   <p class="lmguide-helper">${tr(en, 'Guide ช่วยคิดและอธิบาย แต่ไม่ทำภารกิจแทนคุณ', 'The Guide helps you think and explain, but does not do the mission for you.')}</p>
+   <p class="lmguide-message" id="lmguide-message" role="status" aria-live="polite" hidden></p>
+   <div class="lmguide-step" data-lmguide-step="intro" hidden>
+    <p class="lmguide-text">${tr(en, 'คุยด้วยเสียงภาษาไทย รอบละประมาณ 120 วินาที', 'A spoken chat in Thai, about 120 seconds per round.')}</p>
+    <div class="lmguide-actions">
+     <button type="button" id="lmguide-start" class="skilllab-guide-btn skilllab-guide-btn--primary">${tr(en, 'เริ่มคุยด้วยเสียง', 'Start voice chat')}</button>
+     <button type="button" id="lmguide-intro-close" class="skilllab-guide-btn">${tr(en, 'ปิด', 'Close')}</button>
+    </div>
+   </div>
+   <div class="lmguide-step" data-lmguide-step="fallback" hidden>
+    <p class="lmguide-text">${tr(en, 'เบราว์เซอร์นี้เปิดไมโครโฟนไม่ได้ (เช่น เปิดจากแอป LINE) ทำภารกิจต่อได้ตามขั้นตอนบนหน้าจอ หรือเปิดหน้านี้ใน Chrome หรือ Safari เพื่อคุยด้วยเสียง', 'This browser cannot use the microphone (for example inside the LINE app). Keep going with the steps on screen, or open this page in Chrome or Safari to talk by voice.')}${voiceGuidePilot[key] ? ' ' + tr(en, 'หรืออ่านข้อความแนะนำในการ์ดด้านบน', 'You can also read the guide transcript in the card above.') : ''}</p>
+    <div class="lmguide-actions"><button type="button" id="lmguide-fallback-close" class="skilllab-guide-btn">${tr(en, 'ปิด', 'Close')}</button></div>
+   </div>
+   <div class="lmguide-step lmguide-codebox" data-lmguide-step="code" hidden>
+    <label for="lmguide-code-input">${tr(en, 'รหัสทดลอง (สำหรับผู้ก่อตั้งเท่านั้น)', 'Pilot code (founder only)')}</label>
+    <input type="password" id="lmguide-code-input" autocomplete="off" inputmode="text">
+    <div class="lmguide-actions">
+     <button type="button" id="lmguide-code-cancel" class="skilllab-guide-btn">${tr(en, 'ยกเลิก', 'Cancel')}</button>
+     <button type="button" id="lmguide-code-next" class="skilllab-guide-btn skilllab-guide-btn--primary">${tr(en, 'ต่อไป', 'Next')}</button>
+    </div>
+   </div>
+   <div class="lmguide-step" data-lmguide-step="consent" hidden>
+    <p class="lmguide-text">${tr(en, 'LifeMap Guide จะใช้ไมโครโฟนของคุณเพื่อฟังและตอบเป็นเสียงภาษาไทย เสียงของคุณจะถูกส่งไปยังบริการ AI ระหว่างคุย ปิดไมค์หรือจบการสนทนาได้ทุกเมื่อ', 'LifeMap Guide will use your microphone to listen and reply in Thai voice. Your voice is sent to an AI service during the chat. You can mute or end the chat at any time.')}</p>
+    <div class="lmguide-actions">
+     <button type="button" id="lmguide-consent-cancel" class="skilllab-guide-btn">${tr(en, 'ยกเลิก', 'Cancel')}</button>
+     <button type="button" id="lmguide-consent-allow" class="skilllab-guide-btn skilllab-guide-btn--primary">${tr(en, 'อนุญาตไมโครโฟนและเริ่ม', 'Allow microphone and start')}</button>
+    </div>
+   </div>
+   <div class="lmguide-step" data-lmguide-step="result" hidden>
+    <div class="lmguide-actions">
+     <button type="button" id="lmguide-continue" class="skilllab-guide-btn skilllab-guide-btn--primary" hidden>${tr(en, 'คุยต่อ', 'Continue talking')}</button>
+     <button type="button" id="lmguide-retry" class="skilllab-guide-btn skilllab-guide-btn--primary">${tr(en, 'คุยอีกครั้ง', 'Talk again')}</button>
+     <button type="button" id="lmguide-result-close" class="skilllab-guide-btn">${tr(en, 'ปิด', 'Close')}</button>
+    </div>
+   </div>
+   <div class="lmguide-step lmguide-session" data-lmguide-step="session" hidden>
+    <div class="lmguide-status" id="lmguide-status" role="status" aria-live="polite"></div>
+    <div class="lmguide-actions">
+     <button type="button" id="lmguide-mute" class="skilllab-guide-btn" aria-pressed="false">${tr(en, 'ปิดไมค์', 'Mute')}</button>
+     <button type="button" id="lmguide-end" class="skilllab-guide-btn skilllab-guide-btn--danger">${tr(en, 'จบการสนทนา', 'End conversation')}</button>
+    </div>
+    <div class="lmguide-transcript" id="lmguide-transcript" aria-live="polite"></div>
    </div>
   </div>
-  <div class="skilllab-conversation-live" id="skillguide-live" hidden>
-   <div class="skilllab-conversation-status" id="skillguide-status" role="status" aria-live="polite">${tr(en, 'ยังไม่ได้เชื่อมต่อ', 'Not connected')}</div>
-   <div class="skilllab-conversation-controls">
-    <button type="button" id="skillguide-mute" class="skilllab-guide-btn" aria-pressed="false">${tr(en, 'ปิดไมค์', 'Mute')}</button>
-    <button type="button" id="skillguide-end" class="skilllab-guide-btn skilllab-guide-btn--danger">${tr(en, 'จบการสนทนา', 'End conversation')}</button>
-   </div>
-   <div class="skilllab-conversation-transcript" id="skillguide-transcript" aria-live="polite"></div>
-  </div>
-  <p class="skilllab-conversation-fallback-note" id="skillguide-fallback-note" hidden>${tr(en, 'เบราว์เซอร์นี้เปิดไมโครโฟนไม่ได้ (เช่น เปิดจากแอป LINE) กรุณาฟังคลังเสียงหรืออ่านข้อความด้านบนแทน', 'This browser cannot access the microphone (for example, inside the LINE app). Please use the recorded guide or transcript above instead.')}</p>
- </div>`;
+ </section>`;
 }
 function bindVoiceGuide(root, en, key, onPlayed) {
  const guide = voiceGuidePilot[key]; if (!guide) return;
@@ -152,33 +196,57 @@ function bindVoiceGuide(root, en, key, onPlayed) {
  if (!audio.getAttribute('src')) setUnavailable();
 }
 
-// LifeMap Guide — conversational pilot (founder/internal testing only).
+// LifeMap Guide — shared conversational client (all 15 Skill Lab missions).
 // Backend: lifemap-voice-lab (separate Netlify project), endpoint
-// skill-guide-session.mjs — commit 31d48aad4620574b30ea2a2da276e20348e04541.
-// Client sends only { missionKey, sdp }; all mission instructions and
-// guardrails live server-side. No prompt/guardrail text is duplicated here.
+// skill-guide-session.mjs, mission context 2026-10-skill-guide-context-2
+// (branch phase1/skill-guide-mission-context).
+// The client sends only { missionKey, sdp }. Every instruction, mission text
+// and guardrail lives server-side; none is duplicated here.
 const SKILL_GUIDE_BACKEND_URL = 'https://lifemap-voice-lab.netlify.app/.netlify/functions/skill-guide-session';
-const SKILL_GUIDE_SOFT_CAP_MS = 90000;
+// Client-side soft cap only. It is NOT a server-enforced quota: a modified
+// client could ignore it.
+const SKILL_GUIDE_SOFT_CAP_MS = 120000;
 
-// Single shared reference so a re-render (language toggle, mission change,
-// navigating away) can find and tear down a connection from a prior bind —
-// satisfies "clear the timeout on ... component rebind/unmount".
-let skillGuideActiveConnection = null;
+// One explicit state model for the whole feature. UI is derived from it.
+//   idle        nothing started (the panel steps before connecting live here)
+//   connecting  consent given; mic, WebRTC and backend handshake in progress
+//   listening   data channel open; connected, neutral
+//   speaking    supported by the model but NOT entered by any code path today:
+//               the GPT-Live data-channel events that mark the start/end of
+//               model audio have not been verified against real events, and an
+//               AnalyserNode guess would be unreliable, so `listening` stays
+//               the connected state. Wire a verified signal to
+//               transition('speaking') later; the UI label already exists.
+//   ending      session.close sent if possible, resources being released
+//   ended       finished normally (user, cap, or remote close)
+//   error       failed to start or lost; message says why
+export const SKILL_GUIDE_STATES = Object.freeze(['idle', 'connecting', 'listening', 'speaking', 'ending', 'ended', 'error']);
+export const SKILL_GUIDE_TRANSITIONS = Object.freeze({
+ idle: ['connecting'],
+ connecting: ['listening', 'ending', 'error'],
+ listening: ['speaking', 'ending', 'error'],
+ speaking: ['listening', 'ending', 'error'],
+ ending: ['ended'],
+ ended: ['connecting'],
+ error: ['connecting']
+});
+const SKILL_GUIDE_LIVE_STATES = ['connecting', 'listening', 'speaking', 'ending'];
 
-function teardownSkillGuideConnection(message) {
- const conn = skillGuideActiveConnection;
- if (!conn) return;
- skillGuideActiveConnection = null;
- if (conn.softCapTimer) clearTimeout(conn.softCapTimer);
- conn.micStream?.getTracks().forEach((t) => t.stop());
- try { conn.dataChannel?.close(); } catch {}
- try { conn.peer?.close(); } catch {}
- if (typeof conn.onTeardown === 'function') conn.onTeardown(message);
+// The pilot code lives here, in JS memory only, for the life of the page.
+// Never written to storage, URL, DOM attributes, analytics or console, and
+// never rendered back into an input. A page reload clears it.
+let skillGuidePilotCode = '';
+let activeSkillGuide = null;
+
+function disposeSkillGuide() {
+ const guide = activeSkillGuide;
+ activeSkillGuide = null;
+ if (guide) guide.dispose();
 }
 
 if (typeof window !== 'undefined' && !window.__skillGuideUnloadBound) {
  window.__skillGuideUnloadBound = true;
- window.addEventListener('beforeunload', () => teardownSkillGuideConnection());
+ window.addEventListener('beforeunload', () => disposeSkillGuide());
 }
 
 function isLineInAppBrowser() {
@@ -189,36 +257,100 @@ function skillGuideMicSupported() {
  return Boolean(navigator.mediaDevices?.getUserMedia) && typeof RTCPeerConnection !== 'undefined';
 }
 
-function bindSkillGuideConversation(root, en, key) {
- // Any connection from a previous render/mission must be torn down before
- // binding fresh DOM nodes, regardless of whether this mission has the
- // conversational feature at all.
- teardownSkillGuideConnection();
- if (key !== 'creator') return;
- const wrap = root.querySelector('#skillguide-conversation'); if (!wrap) return;
- const trigger = wrap.querySelector('#skillguide-live-trigger');
- const codebox = wrap.querySelector('#skillguide-codebox');
- const codeInput = wrap.querySelector('#skillguide-code-input');
- const codeCancel = wrap.querySelector('#skillguide-code-cancel');
- const codeConnect = wrap.querySelector('#skillguide-code-connect');
- const liveBox = wrap.querySelector('#skillguide-live');
- const statusEl = wrap.querySelector('#skillguide-status');
- const muteBtn = wrap.querySelector('#skillguide-mute');
- const endBtn = wrap.querySelector('#skillguide-end');
- const transcriptEl = wrap.querySelector('#skillguide-transcript');
- const fallbackNote = wrap.querySelector('#skillguide-fallback-note');
- const outcomeEl = wrap.querySelector('#skillguide-outcome');
+function mountSkillGuide(root, en, key) {
+ // Whatever was mounted by a previous render (other mission, language toggle,
+ // returning to the mission list) is torn down before new DOM is bound.
+ disposeSkillGuide();
+ const el = root.querySelector('#lmguide'); if (!el) return;
+ const cta = el.querySelector('#lmguide-cta');
+ const panel = el.querySelector('#lmguide-panel');
+ const messageEl = el.querySelector('#lmguide-message');
+ const stepEls = Object.fromEntries(['intro', 'fallback', 'code', 'consent', 'result', 'session'].map((name) => [name, el.querySelector(`[data-lmguide-step="${name}"]`)]));
+ const codeInput = el.querySelector('#lmguide-code-input');
+ const statusEl = el.querySelector('#lmguide-status');
+ const muteBtn = el.querySelector('#lmguide-mute');
+ const endBtn = el.querySelector('#lmguide-end');
+ const transcriptEl = el.querySelector('#lmguide-transcript');
+ const retryBtn = el.querySelector('#lmguide-retry');
+ const continueBtn = el.querySelector('#lmguide-continue');
+ const canVoice = !isLineInAppBrowser() && skillGuideMicSupported();
 
- if (isLineInAppBrowser() || !skillGuideMicSupported()) {
-  trigger.hidden = true;
-  fallbackNote.hidden = false;
-  return;
+ // `view` only decides which pre-connection step is open while state is
+ // idle / ended / error; during a live session the session panel is shown.
+ // `continueFromTimeout` is true only while the Guide sits in `ended` because the
+ // client soft cap fired, and only for this mount (same mission, same page
+ // lifetime). It lets "Continue talking" skip the consent step once. It is
+ // cleared by every other transition and every panel navigation, and a new
+ // mount (mission change, language/view re-render, reload) starts it false.
+ // It is never persisted, and the microphone is never held between sessions.
+ const model = { state: 'idle', view: 'collapsed', message: '', continueFromTimeout: false };
+ let attempt = null;
+ let dead = false;
+ let lastTranscript = '';
+
+ const STATUS_TEXT = {
+  connecting: tr(en, 'กำลังเชื่อมต่อ LifeMap Guide…', 'Connecting to LifeMap Guide…'),
+  listening: tr(en, 'เชื่อมต่อแล้ว ลองพูดได้เลย', 'Connected — go ahead and speak'),
+  speaking: tr(en, 'LifeMap Guide กำลังพูด…', 'LifeMap Guide is speaking…'),
+  ending: tr(en, 'กำลังจบการสนทนา…', 'Ending the conversation…')
+ };
+
+ function render() {
+  if (dead) return;
+  const live = SKILL_GUIDE_LIVE_STATES.includes(model.state);
+  const view = live ? 'session' : model.view;
+  el.dataset.guideState = model.state;
+  cta.setAttribute('aria-expanded', String(view !== 'collapsed'));
+  panel.hidden = view === 'collapsed';
+  for (const [name, node] of Object.entries(stepEls)) node.hidden = name !== view;
+  messageEl.hidden = live || !model.message;
+  messageEl.textContent = live ? '' : model.message;
+  statusEl.textContent = STATUS_TEXT[model.state] || '';
+  const talking = model.state === 'listening' || model.state === 'speaking';
+  muteBtn.disabled = !talking;
+  endBtn.disabled = model.state === 'ending';
+  continueBtn.hidden = !model.continueFromTimeout;
+  retryBtn.hidden = model.continueFromTimeout;
  }
 
- let lastTranscript = '';
- const setStatus = (text) => { statusEl.textContent = text; };
+ function transition(next, patch = {}) {
+  if (!SKILL_GUIDE_TRANSITIONS[model.state]?.includes(next)) return false;
+  Object.assign(model, { continueFromTimeout: false }, patch, { state: next });
+  render();
+  return true;
+ }
 
- const addTranscriptLine = (text, role) => {
+ function openView(view, message = '') {
+  if (SKILL_GUIDE_LIVE_STATES.includes(model.state)) return;
+  model.continueFromTimeout = false;
+  model.view = view;
+  model.message = message;
+  render();
+ }
+
+ // The app hides inactive screens with visibility:hidden (and keeps them
+ // mounted, without re-rendering), so a live session also ends when the Guide
+ // stops being displayed. Scrolling it out of view does not count.
+ const guideIsShown = () => el.isConnected && el.getClientRects().length > 0 && getComputedStyle(el).visibility !== 'hidden';
+
+ function cleanupAttempt(a) {
+  a.disposed = true;
+  if (a.softCapTimer) clearTimeout(a.softCapTimer);
+  if (a.visibilityTimer) clearInterval(a.visibilityTimer);
+  try { a.abort.abort(); } catch {}
+  a.micStream?.getTracks().forEach((t) => t.stop());
+  try { a.dataChannel?.close(); } catch {}
+  try { a.peer?.close(); } catch {}
+  if (a.remoteAudio) { try { a.remoteAudio.pause(); } catch {} a.remoteAudio.srcObject = null; }
+ }
+
+ function dispose() {
+  dead = true;
+  if (attempt) cleanupAttempt(attempt);
+  attempt = null;
+ }
+
+ function addTranscriptLine(text, role) {
   const clean = String(text || '').trim();
   if (!clean || clean === lastTranscript) return;
   lastTranscript = clean;
@@ -227,9 +359,9 @@ function bindSkillGuideConversation(root, en, key) {
   line.textContent = clean;
   transcriptEl.append(line);
   transcriptEl.scrollTop = transcriptEl.scrollHeight;
- };
+ }
 
- const extractTranscript = (event) => {
+ function extractTranscript(event) {
   const nested = event?.event;
   const source = nested && typeof nested === 'object' ? nested : event;
   const type = String(source?.type || event?.type || '');
@@ -237,156 +369,186 @@ function bindSkillGuideConversation(root, en, key) {
   if (typeof text !== 'string' || !text.trim()) return null;
   const role = /input|user/i.test(type) ? 'user' : 'assistant';
   return { text, role, type };
- };
+ }
 
- const handleChannelMessage = (raw) => {
+ function handleChannelMessage(raw) {
   let event;
   try { event = JSON.parse(raw); } catch { return; }
-  if (event.type === 'session.closed') { finishConversation(tr(en, 'จบการสนทนาแล้ว', 'Conversation ended')); return; }
+  if (event.type === 'session.closed') { endSession(tr(en, 'จบการสนทนาแล้ว', 'Conversation ended'), false); return; }
   const result = extractTranscript(event);
   if (result && /transcript|text|message/i.test(result.type)) addTranscriptLine(result.text, result.role);
- };
-
- function finishConversation(message) {
-  teardownSkillGuideConnection(message);
  }
 
- function resetIdleUi(message) {
-  liveBox.hidden = true;
-  codebox.hidden = true;
-  trigger.hidden = false;
+ // ending → cleanup → ended. Safe to call more than once.
+ function endSession(message, sendClose, timedOut = false) {
+  const a = attempt;
+  if (!a || a.disposed || !transition('ending')) return;
+  if (sendClose) {
+   try { if (a.dataChannel?.readyState === 'open') a.dataChannel.send(JSON.stringify({ type: 'session.close' })); } catch {}
+  }
+  cleanupAttempt(a);
+  attempt = null;
   transcriptEl.replaceChildren();
   lastTranscript = '';
-  if (message) { outcomeEl.hidden = false; outcomeEl.textContent = message; }
-  else { outcomeEl.hidden = true; outcomeEl.textContent = ''; }
+  transition('ended', { view: 'result', message, continueFromTimeout: timedOut });
  }
 
- async function waitForIce(connection) {
+ function failSession(a, message) {
+  if (attempt === a) attempt = null;
+  cleanupAttempt(a);
+  transcriptEl.replaceChildren();
+  lastTranscript = '';
+  transition('error', { view: 'result', message });
+ }
+
+ async function waitForIce(connection, signal) {
   if (connection.iceGatheringState === 'complete') return;
   await new Promise((resolve, reject) => {
-   const t = setTimeout(() => {
+   const done = () => {
+    clearTimeout(timer);
+    signal.removeEventListener('abort', done);
     connection.removeEventListener('icegatheringstatechange', onState);
+   };
+   const timer = setTimeout(() => {
+    done();
     reject(new Error(tr(en, 'การเชื่อมต่อใช้เวลานานเกินไป กรุณาลองใหม่', 'The connection took too long — please try again')));
    }, 10000);
    function onState() {
     if (connection.iceGatheringState !== 'complete') return;
-    clearTimeout(t);
-    connection.removeEventListener('icegatheringstatechange', onState);
+    done();
     resolve();
    }
+   signal.addEventListener('abort', () => { done(); resolve(); });
    connection.addEventListener('icegatheringstatechange', onState);
   });
  }
 
- async function connect(pilotCode) {
-  setStatus(tr(en, 'กำลังขออนุญาตใช้ไมโครโฟน…', 'Requesting microphone permission…'));
-  const connState = { peer: null, dataChannel: null, micStream: null, softCapTimer: null, onTeardown: null };
+ // Must be called synchronously from the "Allow microphone" click so the
+ // browser sees a user gesture; getUserMedia is its first await.
+ async function startSession() {
+  if (dead || !transition('connecting', { message: '' })) return;
+  muteBtn.setAttribute('aria-pressed', 'false');
+  muteBtn.textContent = tr(en, 'ปิดไมค์', 'Mute');
+  const a = { disposed: false, peer: null, dataChannel: null, micStream: null, remoteAudio: null, softCapTimer: null, visibilityTimer: null, abort: new AbortController() };
+  attempt = a;
+  a.visibilityTimer = setInterval(() => {
+   if (!guideIsShown()) endSession(tr(en, 'จบการสนทนาเพราะออกจากหน้านี้', 'Conversation ended because you left this screen'), true);
+  }, 500);
   try {
-   const connection = new RTCPeerConnection();
-   connState.peer = connection;
-   const remoteAudio = new Audio();
-   remoteAudio.autoplay = true;
-   connection.addEventListener('track', (event) => {
-    remoteAudio.srcObject = new MediaStream([event.track]);
-   });
-
    const micStream = await navigator.mediaDevices.getUserMedia({
     audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
    });
-   connState.micStream = micStream;
+   // Mission changed / page re-rendered while the permission prompt was open.
+   if (a.disposed) { micStream.getTracks().forEach((t) => t.stop()); return; }
+   a.micStream = micStream;
+
+   const connection = new RTCPeerConnection();
+   a.peer = connection;
+   const remoteAudio = new Audio();
+   remoteAudio.autoplay = true;
+   a.remoteAudio = remoteAudio;
+   connection.addEventListener('track', (event) => {
+    if (!a.disposed) remoteAudio.srcObject = new MediaStream([event.track]);
+   });
    for (const track of micStream.getAudioTracks()) connection.addTrack(track, micStream);
 
    const dataChannel = connection.createDataChannel('oai-events');
-   connState.dataChannel = dataChannel;
-   // Soft cap starts on the data channel's own `open` event — the point at
-   // which the live session is reliably usable — rather than waiting on any
-   // application-level event from the model, per explicit correction.
+   a.dataChannel = dataChannel;
+   // The 120 s soft cap starts when the data channel actually opens — the point
+   // at which the live session is usable — not when the button was pressed.
    dataChannel.addEventListener('open', () => {
-    connState.softCapTimer = setTimeout(() => {
-     try { if (dataChannel.readyState === 'open') dataChannel.send(JSON.stringify({ type: 'session.close' })); } catch {}
-     finishConversation(tr(en, 'ครบเวลาสนทนาแล้ว (90 วินาที)', 'Time limit reached (90 seconds)'));
+    if (a.disposed) return;
+    a.softCapTimer = setTimeout(() => {
+     endSession(tr(en, 'ครบเวลาสนทนาแล้ว (120 วินาที)', 'Time limit reached (120 seconds)'), true, true);
     }, SKILL_GUIDE_SOFT_CAP_MS);
-    muteBtn.disabled = false;
-    setStatus(tr(en, 'เชื่อมต่อแล้ว ลองพูดได้เลย', 'Connected — go ahead and speak'));
+    transition('listening');
    });
-   dataChannel.addEventListener('message', ({ data }) => handleChannelMessage(data));
-   dataChannel.addEventListener('close', () => finishConversation());
+   dataChannel.addEventListener('message', ({ data }) => { if (!a.disposed) handleChannelMessage(data); });
+   dataChannel.addEventListener('close', () => { if (!a.disposed) endSession(tr(en, 'จบการสนทนาแล้ว', 'Conversation ended'), false); });
 
    const offer = await connection.createOffer();
    await connection.setLocalDescription(offer);
-   await waitForIce(connection);
+   await waitForIce(connection, a.abort.signal);
+   if (a.disposed) return;
    const sdp = connection.localDescription?.sdp;
    if (!sdp) throw new Error(tr(en, 'ไม่พบข้อมูลสำหรับเริ่มการเชื่อมต่อ', 'Could not prepare the connection'));
 
-   setStatus(tr(en, 'กำลังเชื่อมต่อ LifeMap Guide…', 'Connecting to LifeMap Guide…'));
    const response = await fetch(SKILL_GUIDE_BACKEND_URL, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'X-LifeMap-Skill-Guide-Code': pilotCode },
+    headers: { 'Content-Type': 'application/json', 'X-LifeMap-Skill-Guide-Code': skillGuidePilotCode },
     body: JSON.stringify({ missionKey: key, sdp }),
+    signal: a.abort.signal,
    });
    const result = await response.json().catch(() => ({}));
-   if (!response.ok) throw new Error(result.error || tr(en, 'ไม่สามารถเปิดการสนทนาได้', 'Could not start the conversation'));
+   if (a.disposed) return;
+   if (!response.ok) {
+    // A rejected code is dropped from memory so the next try asks again.
+    if (response.status === 401) skillGuidePilotCode = '';
+    throw new Error(result.error || tr(en, 'ไม่สามารถเปิดการสนทนาได้', 'Could not start the conversation'));
+   }
    await connection.setRemoteDescription({ type: 'answer', sdp: result.transport.sdp });
-
-   connState.onTeardown = (message) => resetIdleUi(message);
-   skillGuideActiveConnection = connState;
-   liveBox.hidden = false;
-   muteBtn.disabled = true;
-   muteBtn.setAttribute('aria-pressed', 'false');
-   muteBtn.textContent = tr(en, 'ปิดไมค์', 'Mute');
   } catch (error) {
-   const message = error?.name === 'NotAllowedError'
+   if (a.disposed) return;
+   const message = error?.name === 'NotAllowedError' || error?.name === 'SecurityError'
     ? tr(en, 'ยังไม่ได้รับอนุญาตใช้ไมโครโฟน กรุณาอนุญาตแล้วลองใหม่', 'Microphone permission was not granted — please allow it and try again')
-    : (error instanceof Error ? error.message : String(error));
-   connState.micStream?.getTracks().forEach((t) => t.stop());
-   try { connState.dataChannel?.close(); } catch {}
-   try { connState.peer?.close(); } catch {}
-   resetIdleUi(message);
+    : error instanceof TypeError
+     ? tr(en, 'เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ กรุณาตรวจสอบอินเทอร์เน็ตแล้วลองใหม่', 'Could not reach the server — check your connection and try again')
+     : (error instanceof Error ? error.message : String(error));
+   failSession(a, message);
   }
  }
 
- trigger.addEventListener('click', () => {
-  outcomeEl.hidden = true;
-  outcomeEl.textContent = '';
-  codebox.hidden = false;
-  trigger.hidden = true;
-  codeInput.value = '';
-  codeInput.focus();
+ cta.addEventListener('click', () => {
+  if (SKILL_GUIDE_LIVE_STATES.includes(model.state)) return;
+  if (model.view === 'collapsed') openView(canVoice ? 'intro' : 'fallback');
+  else { codeInput.value = ''; openView('collapsed'); }
  });
-
- codeCancel.addEventListener('click', () => {
-  codeInput.value = '';
-  codebox.hidden = true;
-  trigger.hidden = false;
+ el.querySelector('#lmguide-start').addEventListener('click', () => {
+  // Order: pilot code (only if not already held in memory) → explicit mic consent.
+  if (skillGuidePilotCode) openView('consent');
+  else { codeInput.value = ''; openView('code'); codeInput.focus(); }
  });
-
- codeConnect.addEventListener('click', () => {
-  // Read then immediately clear — the code must never remain in the DOM,
-  // and is never written to any storage or log.
+ for (const id of ['#lmguide-intro-close', '#lmguide-fallback-close', '#lmguide-result-close', '#lmguide-consent-cancel']) {
+  el.querySelector(id).addEventListener('click', () => openView('collapsed'));
+ }
+ el.querySelector('#lmguide-code-cancel').addEventListener('click', () => { codeInput.value = ''; openView('intro'); });
+ el.querySelector('#lmguide-code-next').addEventListener('click', () => {
+  // Read, keep in memory, clear the field immediately.
   const code = codeInput.value;
   codeInput.value = '';
-  codebox.hidden = true;
-  if (!code) { trigger.hidden = false; return; }
-  connect(code);
+  if (!code) { openView('code', tr(en, 'กรุณากรอกรหัสทดลอง', 'Please enter the pilot code')); codeInput.focus(); return; }
+  skillGuidePilotCode = code;
+  openView('consent');
  });
-
+ el.querySelector('#lmguide-consent-allow').addEventListener('click', () => { startSession(); });
+ retryBtn.addEventListener('click', () => {
+  // A new voice session always passes through explicit consent again.
+  if (skillGuidePilotCode) openView('consent');
+  else { codeInput.value = ''; openView('code'); codeInput.focus(); }
+ });
+ continueBtn.addEventListener('click', () => {
+  // Same mission, straight from the timeout: skip the consent step once. The
+  // previous session is already fully released; this opens a fresh WebRTC
+  // session and asks the browser for the microphone again.
+  if (model.state === 'ended' && model.continueFromTimeout && skillGuidePilotCode) startSession();
+  else if (skillGuidePilotCode) openView('consent');
+  else { codeInput.value = ''; openView('code'); codeInput.focus(); }
+ });
  muteBtn.addEventListener('click', () => {
-  const conn = skillGuideActiveConnection;
-  if (!conn?.micStream) return;
-  const nowMuted = conn.micStream.getAudioTracks().some((t) => t.enabled);
-  conn.micStream.getAudioTracks().forEach((t) => { t.enabled = !nowMuted; });
+  const stream = attempt?.micStream;
+  if (!stream) return;
+  const nowMuted = stream.getAudioTracks().some((t) => t.enabled);
+  stream.getAudioTracks().forEach((t) => { t.enabled = !nowMuted; });
   muteBtn.setAttribute('aria-pressed', String(nowMuted));
   muteBtn.textContent = nowMuted ? tr(en, 'เปิดไมค์', 'Unmute') : tr(en, 'ปิดไมค์', 'Mute');
  });
+ endBtn.addEventListener('click', () => endSession(tr(en, 'จบการสนทนาแล้ว', 'Conversation ended'), true));
 
- endBtn.addEventListener('click', () => {
-  const conn = skillGuideActiveConnection;
-  try { if (conn?.dataChannel?.readyState === 'open') conn.dataChannel.send(JSON.stringify({ type: 'session.close' })); } catch {}
-  finishConversation(tr(en, 'จบการสนทนาแล้ว', 'Conversation ended'));
- });
+ activeSkillGuide = { dispose };
+ render();
 }
 function renderAnswerGuide(key, field, en) {
- const guide = experimentGuidance[paths[key]?.category || key];
+ const guide = guidanceFor(key, paths[key]?.category);
  const id = `experiment-${field}-guide`;
  if (field === 'output') return `<div id="${id}" class="experiment-answer-guide"><p>${tr(en,'เริ่มเขียนได้แบบนี้:','You can start with:')} ${escape(guide.starter[en?1:0])}</p><section class="experiment-example"><h4>${tr(en,'ตัวอย่างคำตอบของกิจกรรมนี้','Example answer for this activity')}</h4><p>${tr(en,'ตัวอย่างสมมุติ ใช้ดูแนวทาง แล้วเขียนเรื่องของคุณเอง','An imaginary example. Use it as a guide and write your own version.')}</p><blockquote>${escape(guide.output[en?1:0])}</blockquote></section></div>`;
  return `<p id="${id}" class="experiment-answer-guide">${tr(en,'ตัวอย่าง:','Example:')} ${escape(guide[field][en?1:0])}</p>`;
@@ -479,7 +641,7 @@ function positionActivityResponse(root,p,key,en){
  heading.textContent=tr(en,'ลองทำกิจกรรมตรงนี้ก่อน','Do the activity here first');
  label.textContent=p.prompt[en?1:0];
  guide.id='experiment-output-guide';
- const guidance=experimentGuidance[p.category || key];
+ const guidance=guidanceFor(key, p.category);
  guide.innerHTML=`<span>${tr(en,'เริ่มเขียนได้แบบนี้:','Start like this:')} ${escape(guidance.starter[en?1:0])}</span><span><strong>${tr(en,'ตัวอย่าง:','Example:')}</strong> ${escape(guidance.output[en?1:0])}</span>`;
  textarea.required=true;
  textarea.rows=5;
@@ -516,8 +678,8 @@ export function renderExperimentWorkbench(state,questions,save,navigate,onEviden
  // down before this screen re-renders for any reason (mission change,
  // language toggle, returning to the "choose a mission" state) — covers both
  // branches below, including the early-return path that never reaches
- // bindSkillGuideConversation.
- teardownSkillGuideConnection();
+ // mountSkillGuide.
+ disposeSkillGuide();
  const en=state.language==='en';
  if(localStorage.getItem('lifemap_logged_in_role')==='parent'){root.replaceChildren();return;}
  const key=state.exploration?.selected,p=paths[key];
@@ -528,8 +690,8 @@ export function renderExperimentWorkbench(state,questions,save,navigate,onEviden
  const fieldKeys=['output','enjoyment','difficulty','nextChoice'];
  const initiallySaved=Boolean(savedRecord && fieldKeys.every(field=>String(draft[field] ?? '')===String(savedRecord[field] ?? '')));
  const savedMessage=tr(en,'บันทึกหลักฐานเรียบร้อยแล้ว · ดูได้ในคลังหลักฐานของคุณ','Evidence saved · It is now in your evidence library');
- const guide=experimentGuidance[p.category];
- root.innerHTML=`<header class="experiment-heading" data-selected-path="${key}"><div><p class="evidence-eyebrow">${escape(en?skillCatalog[p.category].en:skillCatalog[p.category].th)} · ${tr(en,`ภารกิจ ${p.level}/3`,`Mission ${p.level}/3`)}</p><h2 id="experiment-heading" tabindex="-1">${escape(en?p.en:p.th)}</h2><p><strong>${tr(en,'ลองทำ:','Try:')}</strong> ${escape(p.task[en?1:0])} · 10 ${tr(en,'นาที','min')}</p></div><button type="button" class="btn explore-secondary" id="experiment-change">${tr(en,'เลือกภารกิจอื่น','Choose another')}</button></header>${renderVoiceGuideCard(key,en)}<div class="experiment-layout"><section><h3>${tr(en,'ทำตาม 3 ขั้นนี้','Follow these 3 steps')}</h3><ol class="experiment-steps">${p.steps.map(s=>`<li>${escape(s[en?1:0])}</li>`).join('')}</ol><p class="explore-note">${tr(en,'ใช้ข้อมูลสมมุติ และหยุดได้ทุกเมื่อ ภารกิจนี้สร้างหลักฐานการฝึก ไม่ใช่การรับรองระดับทักษะ','Use imaginary information and stop anytime. This mission creates practice evidence; it is not a skill certification.')}</p></section><form id="experiment-form"><h3>${tr(en,'ทำเสร็จแล้ว ตอบ 3 ข้อ','Done? Answer 3 questions')}</h3><fieldset class="quick-choice"><legend>1. ${tr(en,'กิจกรรมนี้สนุกแค่ไหน','How enjoyable was it?')}</legend><div class="scale-options">${[1,2,3,4,5].map(n=>`<label><input type="radio" name="enjoyment" value="${n}"${String(draft.enjoyment)===String(n)?' checked':''} required><span>${n}</span></label>`).join('')}</div><p class="scale-ends"><span>${tr(en,'ไม่สนุก','Not enjoyable')}</span><span>${tr(en,'สนุกมาก','Very enjoyable')}</span></p></fieldset><fieldset class="quick-choice"><legend>2. ${tr(en,'กิจกรรมนี้ยากแค่ไหน','How difficult was it?')}</legend><div class="scale-options">${[1,2,3,4,5].map(n=>`<label><input type="radio" name="difficulty" value="${n}"${String(draft.difficulty)===String(n)?' checked':''} required><span>${n}</span></label>`).join('')}</div><p class="scale-ends"><span>${tr(en,'ง่าย','Easy')}</span><span>${tr(en,'ยากมาก','Very difficult')}</span></p></fieldset><fieldset class="quick-choice next-choice"><legend>3. ${tr(en,'ตอนนี้อยากทำอะไรต่อ','What would you like to do next?')}</legend>${[['continue',tr(en,'ทำต่อ','Continue')],['switch',tr(en,'ลองอย่างอื่น','Try something else')],['unsure',tr(en,'ยังไม่แน่ใจ','Not sure yet')]].map(([value,label])=>`<label><input type="radio" name="nextChoice" value="${value}"${draft.nextChoice===value?' checked':''} required><span>${label}</span></label>`).join('')}</fieldset><label for="experiment-output">${tr(en,'อยากจดอะไรเพิ่มไหม (ไม่บังคับ)','Anything else to note? (optional)')}</label><p class="experiment-answer-guide">${tr(en,`ตัวอย่าง: ${guide.liked[0]}`,`Example: ${guide.liked[1]}`)}</p><textarea id="experiment-output" name="output" placeholder="${tr(en,'พิมพ์สั้น ๆ หรือเว้นไว้ได้','Write a short note, or leave blank')}" rows="3" maxlength="600">${escape(draft.output)}</textarea><p class="explore-note">${tr(en,'บันทึกในเบราว์เซอร์นี้เท่านั้น ยังไม่ส่งให้ AI ครู หรือผู้ปกครอง','Saved only in this browser. Not sent to AI, teachers or parents.')}</p><button id="experiment-save" class="btn btn-primary experiment-save-btn${initiallySaved?' is-saved':''}" type="submit"${initiallySaved?' disabled':''}>${initiallySaved?tr(en,'บันทึกเรียบร้อยแล้ว','Saved successfully'):tr(en,'บันทึกหลักฐาน','Save evidence')}</button><p id="experiment-status" role="status" aria-live="polite"${initiallySaved?' data-state="saved"':''}>${initiallySaved?savedMessage:''}</p><button id="experiment-result" class="btn explore-secondary" type="button">${tr(en,'ดูคลังหลักฐานทั้งหมด','View all evidence')}</button></form></div>${skillPortfolio(state,en)}${activitySummary(state,en,'activity-summary-skill-lab')}`;
+ const guide=guidanceFor(key, p.category);
+ root.innerHTML=`<header class="experiment-heading" data-selected-path="${key}"><div><p class="evidence-eyebrow">${escape(en?skillCatalog[p.category].en:skillCatalog[p.category].th)} · ${tr(en,`ภารกิจ ${p.level}/3`,`Mission ${p.level}/3`)}</p><h2 id="experiment-heading" tabindex="-1">${escape(en?p.en:p.th)}</h2><p><strong>${tr(en,'ลองทำ:','Try:')}</strong> ${escape(p.task[en?1:0])} · 10 ${tr(en,'นาที','min')}</p></div><button type="button" class="btn explore-secondary" id="experiment-change">${tr(en,'เลือกภารกิจอื่น','Choose another')}</button></header>${renderVoiceGuideCard(key,en)}${renderLifeMapGuide(key,en)}<div class="experiment-layout"><section><h3>${tr(en,'ทำตาม 3 ขั้นนี้','Follow these 3 steps')}</h3><ol class="experiment-steps">${p.steps.map(s=>`<li>${escape(s[en?1:0])}</li>`).join('')}</ol><p class="explore-note">${guide.note?tr(en,guide.note[0],guide.note[1]):tr(en,'ใช้ข้อมูลสมมุติ และหยุดได้ทุกเมื่อ ภารกิจนี้สร้างหลักฐานการฝึก ไม่ใช่การรับรองระดับทักษะ','Use imaginary information and stop anytime. This mission creates practice evidence; it is not a skill certification.')}</p></section><form id="experiment-form"><h3>${tr(en,'ทำเสร็จแล้ว ตอบ 3 ข้อ','Done? Answer 3 questions')}</h3><fieldset class="quick-choice"><legend>1. ${tr(en,'กิจกรรมนี้สนุกแค่ไหน','How enjoyable was it?')}</legend><div class="scale-options">${[1,2,3,4,5].map(n=>`<label><input type="radio" name="enjoyment" value="${n}"${String(draft.enjoyment)===String(n)?' checked':''} required><span>${n}</span></label>`).join('')}</div><p class="scale-ends"><span>${tr(en,'ไม่สนุก','Not enjoyable')}</span><span>${tr(en,'สนุกมาก','Very enjoyable')}</span></p></fieldset><fieldset class="quick-choice"><legend>2. ${tr(en,'กิจกรรมนี้ยากแค่ไหน','How difficult was it?')}</legend><div class="scale-options">${[1,2,3,4,5].map(n=>`<label><input type="radio" name="difficulty" value="${n}"${String(draft.difficulty)===String(n)?' checked':''} required><span>${n}</span></label>`).join('')}</div><p class="scale-ends"><span>${tr(en,'ง่าย','Easy')}</span><span>${tr(en,'ยากมาก','Very difficult')}</span></p></fieldset><fieldset class="quick-choice next-choice"><legend>3. ${tr(en,'ตอนนี้อยากทำอะไรต่อ','What would you like to do next?')}</legend>${[['continue',tr(en,'ทำต่อ','Continue')],['switch',tr(en,'ลองอย่างอื่น','Try something else')],['unsure',tr(en,'ยังไม่แน่ใจ','Not sure yet')]].map(([value,label])=>`<label><input type="radio" name="nextChoice" value="${value}"${draft.nextChoice===value?' checked':''} required><span>${label}</span></label>`).join('')}</fieldset><label for="experiment-output">${tr(en,'อยากจดอะไรเพิ่มไหม (ไม่บังคับ)','Anything else to note? (optional)')}</label><p class="experiment-answer-guide">${tr(en,`ตัวอย่าง: ${guide.liked[0]}`,`Example: ${guide.liked[1]}`)}</p><textarea id="experiment-output" name="output" placeholder="${tr(en,'พิมพ์สั้น ๆ หรือเว้นไว้ได้','Write a short note, or leave blank')}" rows="3" maxlength="600">${escape(draft.output)}</textarea><p class="explore-note">${tr(en,'บันทึกในเบราว์เซอร์นี้เท่านั้น ยังไม่ส่งให้ AI ครู หรือผู้ปกครอง','Saved only in this browser. Not sent to AI, teachers or parents.')}</p><button id="experiment-save" class="btn btn-primary experiment-save-btn${initiallySaved?' is-saved':''}" type="submit"${initiallySaved?' disabled':''}>${initiallySaved?tr(en,'บันทึกเรียบร้อยแล้ว','Saved successfully'):tr(en,'บันทึกหลักฐาน','Save evidence')}</button><p id="experiment-status" role="status" aria-live="polite"${initiallySaved?' data-state="saved"':''}>${initiallySaved?savedMessage:''}</p><button id="experiment-result" class="btn explore-secondary" type="button">${tr(en,'ดูคลังหลักฐานทั้งหมด','View all evidence')}</button></form></div>${skillPortfolio(state,en)}${activitySummary(state,en,'activity-summary-skill-lab')}`;
  insertUsageGuide(root,en);
  positionActivityResponse(root,p,key,en);
  root.querySelector('#experiment-change').onclick=()=>returnToResult(navigate,'explore-paths');
@@ -537,7 +699,7 @@ export function renderExperimentWorkbench(state,questions,save,navigate,onEviden
  bindActivitySummary(root,navigate);
  let voiceGuidePlayedThisRender=false,missionStartedAfterVoiceDispatched=false;
  bindVoiceGuide(root,en,key,()=>{voiceGuidePlayedThisRender=true;});
- bindSkillGuideConversation(root,en,key);
+ mountSkillGuide(root,en,key);
  const form=root.querySelector('form'),status=root.querySelector('#experiment-status'),saveButton=root.querySelector('#experiment-save');
  let hasSavedRecord=Boolean(savedRecord);
  const values=()=>Object.fromEntries(fieldKeys.map(k=>[k,form.elements[k]?.value || '']));
