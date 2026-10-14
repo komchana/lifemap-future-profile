@@ -1,0 +1,11 @@
+# Skill Lab deployed v02 baseline — sha256, bytes, path (these 10 files are the complete published set)
+94bee9b3989aa2bbd29911dee4f40dad79c846f7ea5cf6fbb301213609fd5a5b    595446  app.js
+d4917de1accbdf4ee03a896f3a879cdca716505cec32251a05adbc654e422d54    145576  index.html
+bf1e8b13c96f0afa3368cd6e0ef59f1fd83b07c69c3aa70576cc079c94ea405a    111019  style.css
+fb80ac4e7694df3ed999a11085014f0d4071d0f19f96b2752af3aad2eac1397a     79902  exploration.js
+437a8e94869231bf68fb4882d890aced81d51acdfcd7daf3eceeecc0681b5edd     18867  exploration.css
+f5b8a1b7fefeeb640be4b7eb87d702ffff8f2cdc10381dc42d6940507f825946      8504  landing.js
+7d1ea971ea9de97bcb8f955a851829847f0eada4ae08fb49eb1e83cd5a1df227     25622  landing.css
+d029ee2f8b418ee988836acac9bb63b82be5e23d285c52d1f1afdfe3e546f4fe     15086  favicon.ico
+2ee818e5208970ee8117de6ede4416e327e9c14f91aa63648cde234a66c92ec2     23586  assets/mascot.webp
+4644e1131730bb33174771938eaf084aef43ab767e0d959e99aacd9be1b66a42     94965  assets/og-lifemap-cover.jpg
